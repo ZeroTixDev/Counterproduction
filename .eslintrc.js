@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
     root: true,
     extends: ['eslint:recommended', 'plugin:prettier/recommended'],
@@ -5,6 +7,7 @@ module.exports = {
         'no-constant-condition': ['error', { checkLoops: false }],
         'no-var': 'error',
         'prefer-const': 'error',
+        strict: ['error', 'global'],
     },
     globals: {},
     parserOptions: {
