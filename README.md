@@ -18,9 +18,6 @@
     <strong> <a href="https://youxplode.com/md.html?Autofactory">About</a> </strong>
 </p>
 
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FiMplode-nZ%2FAutofactory.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FiMplode-nZ%2FAutofactory?ref=badge_large)
-
 ## Compiling
 
 To compile the Rust part of the program, run
@@ -53,3 +50,5 @@ There is also a very simple prototype<sup>[2](#fn2)</sup> that can be accessed b
 <a name="fn1">1</a>: Install `pnpm` using `npm install --global pnpm`.
 
 <a name="fn2">2</a>: Nothing in this will be kept; its purely for testing purposes.
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FiMplode-nZ%2FAutofactory.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FiMplode-nZ%2FAutofactory?ref=badge_large)
