@@ -23,27 +23,23 @@
 To compile the Rust part of the program, run
 
 ```bash
-> cd native
+> cd core
 > cargo build
 ```
 
 This assumes that you have [`rustup`](https://rustup.rs/) installed and a nightly version of the compiler as the default.
 
-To compile the JavaScript part of the program, and link it with the Rust part, run<sup>[1](#fn1)</sup>
+To run the UI library test page, run<sup>[1](#fn1)</sup>
 
 ```bash
-> pnpm run build
-```
-
-Start using
-
-```bash
-> pnpm run start
+> pnpm install
+> cd test
+> pnpm run serve
 ```
 
 ## Prototype
 
-There is also a very simple prototype<sup>[2](#fn2)</sup> that can be accessed by simply opening `file:///path/to/Autofactory/demo/index.html`. The space button can be used to pause the "game". Other controls are shown in the `Player 0's Resources ...` section.
+There is also a very simple prototype<sup>[2](#fn2)</sup> that can be accessed by simply opening `file:///path/to/Autofactory/prototype/index.html`. The space button can be used to pause the "game". Other controls are shown in the `Player 0's Resources ...` section.
 
 ---
 
