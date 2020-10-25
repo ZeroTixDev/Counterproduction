@@ -29,7 +29,6 @@ importers:
   test:
     dependencies:
       autofactory-ui: 'link:../ui'
-      mithril: 2.0.4
     devDependencies:
       clean-webpack-plugin: 3.0.0_webpack@5.2.0
       cross-env: 7.0.2
@@ -55,7 +54,6 @@ importers:
       css-minimizer-webpack-plugin: ^1.1.5
       html-webpack-plugin: next
       mini-css-extract-plugin: ^1.0.0
-      mithril: ^2.0.4
       node-sass: ^4.14.1
       sass-loader: ^10.0.3
       style-loader: ^2.0.0
@@ -68,13 +66,13 @@ importers:
       webpackbar: ^4.0.0
   ui:
     dependencies:
-      hyperscript-adapter: 7.1.1
-      hyperscript-adapter-modules: 1.2.0_hyperscript-adapter@7.1.1
+      hyperscript-adapter: 7.1.2
+      hyperscript-adapter-modules: 1.2.1_hyperscript-adapter@7.1.2
       mithril: 2.0.4
       overlayscrollbars: 1.13.0
     specifiers:
-      hyperscript-adapter: ^7.1.1
-      hyperscript-adapter-modules: ^1.2.0
+      hyperscript-adapter: ^7.1.2
+      hyperscript-adapter-modules: ^1.2.1
       mithril: ^2.0.4
       overlayscrollbars: ^1.13.0
 lockfileVersion: 5.2
@@ -2814,18 +2812,22 @@ packages:
       node: '>=8.12.0'
     resolution:
       integrity: sha512-SEQu7vl8KjNL2eoGBLF3+wAjpsNfA9XMlXAYj/3EdaNfAlxKthD1xjEQfGOUhllCGGJVNY34bRr6lPINhNjyZw==
-  /hyperscript-adapter-modules/1.2.0_hyperscript-adapter@7.1.1:
+  /hyperscript-adapter-modules/1.2.1_hyperscript-adapter@7.1.2:
     dependencies:
-      hyperscript-adapter: 7.1.1
+      hyperscript-adapter: 7.1.2
     dev: false
     peerDependencies:
       hyperscript-adapter: '*'
     resolution:
-      integrity: sha512-e3GxVbrmtS3Tt1ruMJBh8w6V7R/REJKwFEBz2KpluBQDTTOo1cqMY/ZGVIQTq4M00U85aJuHMONEIncLCM/78w==
+      integrity: sha512-D45MKCh70I8rhPlqfu8Jlctwu1UI2SFXlVikCccxB+UHoDo/7TbJqp9CCMaMFsO5MUIRRj3grqD8iET1BXaaQg==
   /hyperscript-adapter/7.1.1:
     dev: false
     resolution:
       integrity: sha512-2PTQQGxKXGsPjiL9yi3FYKq7Y8qoAoOABmfoGKyyAbJx+aSxIak5n5kdMLw0iog0S37UhWfUfwpKrK6R25Cw8w==
+  /hyperscript-adapter/7.1.2:
+    dev: false
+    resolution:
+      integrity: sha512-nMZ422dAxIoWf+FtXBMSaAbPCIaCPwfW5o1s6iyebcbjhhrd+nxWHjkvY0u0501aifi0hJfPR3gx+TcW9hWdUA==
   /iconv-lite/0.4.24:
     dependencies:
       safer-buffer: 2.1.2

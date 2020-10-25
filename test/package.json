@@ -28,7 +28,6 @@
         "webpackbar": "^4.0.0"
     },
     "dependencies": {
-        "mithril": "^2.0.4",
         "autofactory-ui": "workspace:*"
     }
 }
