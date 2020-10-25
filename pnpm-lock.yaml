@@ -10,6 +10,22 @@ importers:
       eslint-config-prettier: ^6.14.0
       eslint-plugin-prettier: ^3.1.4
       prettier: ^2.1.2
+  prototype:
+    dependencies:
+      hyperscript-adapter: 7.1.1
+      mithril: 2.0.4
+    devDependencies:
+      eslint: 7.12.0
+      eslint-config-prettier: 6.14.0_eslint@7.12.0
+      eslint-plugin-prettier: 3.1.4_eslint@7.12.0+prettier@2.1.2
+      prettier: 2.1.2
+    specifiers:
+      eslint: ^7.11.0
+      eslint-config-prettier: ^6.13.0
+      eslint-plugin-prettier: ^3.1.4
+      hyperscript-adapter: ^7.0.0
+      mithril: ^2.0.4
+      prettier: ^2.1.2
   test:
     dependencies:
       autofactory-ui: 'link:../ui'
