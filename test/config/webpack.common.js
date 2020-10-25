@@ -8,6 +8,28 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackBar = require('webpackbar');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
+const plugins = [
+    // Removes/cleans build folders and unused assets when rebuilding
+    new CleanWebpackPlugin(),
+    // Generates an HTML file from a template
+    new HtmlWebpackPlugin({
+        title: 'Autofactory',
+        favicon: path.resolve(__dirname, '../favicon.svg'),
+        template: paths.src + '/template.html', // template file
+        filename: 'index.html', // output file
+    }),
+    new WebpackBar(),
+];
+
+if (process.env.WEBPACK_ANALYZE_SIZE) {
+    plugins.push(
+        new BundleAnalyzerPlugin({
+            logLevel: 'silent',
+            openAnalyzer: false,
+        })
+    );
+}
+
 module.exports = {
     // Where webpack looks to start building the bundle
     entry: [paths.src + '/index.js'],
@@ -19,22 +41,7 @@ module.exports = {
         publicPath: '/',
     },
     // Customize the webpack build process
-    plugins: [
-        // Removes/cleans build folders and unused assets when rebuilding
-        new CleanWebpackPlugin(),
-        // Generates an HTML file from a template
-        new HtmlWebpackPlugin({
-            title: 'Autofactory',
-            favicon: path.resolve(__dirname, '../favicon.svg'),
-            template: paths.src + '/template.html', // template file
-            filename: 'index.html', // output file
-        }),
-        new WebpackBar(),
-        new BundleAnalyzerPlugin({
-            logLevel: 'silent',
-            openAnalyzer: false,
-        }),
-    ],
+    plugins,
     // Determine how modules within the project are treated
     module: {
         rules: [
@@ -48,8 +55,8 @@ module.exports = {
                         options: {
                             modules: {
                                 compileType: 'module',
-                                mode: 'local',
-                                auto: true,
+                                mode: (a) => (/\.module\.\w+$/i.test(a) ? 'local' : 'global'),
+                                auto: /.*/i,
                                 exportGlobals: true,
                                 namedExport: false,
                                 exportLocalsConvention: 'asIs',

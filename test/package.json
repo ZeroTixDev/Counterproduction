@@ -5,8 +5,9 @@
     "author": "iMplode nZ",
     "license": "ISC",
     "scripts": {
-        "serve": "cross-env NODE_ENV=development webpack serve --config config/webpack.dev.js",
-        "build": "cross-env NODE_ENV=production webpack --config config/webpack.prod.js"
+        "serve": "cross-env NODE_ENV=development WEBPACK_ANALYZE_SIZE=true webpack serve --config config/webpack.dev.js",
+        "build": "cross-env NODE_ENV=production WEBPACK_ANALYZE_SIZE=true webpack --config config/webpack.prod.js",
+        "test-compile": "cross-env NODE_ENV=production webpack --config config/webpack.prod.js"
     },
     "devDependencies": {
         "clean-webpack-plugin": "^3.0.0",
