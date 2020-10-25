@@ -1,0 +1,17 @@
+dependencies:
+  hyperscript-adapter: 7.1.1
+  mithril: 2.0.4
+lockfileVersion: 5.2
+packages:
+  /hyperscript-adapter/7.1.1:
+    dev: false
+    resolution:
+      integrity: sha512-2PTQQGxKXGsPjiL9yi3FYKq7Y8qoAoOABmfoGKyyAbJx+aSxIak5n5kdMLw0iog0S37UhWfUfwpKrK6R25Cw8w==
+  /mithril/2.0.4:
+    dev: false
+    hasBin: true
+    resolution:
+      integrity: sha512-mgw+DMZlhMS4PpprF6dl7ZoeZq5GGcAuWnrg5e12MvaGauc4jzWsDZtVGRCktsiQczOEUr2K5teKbE5k44RlOg==
+specifiers:
+  hyperscript-adapter: ^7.1.1
+  mithril: ^2.0.4
