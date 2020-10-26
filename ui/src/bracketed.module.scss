@@ -1,5 +1,6 @@
 :global .bracketed {
     position: relative;
+    font-weight: light;
 }
 
 .bracket {
@@ -13,22 +14,26 @@
         height: var(--bracket-size);
         left: calc(-1 * var(--bracket-size) / 2);
         top: calc(-1 * var(--bracket-size) / 2);
-        border: #FFFA solid 1px;
+        border: #FFFA 1px;
     }
 }
 
-.bracket :global {
-    &.top::after {
+.bracket:global(.top)::after {
+    border-top-style: solid;
+}
 
+.bracket:global {
+    &.top::after {
+        border-top-style: solid;
     }
     &.bot::after {
-
+        border-bottom-style: solid;
     }
     &.lef::after {
-
+        border-left-style: solid;
     }
     &.rig::after {
-
+        border-right-style: solid;
     }
 }
 .interior {

@@ -44,6 +44,7 @@ importers:
       postcss: 8.1.4
       postcss-lab-function: 3.1.2
       postcss-loader: 4.0.4_postcss@8.1.4+webpack@5.2.0
+      postcss-short: 5.0.0
       sass-loader: 10.0.4_node-sass@4.14.1+webpack@5.2.0
       style-loader: 2.0.0_webpack@5.2.0
       terser-webpack-plugin: 5.0.1_webpack@5.2.0
@@ -65,6 +66,7 @@ importers:
       postcss: ^8.1.4
       postcss-lab-function: ^3.1.2
       postcss-loader: ^4.0.4
+      postcss-short: ^5.0.0
       sass-loader: ^10.0.3
       style-loader: ^2.0.0
       terser-webpack-plugin: ^5.0.0
@@ -5139,6 +5141,14 @@ packages:
       node: '>=6.9.0'
     resolution:
       integrity: sha512-IYY2bEDD7g1XM1IDEsUT4//iEYCxAmP5oDSFMVU/JVvT7gh+l4fmjciLqGgwjdWpQIdb0Che2VX00QObS5+cTg==
+  /postcss-font-weights/5.0.0:
+    dependencies:
+      postcss: 7.0.35
+    dev: true
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-n/1sLibDcRcFS4HcGVzB81eUdxjG8p3XZFvM3Q+0Szz+e8f64dV3bJyUMs7Nw8ZV4qmO293SUVmOMmmhNMkzjw==
   /postcss-html/0.36.0_4fe96148bf77e6cee792ae366c9083f9:
     dependencies:
       htmlparser2: 3.10.1
@@ -5472,6 +5482,87 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-gjMeXBempyInaBqpp8gODmwZ52WaYsVOsfr4L4lDQ7n3ncD6mEyySiDtgzCT+NYC0mmeOLvtsF8iaEf0YT6dBw==
+  /postcss-short-border-radius/3.0.0:
+    dependencies:
+      postcss: 7.0.35
+    dev: true
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-s4g/NSUFA71+s4fJMUFo/IqcJL1ZdmWSz90GctW/f3msdhetgaU2OuORYQtUB2HGX5BdsvBFai8FBv/D3/lrVQ==
+  /postcss-short-border/4.0.0:
+    dependencies:
+      postcss: 7.0.35
+    dev: true
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-o9lZZ7yavQAs2Tj1BazltLBTDH4XdNtUuY15NhV6Nr1R+1sG4e9k2QZRhaOazPbntrw7pDHFqRwDYQND9DB8jw==
+  /postcss-short-color/4.0.0:
+    dependencies:
+      postcss: 7.0.35
+    dev: true
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-2cIbOysfLRXweXDqVpt+csXNaAF46S150lN8SgItvKN3naWXfKSanYLefzF9xZ2eVl7qgkv7Fkd8NgNI0PZFHQ==
+  /postcss-short-font-size/5.0.0:
+    dependencies:
+      postcss: 7.0.35
+    dev: true
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-CaEzUc/YSOq2PDblqZuSxdecmCqN5HbxLLLu5h53GoKJpXPNxrk6R9cfBvB/cO1LQyXNFtzZuQwL/JglkuBy4A==
+  /postcss-short-overflow/1.0.0:
+    dependencies:
+      postcss: 7.0.35
+    dev: true
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-nYFZGCt4+/x3kyQjgX3unxx7942sU/7ZI3JE8jHdgJZ/c/sAOrwWyjrNdrdckJzUj1xrCYcrp+vcrj2wspsCJA==
+  /postcss-short-position/4.0.1:
+    dependencies:
+      postcss: 7.0.35
+    dev: true
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-/k2v8v+Wwrb+nIcXqOuD32y6Yss1lci1fq7FMzsJsu7nfWHf48mpgPR/afliGdZvrXRRB9IW2aJbwugoOCgDsw==
+  /postcss-short-size/4.0.0:
+    dependencies:
+      postcss: 7.0.35
+    dev: true
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-/RRw2JFj+7xmX+GO5HIp9+sVNZTm+bXWKwHlxxXcxEJDPng/dNeWGXIdExbuknqgDeDX/lv5YfgjD2g5TUtUtA==
+  /postcss-short-spacing/4.0.0:
+    dependencies:
+      postcss: 7.0.35
+    dev: true
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-ThWP8vse9jtT26+l8fqfCriPVR7QGYUX7gEXYNPJ2+smD4XHpMJAmbhqa8aKuYsCMhvzeC9ZxCsR/B+nXA7iEw==
+  /postcss-short/5.0.0:
+    dependencies:
+      postcss: 7.0.35
+      postcss-font-weights: 5.0.0
+      postcss-short-border: 4.0.0
+      postcss-short-border-radius: 3.0.0
+      postcss-short-color: 4.0.0
+      postcss-short-font-size: 5.0.0
+      postcss-short-overflow: 1.0.0
+      postcss-short-position: 4.0.1
+      postcss-short-size: 4.0.0
+      postcss-short-spacing: 4.0.0
+    dev: true
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-7VvAeY8Bm01cK+honNsQIisaJsUdhdNTPlYuo7iQq80Fbjl844pVNBXhjXjVeXi/+dKK5aRtCNKod7U0hSeTug==
   /postcss-sorting/5.0.1:
     dependencies:
       lodash: 4.17.20
