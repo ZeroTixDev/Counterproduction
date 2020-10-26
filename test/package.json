@@ -20,6 +20,7 @@
         "postcss": "^8.1.4",
         "postcss-lab-function": "^3.1.2",
         "postcss-loader": "^4.0.4",
+        "postcss-scss": "^3.0.2",
         "postcss-short": "^5.0.0",
         "sass-loader": "^10.0.3",
         "style-loader": "^2.0.0",

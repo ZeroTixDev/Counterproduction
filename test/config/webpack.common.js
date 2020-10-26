@@ -68,11 +68,11 @@ module.exports = {
                             esModule: false,
                         },
                     },
+                    'sass-loader',
                     {
                         loader: 'postcss-loader',
                         options: { postcssOptions: { config: path.resolve(__dirname, 'postcss.config.js') } },
                     },
-                    'sass-loader',
                 ],
             },
             { test: /\.(?:ico|gif|png|jpg|jpeg)$/i, type: 'asset/resource' },

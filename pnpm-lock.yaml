@@ -44,6 +44,7 @@ importers:
       postcss: 8.1.4
       postcss-lab-function: 3.1.2
       postcss-loader: 4.0.4_postcss@8.1.4+webpack@5.2.0
+      postcss-scss: 3.0.2
       postcss-short: 5.0.0
       sass-loader: 10.0.4_node-sass@4.14.1+webpack@5.2.0
       style-loader: 2.0.0_webpack@5.2.0
@@ -66,6 +67,7 @@ importers:
       postcss: ^8.1.4
       postcss-lab-function: ^3.1.2
       postcss-loader: ^4.0.4
+      postcss-scss: ^3.0.2
       postcss-short: ^5.0.0
       sass-loader: ^10.0.3
       style-loader: ^2.0.0
@@ -5461,6 +5463,14 @@ packages:
       node: '>=6.0.0'
     resolution:
       integrity: sha512-jQmGnj0hSGLd9RscFw9LyuSVAa5Bl1/KBPqG1NQw9w8ND55nY4ZEsdlVuYJvLPpV+y0nwTV5v/4rHPzZRihQbA==
+  /postcss-scss/3.0.2:
+    dependencies:
+      postcss: 8.1.4
+    dev: true
+    engines:
+      node: '>=10.0'
+    resolution:
+      integrity: sha512-gR31pETUW0nHKbciPh/2CU+HI3phdgT5Zw/9Z2Wq/hX1G54PmydF965Hx8X6ZDldrFgMuQageNJfk00V+U8YRQ==
   /postcss-selector-parser/3.1.2:
     dependencies:
       dot-prop: 5.3.0

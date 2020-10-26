@@ -7,11 +7,10 @@
     position: absolute;
     margin: var(--bracket-margin);
     &::after {
-        position: absolute;
         content: '';
         display: block;
-        width: var(--bracket-size);
-        height: var(--bracket-size);
+        size: var(--bracket-size);
+        position: absolute;
         left: calc(-1 * var(--bracket-size) / 2);
         top: calc(-1 * var(--bracket-size) / 2);
         border: #FFFA 1px;
