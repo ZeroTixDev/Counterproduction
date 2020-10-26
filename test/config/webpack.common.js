@@ -7,6 +7,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackBar = require('webpackbar');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const postcssLabFunction = require('postcss-lab-function');
 
 const plugins = [
     // Removes/cleans build folders and unused assets when rebuilding
@@ -64,10 +65,19 @@ module.exports = {
                                 localIdentName:
                                     process.env.NODE_ENV === 'production' ? '[hash:base64]' : '[path][name]__[local]',
                             },
-                            importLoaders: 1,
+                            importLoaders: 2,
                             esModule: false,
                         },
                     },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            postcssOptions: {
+                                plugins: () => [postcssLabFunction({ preserve: true })],
+                            },
+                        },
+                    },
+
                     'sass-loader', // It can't even get source maps correct.
                 ],
             },
