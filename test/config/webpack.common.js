@@ -61,6 +61,8 @@ module.exports = {
                                 namedExport: false,
                                 exportLocalsConvention: 'asIs',
                                 exportOnlyLocals: false,
+                                localIdentName:
+                                    process.env.NODE_ENV === 'production' ? '[hash:base64]' : '[path][name]__[local]',
                             },
                             importLoaders: 1,
                             esModule: false,
