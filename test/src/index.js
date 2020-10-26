@@ -9,8 +9,7 @@ const root = mod('root', (css, use, $) => {
     use(ui.bracketed);
     return {
         view() {
-            // console.log('Viewing');
-            return $.bracketed($.div('Hiasdofiasudfoiasudfoiuo'));
+            return $.window($.bracketed($.div('Hiasdofiasudfoiasudfoiuo')));
         },
     };
 });
