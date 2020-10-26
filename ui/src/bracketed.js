@@ -30,8 +30,6 @@ module.exports = mod('bracketed', (css, use, $, vnode) => {
             // Make brackets fade if they exist.
         },
         view() {
-            console.log('Viewing');
-            console.log(enter);
             interior = $.div.interior(vnode.children);
             return $.div.bracketed[enter](
                 {

@@ -9,6 +9,15 @@ body {
     align-items: center;
 }
 
+.interior {
+    display: inline-block;
+    margin: 10px;
+}
+
+.bracketed {
+    margin: 100px;
+}
+
 @font-face {
     font-family: 'Inter';
     src: url('fonts/Inter-Var.ttf') format('truetype');
