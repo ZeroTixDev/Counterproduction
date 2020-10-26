@@ -6,14 +6,11 @@ const ui = require('autofactory-ui');
 const { mod, m } = require('autofactory-ui/settings.js');
 const root = mod('root', (css, use, $) => {
     use(ui.window);
+    use(ui.bracketed);
     return {
         view() {
-            return $.window({
-                // borderWidth: 10,
-                // width: 100,
-                // height: 100,
-                // boxSize: 20,
-            });
+            // console.log('Viewing');
+            return $.bracketed($.div('Hiasdofiasudfoiasudfoiuo'));
         },
     };
 });

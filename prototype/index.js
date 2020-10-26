@@ -1,4 +1,5 @@
 /* global HTML, m */
+/* eslint-disable no-unused-vars */
 
 'use strict';
 

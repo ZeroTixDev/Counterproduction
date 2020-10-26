@@ -1,4 +1,9 @@
 {
+    "scripts": {
+        "stylelint": "stylelint **/*.scss",
+        "eslint": "eslint **/*.js",
+        "lints": "pnpm run eslint && pnpm run stylelint"
+    },
     "devDependencies": {
         "eslint": "^7.12.0",
         "eslint-config-prettier": "^6.14.0",

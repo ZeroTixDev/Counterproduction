@@ -1,0 +1,40 @@
+:global .bracketed {
+    position: relative;
+}
+
+.bracket {
+    position: absolute;
+    margin: var(--bracket-margin);
+    &::after {
+        position: absolute;
+        content: '';
+        display: block;
+        width: var(--bracket-size);
+        height: var(--bracket-size);
+        left: calc(-1 * var(--bracket-size) / 2);
+        top: calc(-1 * var(--bracket-size) / 2);
+        border: #FFFA solid 1px;
+    }
+}
+
+.bracket :global {
+    &.top::after {
+
+    }
+    &.bot::after {
+
+    }
+    &.lef::after {
+
+    }
+    &.rig::after {
+
+    }
+}
+.interior {
+    display: block;
+}
+
+.enter-normal {
+    display: block;
+}
