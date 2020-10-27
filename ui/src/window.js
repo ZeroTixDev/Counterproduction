@@ -2,7 +2,7 @@
 
 const { mod, m } = require('../settings.js');
 
-module.exports = mod('window', (css, use, $, vnode) => {
+module.exports = mod('window', (css, use, $, initial) => {
     css(require('./window.module.scss'));
     css(require('./positioned.scss'));
     let drawInner = false;
@@ -13,7 +13,7 @@ module.exports = mod('window', (css, use, $, vnode) => {
                 m.redraw();
             }, 600); // Boxes appear at this point; the inner content is also added at this point.
         },
-        view() {
+        view(vnode) {
             return $.div.window(
                 {
                     style: {

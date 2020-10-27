@@ -2,25 +2,25 @@
 
 const { mod, m } = require('../settings.js');
 
-module.exports = mod('bracketed', (css, use, $, vnode) => {
+module.exports = mod('bracketed', (css, use, $, initial) => {
     css(require('./bracketed.module.scss'));
     css(require('./positioned.scss'));
-    let enter = vnode.attrs?.enterOnHover ? 'enterHover' : '';
-    let bs = Math.floor((vnode.attrs?.bracketSize ?? 0) / 2) * 2;
+    let enter = initial.attrs?.enterOnHover ? 'enterHover' : '';
+    let bs = Math.floor((initial.attrs?.bracketSize ?? 0) / 2) * 2;
     let interior;
     function computeBracketSize(interior) {
         console.log(interior.dom);
         return interior.dom == undefined ? 0 : Math.min(interior.dom.clientWidth, interior.dom.clientHeight);
     }
     return {
-        oncreate() {
+        oncreate(vnode) {
             if (enter !== '') return;
             setTimeout(() => {
                 enter = 'enterNormal';
                 m.redraw();
             }, vnode.attrs.enterDelay ?? 150); // undefined means instant.
         },
-        onbeforeupdate(_, old) {
+        onbeforeupdate(vnode, old) {
             if (vnode.attrs?.bracketSize === undefined) {
                 bs = Math.floor(computeBracketSize(old.children[0]) / 2) * 2;
             }
@@ -29,7 +29,7 @@ module.exports = mod('bracketed', (css, use, $, vnode) => {
         onbeforeremove() {
             // Make brackets fade if they exist.
         },
-        view() {
+        view(vnode) {
             interior = $.div.interior(vnode.children);
             return $.div.bracketed[enter](
                 {
