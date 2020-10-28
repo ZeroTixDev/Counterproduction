@@ -10,7 +10,7 @@ const root = mod('root', (css, use, $) => {
         view() {
             return $.window(
                 $._.windowInterior(
-                    $.bracketed({ hover: true }, $.div.interior('Bracketed Text (Opens on hover)')),
+                    /*$.bracketed({ hover: true }, $.div.interior('Bracketed Text (Opens on hover)')),
                     $.bracketed(
                         {
                             control: (set) => {
@@ -22,7 +22,7 @@ const root = mod('root', (css, use, $) => {
                             },
                         },
                         $.div.interior('Bracketed Text (Changes every second)')
-                    )
+                    )*/
                 )
             );
         },
