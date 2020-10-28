@@ -1,7 +1,8 @@
 'use strict';
 
-module.exports = (def, af) =>
+module.exports = (_def, af) =>
     function withDefaults(obj) {
+        const def = typeof def === 'function' ? def() : def;
         return new Proxy(obj, {
             get(_, prop) {
                 const val = obj[prop];
