@@ -34,7 +34,8 @@
 }
 
 .interior {
-    display: block;
+    display: inline-block;
+    position: absolute 0;
 }
 
 @keyframes border-toggle {

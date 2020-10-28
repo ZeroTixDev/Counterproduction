@@ -2,11 +2,21 @@
     position: relative;
     font-weight: light;
     display: inline-block;
+
+    &:local(.enter-hover):hover,
+    &.enter {
+        .bracket {
+            margin: var(--bracket-margin);
+            opacity: 1;
+        }
+    }
 }
 
 .bracket {
     position: absolute;
-    margin: var(--bracket-margin);
+    margin: calc(var(--bracket-margin) - var(--bracket-enter));
+    opacity: 0;
+    transition: margin var(--enter-time) ease, opacity var(--enter-time) ease;
     &::after {
         content: '';
         display: block;

@@ -1,43 +1,52 @@
 'use strict';
 
 const { mod, m } = require('../settings.js');
+const defaults = require('../defaults.js')(
+    {
+        bracketSize: (interior) => Math.min(interior.clientWidth, interior.clientHeight) / 2,
+        bracketEnter: (bs) => bs, // Functions take in `interior` (the dom) as well.
+        bracketMargin: (bs) => (bs * 3) / 10,
+        control: () => {},
+        enterTime: '0.3s',
+        hover: false,
+    },
+    true
+);
 
 module.exports = mod('bracketed', (css, use, $, initial) => {
     css(require('./bracketed.module.scss'));
     css(require('./positioned.scss'));
-    let enter = initial.attrs?.enterOnHover ? 'enterHover' : '';
-    let bs = Math.floor((initial.attrs?.bracketSize ?? 0) / 2) * 2;
+    const attrs = defaults(initial);
+    let enter = false;
     let interior;
-    function computeBracketSize(interior) {
-        console.log(interior.dom);
-        return interior.dom == undefined ? 0 : Math.min(interior.dom.clientWidth, interior.dom.clientHeight);
-    }
+    let id;
     return {
-        oncreate(vnode) {
-            if (enter !== '') return;
-            setTimeout(() => {
-                enter = 'enterNormal';
-                m.redraw();
-            }, vnode.attrs.enterDelay ?? 150); // undefined means instant.
-        },
-        onbeforeupdate(vnode, old) {
-            if (vnode.attrs?.bracketSize === undefined) {
-                bs = Math.floor(computeBracketSize(old.children[0]) / 2) * 2;
-            }
-            // Set the bracket styles.
+        oncreate() {
+            id = interior.dom;
+            m.redraw();
+            attrs.control((a) => (enter = a));
         },
         onbeforeremove() {
             // Make brackets fade if they exist.
         },
         view(vnode) {
             interior = $.div.interior(vnode.children);
-            return $.div.bracketed[enter](
+            id = interior.dom ?? id;
+            const style = {
+                __bracketSize: '0px',
+                __bracketEnterDistance: '0px',
+                __bracketMargin: '0px',
+                __enterTime: attrs.enterTime,
+            };
+            if (id !== undefined) {
+                const bs = attrs.bracketSize(id);
+                style.__bracketSize = `${bs}px`;
+                style.__bracketEnterDistance = `${attrs.bracketEnter(bs, id)}px`;
+                style.__bracketMargin = `${attrs.bracketMargin(bs, id)}px`;
+            }
+            return $.div.bracketed[attrs.hover ? 'enter-hover' : ''][enter ? 'enter' : ''](
                 {
-                    style: {
-                        __bracketSize: `${bs}px`,
-                        __bracketEnterDistance: `${bs}px`,
-                        __bracketMargin: `${Math.floor(vnode.attrs?.bracketMargin ?? (bs * 3) / 10)}px`,
-                    },
+                    style,
                 },
                 interior,
                 $.div.bracket.top.lef(),
