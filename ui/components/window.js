@@ -7,6 +7,7 @@ const defaults = require('../defaults.js')(() => ({
     height: window.innerHeight * 0.85,
     boxSize: 14,
     boxMargin: window.innerHeight * 0.001,
+    openType: 'slow',
 }));
 module.exports = mod('window', (css, use, $, initial) => {
     use(require('./bracketed.js'));
@@ -36,7 +37,7 @@ module.exports = mod('window', (css, use, $, initial) => {
                         control: (a) => setTimeout(() => a(true), 1500),
                         enterTime: '0.8s',
                     },
-                    $.div.container[initial.attrs?.openType ?? 'slow'][drawInner ? 'boxReady' : ''](
+                    $.div.container[attrs.openType][drawInner ? 'boxReady' : ''](
                         $.div.interior(drawInner ? vnode.children : []),
                         $.div.box.top.lef(),
                         $.div.box.bot.lef(),
