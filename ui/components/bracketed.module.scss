@@ -13,8 +13,8 @@
 }
 
 .bracket {
-    position: absolute;
     margin: calc(var(--bracket-margin) - var(--bracket-enter));
+    position: absolute;
     opacity: 0;
     transition: margin var(--enter-time) ease, opacity var(--enter-time) ease;
     pointer-events: none;
@@ -25,26 +25,22 @@
         position: absolute;
         left: calc(-1 * var(--bracket-size) / 2);
         top: calc(-1 * var(--bracket-size) / 2);
-        border: #FFFA 1px;
+        border: solid #FFFA 1px;
     }
-}
-
-.bracket:global(.top)::after {
-    border-top-style: solid;
 }
 
 .bracket:global {
     &.top::after {
-        border-top-style: solid;
+        border-bottom: solid #FFF0 1px;
     }
     &.bot::after {
-        border-bottom-style: solid;
+        border-top: solid #FFF0 1px;
     }
     &.lef::after {
-        border-left-style: solid;
+        border-right: solid #FFF0 1px;
     }
     &.rig::after {
-        border-right-style: solid;
+        border-left: solid #FFF0 1px;
     }
 }
 .interior {
