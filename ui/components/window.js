@@ -6,7 +6,6 @@ const defaults = require('../defaults.js')(() => ({
     width: window.innerHeight * 1.5,
     height: window.innerHeight * 0.85,
     boxSize: 14,
-    boxMargin: window.innerHeight * 0.001,
     openType: 'slow',
 }));
 module.exports = mod('window', (css, use, $, initial) => {
@@ -28,7 +27,6 @@ module.exports = mod('window', (css, use, $, initial) => {
                         __width: `${Math.round(attrs.width / 2) * 2}px`,
                         __height: `${Math.round(attrs.height / 2) * 2}px`,
                         __halfBoxSize: `${Math.round(attrs.boxSize / 2)}px`,
-                        __boxMargin: `${Math.round(attrs.boxMargin)}px`,
                     },
                 },
                 $.bracketed(
