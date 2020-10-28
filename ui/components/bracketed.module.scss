@@ -17,6 +17,7 @@
     margin: calc(var(--bracket-margin) - var(--bracket-enter));
     opacity: 0;
     transition: margin var(--enter-time) ease, opacity var(--enter-time) ease;
+    pointer-events: none;
     &::after {
         content: '';
         display: block;
