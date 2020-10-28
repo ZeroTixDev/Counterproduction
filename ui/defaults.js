@@ -2,7 +2,7 @@
 
 module.exports = (_def, af) =>
     function withDefaults(obj) {
-        const def = typeof def === 'function' ? def() : def;
+        const def = typeof _def === 'function' ? _def() : _def;
         return new Proxy(obj, {
             get(_, prop) {
                 const val = obj[prop];

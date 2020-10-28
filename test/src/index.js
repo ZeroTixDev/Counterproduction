@@ -14,7 +14,6 @@ const root = mod('root', (css, use, $) => {
                     $.bracketed(
                         {
                             control: (set) => {
-                                console.log('Controlled');
                                 let enter = false;
                                 setInterval(() => {
                                     enter = !enter;
