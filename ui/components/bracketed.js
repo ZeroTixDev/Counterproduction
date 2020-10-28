@@ -16,7 +16,7 @@ const defaults = require('../defaults.js')(
 module.exports = mod('bracketed', (css, use, $, initial) => {
     css(require('./bracketed.module.scss'));
     css(require('./positioned.scss'));
-    const attrs = defaults(initial);
+    const attrs = defaults(initial.attrs);
     let enter = false;
     let interior;
     let id;
@@ -24,7 +24,11 @@ module.exports = mod('bracketed', (css, use, $, initial) => {
         oncreate() {
             id = interior.dom;
             m.redraw();
-            attrs.control((a) => (enter = a));
+            attrs.control((a) => {
+                enter = a;
+                console.log(`Setting: ${enter}`);
+                m.redraw();
+            });
         },
         onbeforeremove() {
             // Make brackets fade if they exist.
@@ -44,7 +48,7 @@ module.exports = mod('bracketed', (css, use, $, initial) => {
                 style.__bracketEnterDistance = `${attrs.bracketEnter(bs, id)}px`;
                 style.__bracketMargin = `${attrs.bracketMargin(bs, id)}px`;
             }
-            return $.div.bracketed[attrs.hover ? 'enter-hover' : ''][enter ? 'enter' : ''](
+            return $.div.bracketed[attrs.hover ? 'enterHover' : ''][enter ? 'enter' : ''](
                 {
                     style,
                 },
