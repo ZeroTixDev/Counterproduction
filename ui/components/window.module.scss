@@ -6,7 +6,7 @@
 
 .container {
     position: absolute;
-    background: repeating-linear-gradient(#5553, #5553 10px, #55555530 10px, #55555530 11px);
+    background: repeating-linear-gradient(#55555536, #55555536 10px, #55555532 10px, #55555532 11px);
 
     &.slow {
         animation: flicker 0.45s step-end both,
