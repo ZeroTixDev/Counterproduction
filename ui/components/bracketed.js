@@ -26,7 +26,6 @@ module.exports = mod('bracketed', (css, use, $, initial) => {
             m.redraw();
             attrs.control((a) => {
                 enter = a;
-                console.log(`Setting: ${enter}`);
                 m.redraw();
             });
         },

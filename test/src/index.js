@@ -9,19 +9,21 @@ const root = mod('root', (css, use, $) => {
     return {
         view() {
             return $.window(
-                $.bracketed({ hover: true }, $.div.interior('Bracketed Text (Opens on hover)')),
-                $.bracketed(
-                    {
-                        control: (set) => {
-                            console.log('Controlled');
-                            let enter = false;
-                            setInterval(() => {
-                                enter = !enter;
-                                set(enter);
-                            }, 1000);
+                $._.windowInterior(
+                    $.bracketed({ hover: true }, $.div.interior('Bracketed Text (Opens on hover)')),
+                    $.bracketed(
+                        {
+                            control: (set) => {
+                                console.log('Controlled');
+                                let enter = false;
+                                setInterval(() => {
+                                    enter = !enter;
+                                    set(enter);
+                                }, 1000);
+                            },
                         },
-                    },
-                    $.div.interior('Bracketed Text (Changes every second)')
+                        $.div.interior('Bracketed Text (Changes every second)')
+                    )
                 )
             );
         },

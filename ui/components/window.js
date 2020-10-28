@@ -3,6 +3,7 @@
 const { mod, m } = require('../settings.js');
 
 module.exports = mod('window', (css, use, $, initial) => {
+    use(require('./bracketed.js'));
     css(require('./window.module.scss'));
     css(require('./positioned.scss'));
     let drawInner = false;
@@ -24,12 +25,19 @@ module.exports = mod('window', (css, use, $, initial) => {
                         __boxMargin: `${Math.round(initial.attrs?.boxMargin ?? window.innerHeight * 0.001)}px`,
                     },
                 },
-                $.div.container[initial.attrs?.openType ?? 'slow'][drawInner ? 'boxReady' : ''](
-                    $.div.interior(drawInner ? vnode.children : []),
-                    $.div.box.top.lef(),
-                    $.div.box.bot.lef(),
-                    $.div.box.top.rig(),
-                    $.div.box.bot.rig()
+                $.bracketed(
+                    {
+                        bracketSize: 100,
+                        control: (a) => setTimeout(() => a(true), 1000),
+                        enterTime: '0.8s',
+                    },
+                    $.div.container[initial.attrs?.openType ?? 'slow'][drawInner ? 'boxReady' : ''](
+                        $.div.interior(drawInner ? vnode.children : []),
+                        $.div.box.top.lef(),
+                        $.div.box.bot.lef(),
+                        $.div.box.top.rig(),
+                        $.div.box.bot.rig()
+                    )
                 )
             );
         },

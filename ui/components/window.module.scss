@@ -2,10 +2,13 @@
     position: relative;
     width: var(--width);
     height: var(--height);
+    > .bracketed {
+        position: absolute 0;
+    }
 }
 
 .container {
-    position: absolute;
+    position: relative;
     background: repeating-linear-gradient(#55555536, #55555536 10px, #55555532 10px, #55555532 11px);
 
     &.slow {

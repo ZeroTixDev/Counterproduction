@@ -5,7 +5,7 @@
 
     &:local(.enter-hover):hover,
     &.enter {
-        .bracket {
+        > .bracket {
             margin: var(--bracket-margin);
             opacity: 1;
         }
