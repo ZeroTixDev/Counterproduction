@@ -1,11 +1,18 @@
 'use strict';
 
 const { mod, m } = require('../settings.js');
-
+const defaults = require('../defaults.js')({
+    borderWidth: 2,
+    width: window.innerHeight * 1.5,
+    height: window.innerHeight * 0.85,
+    boxSize: window.innerHeight * 0.018,
+    boxMargin: window.innerHeight * 0.001,
+});
 module.exports = mod('window', (css, use, $, initial) => {
     use(require('./bracketed.js'));
     css(require('./window.module.scss'));
     css(require('./positioned.scss'));
+    const attrs = defaults(initial.attrs);
     let drawInner = false;
     return {
         oninit() {
@@ -18,11 +25,11 @@ module.exports = mod('window', (css, use, $, initial) => {
             return $.div.window(
                 {
                     style: {
-                        __halfBorder: `${Math.ceil((initial.attrs?.borderWidth ?? 2) / 2)}px`,
-                        __width: `${Math.round((initial.attrs?.width ?? window.innerHeight * 1.5) / 2) * 2}px`,
-                        __height: `${Math.round((initial.attrs?.height ?? window.innerHeight * 0.85) / 2) * 2}px`,
-                        __halfBoxSize: `${Math.round((initial.attrs?.boxSize ?? window.innerHeight * 0.018) / 2)}px`,
-                        __boxMargin: `${Math.round(initial.attrs?.boxMargin ?? window.innerHeight * 0.001)}px`,
+                        __halfBorder: `${Math.ceil(attrs.borderWidth / 2)}px`,
+                        __width: `${Math.round(attrs.width / 2) * 2}px`,
+                        __height: `${Math.round(attrs.height / 2) * 2}px`,
+                        __halfBoxSize: `${Math.round(attrs.boxSize / 2)}px`,
+                        __boxMargin: `${Math.round(attrs.boxMargin)}px`,
                     },
                 },
                 $.bracketed(
