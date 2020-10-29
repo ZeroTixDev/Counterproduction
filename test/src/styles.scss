@@ -1,15 +1,3 @@
-body {
-    margin: 0;
-    background-color: #000;
-    color: #FFF;
-    font-family: 'Inter';
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
-
 .interior {
     display: inline-block;
     margin: 5px;
@@ -21,11 +9,4 @@ body {
 
 .window-interior > .bracketed {
     margin: 10px;
-}
-
-@font-face {
-    font-family: 'Inter';
-    src: url('fonts/Inter-Var.ttf') format('truetype');
-    font-weight: 1 999;
-    font-feature-settings: 'case', 'calt', 'tnum', 'frac';
 }

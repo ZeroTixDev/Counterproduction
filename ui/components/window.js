@@ -9,8 +9,8 @@ const defaults = require('../defaults.js')(() => ({
     openType: 'slow',
 }));
 module.exports = mod('window', (css, use, $, initial) => {
-    use(require('./bracketed.js'));
     css(require('./window.module.scss'));
+    use(require('./bracketed.js'));
     css(require('./positioned.scss'));
     const attrs = defaults(initial.attrs);
     let drawInner = false;
@@ -20,7 +20,7 @@ module.exports = mod('window', (css, use, $, initial) => {
     }, 800); // Boxes appear at this point; the inner content is also added at this point.
     return {
         view(vnode) {
-            return $.div.window(
+            return $._.window(
                 {
                     style: {
                         __halfBorder: `${Math.ceil(attrs.borderWidth / 2)}px`,
@@ -35,12 +35,12 @@ module.exports = mod('window', (css, use, $, initial) => {
                         control: (a) => setTimeout(() => a(true), 1500),
                         enterTime: '0.8s',
                     },
-                    $.div.container[attrs.openType][drawInner ? 'boxReady' : ''](
-                        $.div.interior(drawInner ? vnode.children : []),
-                        $.div.box.top.lef(),
-                        $.div.box.bot.lef(),
-                        $.div.box.top.rig(),
-                        $.div.box.bot.rig()
+                    $._.container[attrs.openType][drawInner ? 'boxReady' : ''](
+                        $._.interior(drawInner ? vnode.children : []),
+                        $._.box.top.lef(),
+                        $._.box.bot.lef(),
+                        $._.box.top.rig(),
+                        $._.box.bot.rig()
                     )
                 )
             );

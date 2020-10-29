@@ -42,20 +42,20 @@ module.exports = mod('bracketed', (css, use, $, initial) => {
                 __enterTime: attrs.enterTime,
             };
             if (id !== undefined) {
-                const bs = attrs.bracketSize(id);
+                const bs = Math.ceil(attrs.bracketSize(id) / 2) * 2;
                 style.__bracketSize = `${bs}px`;
-                style.__bracketEnterDistance = `${attrs.bracketEnter(bs, id)}px`;
-                style.__bracketMargin = `${attrs.bracketMargin(bs, id)}px`;
+                style.__bracketEnterDistance = `${Math.round(attrs.bracketEnter(bs, id) / 2) * 2}px`;
+                style.__bracketMargin = `${Math.round(attrs.bracketMargin(bs, id) / 2) * 2}px`;
             }
-            return $.div.bracketed[attrs.hover ? 'enterHover' : ''][enter ? 'enter' : ''](
+            return $._.bracketed[attrs.hover ? 'enterHover' : ''][enter ? 'enter' : ''](
                 {
                     style,
                 },
                 interior,
-                $.div.bracket.top.lef(),
-                $.div.bracket.bot.lef(),
-                $.div.bracket.top.rig(),
-                $.div.bracket.bot.rig()
+                $._.bracket.top.lef(),
+                $._.bracket.bot.lef(),
+                $._.bracket.top.rig(),
+                $._.bracket.bot.rig()
             );
         },
     };

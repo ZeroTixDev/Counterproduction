@@ -1,0 +1,12 @@
+:global .button {
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+    margin: 10px;
+}
+
+.interior {
+    display: inline-block;
+    border: solid 1px #FFF;
+    padding: var(--button-padding);
+}
