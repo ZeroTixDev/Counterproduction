@@ -28,5 +28,6 @@
     transition: transform 0.1s;
     &:active {
         transform: scale(0.95);
+        outline: solid 1px #FFF;
     }
 }
