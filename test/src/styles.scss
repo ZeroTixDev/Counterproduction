@@ -4,7 +4,12 @@
 }
 
 .window-interior {
-    margin: 20px;
+    margin: 40px;
+    overflow: hidden;
+    position: absolute 0;
+}
+.wrapper {
+    padding: 20px;
 }
 
 .window-interior > .bracketed {

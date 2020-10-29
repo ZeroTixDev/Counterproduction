@@ -15,7 +15,7 @@ module.exports = mod('window', (css, use, $, initial) => {
     setTimeout(() => {
         drawInner = true;
         m.redraw();
-    }, 560); // Boxes appear at this point; the inner content is also added at this point.
+    }, 390); // Boxes appear at this point; the inner content is also added at this point.
     return {
         view(vnode) {
             return $._.window(
