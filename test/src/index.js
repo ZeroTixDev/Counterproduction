@@ -11,7 +11,7 @@ const root = mod('root', (css, use, $) => {
         view() {
             return $.window(
                 $._.windowInterior(
-                    $.bracketed({ hover: true }, $.div.interior('Bracketed Text (Opens on hover)')),
+                    $.bracketed({ hover: true }, $._.interior('Bracketed Text (Opens on hover)')),
                     $.bracketed(
                         {
                             control: (set) => {
@@ -22,9 +22,10 @@ const root = mod('root', (css, use, $) => {
                                 }, 1000);
                             },
                         },
-                        $.div.interior('Bracketed Text (Changes every second)')
+                        $._.interior('Bracketed Text (Changes every second)')
                     ),
-                    $.button('CLICK ME!')
+                    $.button('CLICK ME!'),
+                    $.button($._.bigButtonInterior('Big Buttons work as well!'))
                 )
             );
         },

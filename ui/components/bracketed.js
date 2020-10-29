@@ -33,7 +33,7 @@ module.exports = mod('bracketed', (css, use, $, initial) => {
             // Make brackets fade if they exist.
         },
         view(vnode) {
-            interior = $.div.interior(vnode.children);
+            interior = $._.interior(vnode.children);
             id = interior.dom ?? id;
             const style = {
                 __bracketSize: '0px',

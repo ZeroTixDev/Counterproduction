@@ -31,7 +31,7 @@
 .container.slow.box-ready,
 .container:not(.slow) {
     > .box::after {
-        animation: box-expand 0.1s ease both;
+        animation: box-expand 0.15s ease both;
     }
 }
 

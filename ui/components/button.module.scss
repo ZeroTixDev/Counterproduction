@@ -2,19 +2,31 @@
     display: inline-block;
     cursor: pointer;
     user-select: none;
-    margin: 8px;
-    transition: transform 0.1s;
+    margin: var(--margin);
+    padding: 0;
+    transition: padding 0.1s;
     &:active {
-        transform: scale(0.98);
+        padding: var(--bracket-shift-distance);
+    }
+}
+
+.container {
+    display: inline-block;
+    margin: 0;
+    transition: margin 0.1s;
+    &:active {
+        margin: calc(-1 * var(--bracket-shift-distance));
     }
 }
 
 .interior {
     display: inline-block;
+    padding: var(--padding);
+    min-width: 100px;
     border: solid 1px #FFF;
-    padding: 8px 16px;
+    text-align: center;
     transition: transform 0.1s;
     &:active {
-        transform: scale(0.95);
+        transform: scale(95%);
     }
 }
