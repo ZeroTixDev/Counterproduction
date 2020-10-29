@@ -19,7 +19,7 @@ module.exports = mod('button', (css, use, $, initial) => {
     let bracketShiftDistance;
     return {
         oncreate() {
-            bracketSize = Math.min(interior.clientWidth, interior.clientHeight) / 2;
+            bracketSize = Math.min(interior.dom.clientWidth, interior.dom.clientHeight) / 2;
             bracketShiftDistance = attrs.bracketShiftDistance(interior.dom);
             m.redraw();
         },
@@ -37,7 +37,7 @@ module.exports = mod('button', (css, use, $, initial) => {
                     {
                         hover: true,
                         bracketMargin: (bs) => (bs * 2) / 10,
-                        bracketSize,
+                        bracketSize: () => bracketSize,
                     },
                     $._.container(interior)
                 )
