@@ -2,11 +2,19 @@
     display: inline-block;
     cursor: pointer;
     user-select: none;
-    margin: 10px;
+    margin: 8px;
+    transition: transform 0.1s;
+    &:active {
+        transform: scale(0.98);
+    }
 }
 
 .interior {
     display: inline-block;
     border: solid 1px #FFF;
-    padding: var(--button-padding);
+    padding: 8px 16px;
+    transition: transform 0.1s;
+    &:active {
+        transform: scale(0.95);
+    }
 }

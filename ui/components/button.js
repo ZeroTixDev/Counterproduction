@@ -16,7 +16,7 @@ module.exports = mod('button', (css, use, $, initial) => {
         view(vnode) {
             return $._.button(
                 { style: { __buttonPadding: `${attrs.buttonPadding()}px` } },
-                $.bracketed({ hover: true }, $._.interior(vnode.children))
+                $.bracketed({ hover: true, bracketMargin: (bs) => (bs * 2) / 10 }, $._.interior(vnode.children))
             );
         },
     };

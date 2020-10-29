@@ -23,8 +23,8 @@
         display: block;
         size: var(--bracket-size);
         position: absolute;
-        left: calc(-1 * var(--bracket-size) / 2 - 1px);
-        top: calc(-1 * var(--bracket-size) / 2 - 1px);
+        left: calc(-1 * var(--bracket-size) / 2);
+        top: calc(-1 * var(--bracket-size) / 2);
         border: solid #FFFA 1px;
     }
 }

@@ -4,7 +4,6 @@ const ui = require('autofactory-ui');
 const { mod, m } = require('autofactory-ui/settings.js');
 const root = mod('root', (css, use, $) => {
     css(require('./styles.scss'));
-    css(require('autofactory-ui/global-styles.scss'));
     use(ui.window);
     use(ui.bracketed);
     use(ui.button);

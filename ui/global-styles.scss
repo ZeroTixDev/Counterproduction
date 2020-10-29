@@ -8,6 +8,7 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 @font-face {
@@ -15,4 +16,10 @@ body {
     src: url('fonts/Inter-Var.ttf') format('truetype');
     font-weight: 1 999;
     font-feature-settings: 'case', 'calt', 'tnum', 'frac';
+}
+// Reset all box-sizes.
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
 }
