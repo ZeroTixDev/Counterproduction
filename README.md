@@ -1,6 +1,6 @@
 <!-- markdownlint-disable no-inline-html no-bare-urls line-length header-increment commands-show-output -->
 
-# Autofactory
+<h1 align="center"> Autofactory </h1>
 
 <p align="center">
 <a href="https://discord.gg/GCz7KgG">
@@ -14,9 +14,11 @@
 </a>
 <a href="https://app.fossa.com/projects/git%2Bgithub.com%2FiMplode-nZ%2FAutofactory?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FiMplode-nZ%2FAutofactory.svg?type=shield"/></a>
 </p>
+
 <p align="center">
     <strong> <a href="https://youxplode.com/md.html?Autofactory">About</a> </strong>
 </p>
+
 
 ## Compiling
 
