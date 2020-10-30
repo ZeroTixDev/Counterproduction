@@ -28,6 +28,15 @@
     transition: transform 0.1s;
     &:active {
         transform: scale(0.95);
+    }
+}
+
+body:global(.firefox) .interior {
+    outline: solid 1px #FFF;
+    border: solid 1px #FFF0;
+    &:active {
+        transform: scale(0.95);
         outline: solid 1px #FFF;
+        border: solid 1px #FFF;
     }
 }
