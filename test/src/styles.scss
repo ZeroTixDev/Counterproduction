@@ -8,7 +8,7 @@
 }
 
 .cube {
-    --into-time: 1s;
+    --into-time: 5s;
     --into-start: 1s;
 
     position: absolute 0;
@@ -17,43 +17,37 @@
     > .front {
         transform: rotateY(0deg) translateZ(var(--center-dist));
         &::after {
-            animation: loading 5s both calc(var(--into-start) + var(--into-time) + 1s),
-                into var(--into-time) both calc(var(--into-start) + 0s);
+            animation: into var(--into-time) both calc(var(--into-start) + 0s);
         }
     }
     > .right {
         transform: rotateY(90deg) translateZ(var(--center-dist));
         &::after {
-            animation: loading 5s both calc(var(--into-start) + var(--into-time) + 1s),
-                into var(--into-time) both calc(var(--into-start) + 0s);
+            animation: into var(--into-time) both calc(var(--into-start) + 0s);
         }
     }
     > .back {
         transform: rotateY(180deg) translateZ(var(--center-dist));
         &::after {
-            animation: loading 5s both calc(var(--into-start) + var(--into-time) + 1s),
-                into var(--into-time) both calc(var(--into-start) + 0s);
+            animation: into var(--into-time) both calc(var(--into-start) + 0s);
         }
     }
     > .left {
         transform: rotateY(-90deg) translateZ(var(--center-dist));
         &::after {
-            animation: loading 5s both calc(var(--into-start) + var(--into-time) + 1s),
-                into var(--into-time) both calc(var(--into-start) + 0s);
+            animation: into var(--into-time) both calc(var(--into-start) + 0s);
         }
     }
     > .top {
         transform: rotateX(90deg) translateZ(var(--center-dist));
         &::after {
-            animation: loading 5s both calc(var(--into-start) + var(--into-time) + 1s),
-                into var(--into-time) both calc(var(--into-start) + 0s);
+            animation: into var(--into-time) both calc(var(--into-start) + 0s);
         }
     }
     > .bottom {
         transform: rotateX(-90deg) translateZ(var(--center-dist));
         &::after {
-            animation: loading 5s both calc(var(--into-start) + var(--into-time) + 1s),
-                into var(--into-time) both calc(var(--into-start) + 0s);
+            animation: into var(--into-time) both calc(var(--into-start) + 0s);
         }
     }
     > * {
@@ -81,19 +75,16 @@
 @keyframes into {
     0% {
         opacity: 0;
-        transform: translateZ(100px);
+        transform: translateZ(200px);
     }
-    100% {
+    20% {
         opacity: 1;
-        transform: translateZ(0);
-    }
-}
-
-@keyframes loading {
-    0% {
+        transform: translateZ(100px);
         background: #FFF3;
     }
     100% {
-        background: #FFFC;
+        opacity: 1;
+        transform: translateZ(calc(var(--cube-size) - var(--center-dist)));
+        background: #FFF;
     }
 }
