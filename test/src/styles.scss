@@ -109,8 +109,13 @@
         background: #fff0;
         transform: translateZ(0);
     }
-    100% {
+    80% {
         background: #fff;
+        transform: translateZ(-80px);
+    }
+    100% {
+        background: #fff0;
+        border: solid 5px #fff;
         transform: translateZ(-100px);
     }
 }
