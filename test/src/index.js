@@ -10,8 +10,8 @@ const root = mod('root', (css, use, $) => {
         toView = true;
         m.redraw();
     }, 1000);
-    function face() {
-        return $._.face($._.faceInterior());
+    function face(...args) {
+        return $._.face($._.faceInterior(...args));
     }
     return {
         view() {
@@ -19,7 +19,7 @@ const root = mod('root', (css, use, $) => {
                 return $.window(
                     $._.scene(
                         $._.cube(
-                            $._.front(face()),
+                            $._.front(face('AF')),
                             $._.right(face()),
                             $._.back(face()),
                             $._.left(face()),

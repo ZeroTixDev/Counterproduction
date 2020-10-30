@@ -12,8 +12,7 @@
     background: repeating-linear-gradient(#55555536, #55555536 10px, #55555532 10px, #55555532 11px);
 
     &.slow {
-        animation: flicker 0.5s step-end both,
-            border-toggle 1s step-end both,
+        animation: flicker 0.5s step-end both, border-toggle 1s step-end both,
             open-width 0.5s cubic-bezier(0.11, 0.96, 0.53, 1) 0.23s both,
             open-height 0.5s cubic-bezier(0.11, 0.96, 0.53, 1) 0.73s both;
     }
@@ -22,7 +21,7 @@
         position: absolute;
     }
     > .box::after {
-        background: #FFF;
+        background: #fff;
         content: '';
         display: block;
         position: absolute;
@@ -45,13 +44,13 @@
         outline: 0;
     }
     20% {
-        outline: solid calc(var(--half-border)) #FFF;
+        outline: solid calc(var(--half-border)) #fff;
     }
-    73% {
-        outline: solid calc(2 * var(--half-border)) #FFF;
+    69% {
+        outline: solid calc(2 * var(--half-border)) #fff;
     }
     100% {
-        outline: solid calc(2 * var(--half-border)) #FFF;
+        outline: solid calc(2 * var(--half-border)) #fff;
     }
 }
 
