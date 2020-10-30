@@ -26,7 +26,8 @@ const root = mod('root', (css, use, $) => {
                             $._.top(face()),
                             $._.bottom(face())
                         )
-                    )
+                    ),
+                    $._.centered($._.logoText($._.partA('Auto'), $._.partB('Factory')))
                 );
             } else return $._();
         },

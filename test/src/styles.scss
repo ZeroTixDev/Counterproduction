@@ -5,9 +5,9 @@
     size: calc(2 * var(--cube-size));
     perspective: 1000px;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: calc(50% - var(--cube-size));
+    left: calc(50% - var(--cube-size));
+    animation: disappear 0.5s cubic-bezier(0.37, 0.92, 0.53, 1) 6.5s both;
 }
 
 @mixin enter($start) {
@@ -22,7 +22,7 @@
 .cube {
     position: absolute 0;
     transform-style: preserve-3d;
-    animation: rotate calc(5s) cubic-bezier(0.49, 0.83, 0.62, 1.01) 1s both;
+    animation: rotate 5s cubic-bezier(0.49, 0.83, 0.62, 1.01) 1s both;
     > .front {
         transform: rotateY(0deg) translateZ(var(--center-dist));
         > .face {
@@ -30,7 +30,6 @@
         }
         > .face > .face-interior {
             animation: after-into-front 8s both 1s, into-opacity 1s both calc(1s + 1s);
-            font-size: 200px;
         }
     }
     > .right {
@@ -53,7 +52,7 @@
         @include enter(0.75s);
         transform: rotateX(-90deg) translateZ(var(--center-dist));
     }
-    > * {
+    > :not(.logo-text) {
         position: absolute;
         size: calc(2 * var(--cube-size));
         transform-style: preserve-3d;
@@ -65,6 +64,33 @@
     > * > .face > .face-interior {
         position: absolute 0;
     }
+}
+.logo-text {
+    position: absolute;
+    size: calc(2 * var(--cube-size));
+    font-size: 200px;
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    color: #000;
+    animation: disappear 0.75s cubic-bezier(0.37, 0.92, 0.53, 1) 7.5s both;
+
+    > * {
+        position: absolute 0;
+    }
+    > .part-a {
+        animation: open-a 1.2s both 6.5s;
+    }
+    > .part-b {
+        animation: open-b 1.2s both 6.5s;
+    }
+}
+.centered {
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    size: calc(2 * 120px);
+    animation: enter 0.75s ease 5.5s both;
 }
 
 @keyframes rotate {
@@ -111,7 +137,6 @@
 @keyframes after-into-front {
     0% {
         box-shadow: inset 0 0 0 var(--cube-size) #fff0;
-        color: #fff0;
         transform: translateZ(0);
     }
     40% {
@@ -119,12 +144,49 @@
     }
     60% {
         box-shadow: inset 0 0 0 5px #fff;
-        color: #000;
         transform: translateZ(-100px);
     }
     100% {
         box-shadow: inset 0 0 0 5px #fff;
-        color: #000;
         transform: translateZ(-100px);
+    }
+}
+@keyframes disappear {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}
+@keyframes enter {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+@keyframes open-a {
+    0% {
+        clip-path: polygon(0 48px, 70px 48px, 70px 300px, 0 300px);
+        left: 0.15em;
+    }
+    100% {
+        clip-path: polygon(0 0, 420px 0, 420px 300px, 0 300px);
+        color: #fff;
+        left: -2em;
+    }
+}
+@keyframes open-b {
+    0% {
+        clip-path: polygon(0 48px, 110px 48px, 110px 300px, 0 300px);
+        left: 0.415em;
+    }
+    100% {
+        clip-path: polygon(0 0, 700px 0, 700px 300px, 0 300px);
+        color: #fff;
+        left: 0.1em;
     }
 }
