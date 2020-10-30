@@ -9,9 +9,9 @@
 
 @mixin enter($start) {
     > .face {
-        animation: into 4s both calc(1s + #{$start});
+        animation: into 1s both calc(1s + #{$start});
         > .face-interior {
-            animation: after-into 5s both 2s;
+            animation: after-into 5s both 1s;
         }
     }
 }
@@ -19,25 +19,25 @@
 .cube {
     position: absolute 0;
     transform-style: preserve-3d;
-    animation: rotate calc(1.5s + 4s) cubic-bezier(0.4, 0.7, 0.7, 1) 1s both;
+    animation: rotate calc(5s) cubic-bezier(0.4, 0.7, 0.7, 1) 1s both;
     > .front {
-        @include enter(0s);
+        @include enter(2s);
         transform: rotateY(0deg) translateZ(var(--center-dist));
     }
     > .right {
-        @include enter(0.5s);
+        @include enter(0s);
         transform: rotateY(90deg) translateZ(var(--center-dist));
     }
     > .back {
-        @include enter(0s);
+        @include enter(1s);
         transform: rotateY(180deg) translateZ(var(--center-dist));
     }
     > .left {
-        @include enter(0.5s);
+        @include enter(2s);
         transform: rotateY(-90deg) translateZ(var(--center-dist));
     }
     > .top {
-        @include enter(1s);
+        @include enter(0s);
         transform: rotateX(90deg) translateZ(var(--center-dist));
     }
     > .bottom {
@@ -53,10 +53,10 @@
     > * > .face {
         position: absolute 0;
         transform-style: preserve-3d;
-        > .face-interior {
-            position: absolute 0;
-            background: #fff;
-        }
+    }
+    > * > .face > .face-interior {
+        position: absolute 0;
+        background: #fff;
     }
 }
 
@@ -65,24 +65,26 @@
         transform: rotate3d(1, 1, 1, 0deg);
     }
     100% {
-        transform: rotate3d(1, 1, 1, 30deg);
+        transform: rotate3d(1, 1, 1, 360deg);
     }
 }
 
 @keyframes into {
     0% {
-        opacity: 0;
         transform: translateZ(100px);
     }
     100% {
-        opacity: 1;
         transform: translateZ(60px);
     }
 }
 
 @keyframes after-into {
     0% {
-        opacity: 0.4;
+        opacity: 0;
+        transform: translateZ(0);
+    }
+    10% {
+        opacity: 0.05;
         transform: translateZ(0);
     }
     100% {
