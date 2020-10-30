@@ -1,22 +1,99 @@
-.interior {
-    display: inline-block;
-    margin: 5px;
+.scene {
+    size: 200px;
+    perspective: 600px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
-.window-interior {
-    margin: 40px;
-    overflow: hidden;
+.cube {
+    --into-time: 1s;
+    --into-start: 1s;
+
     position: absolute 0;
-}
-.wrapper {
-    padding: 20px;
+    transform-style: preserve-3d;
+    animation: rotate 5s linear infinite;
+    > .front {
+        transform: rotateY(0deg) translateZ(var(--center-dist));
+        &::after {
+            animation: loading 5s both calc(var(--into-start) + var(--into-time) + 1s),
+                into var(--into-time) both calc(var(--into-start) + 0s);
+        }
+    }
+    > .right {
+        transform: rotateY(90deg) translateZ(var(--center-dist));
+        &::after {
+            animation: loading 5s both calc(var(--into-start) + var(--into-time) + 1s),
+                into var(--into-time) both calc(var(--into-start) + 0s);
+        }
+    }
+    > .back {
+        transform: rotateY(180deg) translateZ(var(--center-dist));
+        &::after {
+            animation: loading 5s both calc(var(--into-start) + var(--into-time) + 1s),
+                into var(--into-time) both calc(var(--into-start) + 0s);
+        }
+    }
+    > .left {
+        transform: rotateY(-90deg) translateZ(var(--center-dist));
+        &::after {
+            animation: loading 5s both calc(var(--into-start) + var(--into-time) + 1s),
+                into var(--into-time) both calc(var(--into-start) + 0s);
+        }
+    }
+    > .top {
+        transform: rotateX(90deg) translateZ(var(--center-dist));
+        &::after {
+            animation: loading 5s both calc(var(--into-start) + var(--into-time) + 1s),
+                into var(--into-time) both calc(var(--into-start) + 0s);
+        }
+    }
+    > .bottom {
+        transform: rotateX(-90deg) translateZ(var(--center-dist));
+        &::after {
+            animation: loading 5s both calc(var(--into-start) + var(--into-time) + 1s),
+                into var(--into-time) both calc(var(--into-start) + 0s);
+        }
+    }
+    > * {
+        position: absolute;
+        size: calc(2 * var(--cube-size));
+        transform-style: preserve-3d;
+    }
+    > *::after {
+        content: '';
+        display: block;
+        position: absolute 0;
+        transform: translateZ(100px);
+    }
 }
 
-.window-interior > .bracketed {
-    margin: 10px;
+@keyframes rotate {
+    0% {
+        transform: rotate3d(1, 1, 1, 0deg);
+    }
+    100% {
+        transform: rotate3d(1, 1, 1, 360deg);
+    }
 }
 
-.big-button-interior {
-    height: 100px;
-    width: 100px;
+@keyframes into {
+    0% {
+        opacity: 0;
+        transform: translateZ(100px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateZ(0);
+    }
+}
+
+@keyframes loading {
+    0% {
+        background: #FFF3;
+    }
+    100% {
+        background: #FFFC;
+    }
 }
