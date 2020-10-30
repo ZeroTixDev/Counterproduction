@@ -19,7 +19,7 @@ const root = mod('root', (css, use, $) => {
                 return $.window(
                     $._.scene(
                         $._.cube(
-                            $._.front(face('AF')),
+                            $._.front(face()),
                             $._.right(face()),
                             $._.back(face()),
                             $._.left(face()),
