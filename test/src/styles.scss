@@ -7,59 +7,56 @@
     transform: translate(-50%, -50%);
 }
 
-.cube {
-    --into-time: 5s;
-    --into-start: 1s;
+@mixin enter($start) {
+    > .face {
+        animation: into 4s both calc(1s + #{$start});
+        > .face-interior {
+            animation: after-into 5s both 2s;
+        }
+    }
+}
 
+.cube {
     position: absolute 0;
     transform-style: preserve-3d;
-    animation: rotate 5s linear infinite;
+    animation: rotate calc(1.5s + 4s) cubic-bezier(0.4, 0.7, 0.7, 1) 1s both;
     > .front {
+        @include enter(0s);
         transform: rotateY(0deg) translateZ(var(--center-dist));
-        &::after {
-            animation: into var(--into-time) both calc(var(--into-start) + 0s);
-        }
     }
     > .right {
+        @include enter(0.5s);
         transform: rotateY(90deg) translateZ(var(--center-dist));
-        &::after {
-            animation: into var(--into-time) both calc(var(--into-start) + 0s);
-        }
     }
     > .back {
+        @include enter(0s);
         transform: rotateY(180deg) translateZ(var(--center-dist));
-        &::after {
-            animation: into var(--into-time) both calc(var(--into-start) + 0s);
-        }
     }
     > .left {
+        @include enter(0.5s);
         transform: rotateY(-90deg) translateZ(var(--center-dist));
-        &::after {
-            animation: into var(--into-time) both calc(var(--into-start) + 0s);
-        }
     }
     > .top {
+        @include enter(1s);
         transform: rotateX(90deg) translateZ(var(--center-dist));
-        &::after {
-            animation: into var(--into-time) both calc(var(--into-start) + 0s);
-        }
     }
     > .bottom {
+        @include enter(1s);
         transform: rotateX(-90deg) translateZ(var(--center-dist));
-        &::after {
-            animation: into var(--into-time) both calc(var(--into-start) + 0s);
-        }
     }
     > * {
         position: absolute;
         size: calc(2 * var(--cube-size));
         transform-style: preserve-3d;
+
     }
-    > *::after {
-        content: '';
-        display: block;
+    > * > .face {
         position: absolute 0;
-        transform: translateZ(100px);
+        transform-style: preserve-3d;
+        > .face-interior {
+            position: absolute 0;
+            background: #fff;
+        }
     }
 }
 
@@ -68,23 +65,28 @@
         transform: rotate3d(1, 1, 1, 0deg);
     }
     100% {
-        transform: rotate3d(1, 1, 1, 360deg);
+        transform: rotate3d(1, 1, 1, 30deg);
     }
 }
 
 @keyframes into {
     0% {
         opacity: 0;
-        transform: translateZ(200px);
-    }
-    20% {
-        opacity: 1;
         transform: translateZ(100px);
-        background: #FFF3;
     }
     100% {
         opacity: 1;
-        transform: translateZ(calc(var(--cube-size) - var(--center-dist)));
-        background: #FFF;
+        transform: translateZ(60px);
+    }
+}
+
+@keyframes after-into {
+    0% {
+        opacity: 0.4;
+        transform: translateZ(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateZ(-60px);
     }
 }

@@ -10,6 +10,9 @@ const root = mod('root', (css, use, $) => {
         toView = true;
         m.redraw();
     }, 1000);
+    function face() {
+        return $._.face($._.faceInterior());
+    }
     return {
         view() {
             if (toView) {
@@ -21,7 +24,14 @@ const root = mod('root', (css, use, $) => {
                                 __centerDist: '120px',
                             },
                         },
-                        $._.cube($._.front(), $._.right(), $._.back(), $._.left(), $._.top(), $._.bottom())
+                        $._.cube(
+                            $._.front(face()),
+                            $._.right(face()),
+                            $._.back(face()),
+                            $._.left(face()),
+                            $._.top(face()),
+                            $._.bottom(face())
+                        )
                     )
                 );
             } else return $._();
