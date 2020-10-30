@@ -18,12 +18,6 @@ const root = mod('root', (css, use, $) => {
             if (toView) {
                 return $.window(
                     $._.scene(
-                        {
-                            style: {
-                                __cubeSize: '100px',
-                                __centerDist: '120px',
-                            },
-                        },
                         $._.cube(
                             $._.front(face()),
                             $._.right(face()),
