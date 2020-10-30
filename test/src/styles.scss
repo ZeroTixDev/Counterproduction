@@ -11,7 +11,7 @@
     > .face {
         animation: into 1s both calc(1s + #{$start});
         > .face-interior {
-            animation: after-into 5s both 1s;
+            animation: after-into 5s both 1s, into-opacity 1s both calc(1s + #{$start});
         }
     }
 }
@@ -21,7 +21,7 @@
     transform-style: preserve-3d;
     animation: rotate calc(5s) cubic-bezier(0.4, 0.7, 0.7, 1) 1s both;
     > .front {
-        @include enter(2s);
+        @include enter(1s);
         transform: rotateY(0deg) translateZ(var(--center-dist));
     }
     > .right {
@@ -29,19 +29,19 @@
         transform: rotateY(90deg) translateZ(var(--center-dist));
     }
     > .back {
-        @include enter(1s);
+        @include enter(0.5s);
         transform: rotateY(180deg) translateZ(var(--center-dist));
     }
     > .left {
-        @include enter(2s);
+        @include enter(1.25s);
         transform: rotateY(-90deg) translateZ(var(--center-dist));
     }
     > .top {
-        @include enter(0s);
+        @include enter(0.25s);
         transform: rotateX(90deg) translateZ(var(--center-dist));
     }
     > .bottom {
-        @include enter(1s);
+        @include enter(0.75s);
         transform: rotateX(-90deg) translateZ(var(--center-dist));
     }
     > * {
@@ -71,24 +71,29 @@
 
 @keyframes into {
     0% {
-        transform: translateZ(100px);
+        transform: translateZ(120px);
     }
     100% {
         transform: translateZ(60px);
     }
 }
 
-@keyframes after-into {
+@keyframes into-opacity {
     0% {
         opacity: 0;
-        transform: translateZ(0);
-    }
-    10% {
-        opacity: 0.05;
-        transform: translateZ(0);
     }
     100% {
         opacity: 1;
+    }
+}
+
+@keyframes after-into {
+    0% {
+        background: #fff0;
+        transform: translateZ(0);
+    }
+    100% {
+        background: #fff;
         transform: translateZ(-60px);
     }
 }
