@@ -1,4 +1,4 @@
-<!-- markdownlint-disable no-inline-html no-bare-urls line-length header-increment commands-show-output -->
+<!-- markdownlint-disable no-inline-html no-bare-urls line-length header-increment commands-show-output first-line-heading -->
 ![Autofactory](./banner.png)
 
 <p align="center">
@@ -18,6 +18,7 @@
     <strong> <a href="https://youxplode.com/md.html?Autofactory">About</a> </strong>
 </p>
 
+TLDR: This is a game in which players will counter others by creating combat spaceship designs on the fly.
 
 ## Compiling
 
