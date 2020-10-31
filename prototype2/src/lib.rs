@@ -5,4 +5,4 @@
 // What's a test? Never heard of such a thing.
 
 /// Main module.
-pub use main;
+pub mod main;
