@@ -15,19 +15,34 @@ const root = mod('root', (css, use, $) => {
     }
     return {
         view() {
+            const size = Math.floor(window.innerHeight * 0.01);
             if (toView) {
                 return $.window(
-                    $._.scene(
-                        $._.cube(
-                            $._.front(face()),
-                            $._.right(face()),
-                            $._.back(face()),
-                            $._.left(face()),
-                            $._.top(face()),
-                            $._.bottom(face())
-                        )
-                    ),
-                    $._.centered($._.logoText($._.partA('Auto'), $._.partB('Factory')))
+                    $._.windowInterior(
+                        {
+                            style: {
+                                __centerDist: `${Math.floor(13.5 * size)}px`,
+                                __cubeSize: `${12 * size}px`,
+                                __perspective: `${100 * size}px`,
+                                __fontSize: `${23 * size}px`,
+                                __startInto: `${16 * size}px`,
+                                __endInto: `${10 * size}px`,
+                                __disappearDistance: `${5 * size}px`,
+                                __frontBorderSize: `${Math.ceil(window.innerHeight * 0.005)}px`,
+                            },
+                        },
+                        $._.scene(
+                            $._.cube(
+                                $._.front(face()),
+                                $._.right(face()),
+                                $._.back(face()),
+                                $._.left(face()),
+                                $._.top(face()),
+                                $._.bottom(face())
+                            )
+                        ),
+                        $._.centered($._.logoText($._.partA('Auto'), $._.partB('Factory')))
+                    )
                 );
             } else return $._();
         },
