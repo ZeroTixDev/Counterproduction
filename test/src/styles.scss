@@ -8,7 +8,6 @@
     position: absolute;
     top: calc(50% - var(--cube-size));
     left: calc(50% - var(--cube-size));
-    animation: disappear 0.5s cubic-bezier(0.37, 0.92, 0.53, 1) 6.5s both;
 }
 
 @mixin enter($start) {
@@ -73,8 +72,7 @@
     font-size: var(--font-size);
     font-weight: 500;
     letter-spacing: -0.05em;
-    color: #000;
-    animation: disappear 0.75s cubic-bezier(0.37, 0.92, 0.53, 1) 8s both;
+    animation: disappear 0.75s cubic-bezier(0.37, 0.92, 0.53, 1) 8.2s both, color-transition 1.5s both 5.5s;
 
     > * {
         position: absolute;
@@ -134,9 +132,13 @@
         background: #fff;
         transform: translateZ(calc(-1 * var(--end-into)));
     }
-    100% {
+    60% {
         background: #fff;
         transform: translateZ(calc(-1 * var(--end-into)));
+    }
+    75% {
+        background: #fff0;
+        transform: translateZ(calc(var(--end-into) / -4));
     }
 }
 @keyframes after-into-front {
@@ -151,9 +153,9 @@
         box-shadow: inset 0 0 0 var(--front-border-size) #fff;
         transform: translateZ(calc(-1 * var(--end-into)));
     }
-    100% {
-        box-shadow: inset 0 0 0 var(--front-border-size) #fff;
-        transform: translateZ(calc(-1 * var(--end-into)));
+    75% {
+        box-shadow: inset 0 0 0 var(--front-border-size) #fff0;
+        transform: translateZ(calc(var(--end-into) / -4));
     }
 }
 @keyframes disappear {
@@ -173,6 +175,14 @@
         opacity: 1;
     }
 }
+@keyframes color-transition {
+    0% {
+        color: #000;
+    }
+    100% {
+        color: #fff;
+    }
+}
 @keyframes open-a {
     0% {
         clip-path: polygon(0 0.24em, 0.35em 0.24em, 0.35em 1.5em, 0 1.5em);
@@ -180,7 +190,6 @@
     }
     100% {
         clip-path: polygon(0 0, 2.1em 0, 2.1em 1.5em, 0 1.5em);
-        color: #fff;
         left: -2.6em;
     }
 }
@@ -191,7 +200,6 @@
     }
     100% {
         clip-path: polygon(0 0, 3.6em 0, 3.6em 1.5em, 0 1.5em);
-        color: #fff;
         left: -0.55em;
     }
 }
