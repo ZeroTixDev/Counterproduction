@@ -3,4 +3,6 @@
 #![feature(generic_associated_types)]
 
 // What's a test? Never heard of such a thing.
-// 0|| pub mod tests;
+
+/// Main module.
+pub use main;
