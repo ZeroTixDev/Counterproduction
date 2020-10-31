@@ -1,6 +1,5 @@
 <!-- markdownlint-disable no-inline-html no-bare-urls line-length header-increment commands-show-output -->
-
-<h1 align="center"> Autofactory </h1>
+![Autofactory](./banner.png)
 
 <p align="center">
 <a href="https://discord.gg/GCz7KgG">
