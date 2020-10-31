@@ -1,0 +1,58 @@
+name: Rust Prototype
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  lints:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: nightly
+        override: true
+        components: rustfmt, clippy
+    - run: sudo apt install libasound2-dev libudev-dev
+    - name: Detect if formatted
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args:  --manifest-path ./prototype2/Cargo.toml -- --check
+    - name: Lint files
+      uses: actions-rs/cargo@v1
+      with:
+        command: clippy
+        args: --manifest-path ./prototype2/Cargo.toml -- -D warnings
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: nightly
+        override: true
+    - name: Install Dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: sudo apt install libasound2-dev libudev-dev
+    - name: Attempt build
+      uses: actions-rs/cargo@v1
+      with:
+        command: check
+        args: --all-features --manifest-path ./prototype2/Cargo.toml
+    - name: Run tests
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --all-features --no-fail-fast --manifest-path ./prototype2/Cargo.toml
