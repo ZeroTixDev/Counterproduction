@@ -31,7 +31,7 @@ To compile the Rust part of the program, run
 
 This assumes that you have [`rustup`](https://rustup.rs/) installed and a nightly version of the compiler as the default.
 
-To run the UI library test page, run<sup>[1](#fn1)</sup>
+To run the opening animation page, execute<sup>[1](#fn1)</sup>
 
 ```bash
 > pnpm install
