@@ -1,5 +1,5 @@
-use bevy::prelude::*;
 use autofactory_prototype::entities::*;
+use bevy::prelude::*;
 
 pub fn main() {
     App::build()
@@ -10,9 +10,7 @@ pub fn main() {
         .run();
 }
 
-fn players(mut commands: Commands) {
-
-}
+fn players(mut commands: Commands) {}
 
 /// set up a simple 3D scene
 fn setup(
