@@ -1,6 +1,5 @@
 [workspace]
-
 members = [
     "core",
-    "prototype2"
+    "prototype2",
 ]
