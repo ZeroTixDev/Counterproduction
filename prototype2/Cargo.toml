@@ -8,9 +8,6 @@ edition = "2018"
 exclude = ["artifacts.json", "index.node"]
 publish = false
 
-[lib]
-name = "autofactory_prototype"
-
 [dependencies]
 derive-new = "0.5.8"
 ultraviolet = { version = "0.7.4", features = [ "f64", "int" ] }
