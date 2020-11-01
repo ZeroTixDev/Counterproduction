@@ -7,15 +7,9 @@ build = "build.rs"
 edition = "2018"
 exclude = ["artifacts.json", "index.node"]
 publish = false
-default-run = "main"
 
 [lib]
 name = "autofactory"
-crate-type = ["cdylib", "lib"]
-
-[[bin]]
-name = "main"
-path = "src/_main.rs"
 
 [[test]]
 name = "tests-main"

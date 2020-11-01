@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::entities::*;
+use autofactory_prototype::entities::*;
 
 pub fn main() {
     App::build()
