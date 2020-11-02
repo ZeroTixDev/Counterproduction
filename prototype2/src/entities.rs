@@ -10,7 +10,7 @@ pub struct Unit {
 
 impl Unit {
     pub fn new(p: Vec3, s: Stats) -> Unit {
-        return Unit {
+        Unit {
             health: Health(s.health.0),
             position: Position(p),
             stats: s,

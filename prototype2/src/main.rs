@@ -5,11 +5,9 @@
 // What's a test? Never heard of such a thing.
 
 pub mod entities;
-pub mod players;
 
-use shape::Cube;
 use entities::*;
-use players::*;
+use shape::Cube;
 
 use bevy::prelude::*;
 
@@ -32,14 +30,24 @@ fn setup(
     // add entities to the world
     commands
         // plane
-        .spawn(Unit::new(Default::default(), Stats::new(5.0, 1.0, 5.0, 1.0)))
-        .with(PbrComponents {
+        // cube
+        .spawn(Unit::new(
+            Default::default(),
+            Stats::new(5.0, 1.0, 5.0, 1.0),
+        ))
+        .with_bundle(PbrComponents {
             mesh: meshes.add(Mesh::from(Cube { size: 1.0 })),
             material: body_color,
+            transform: Transform::from_translation(Default::default()),
             ..Default::default()
         })
         .with_children(|parent| {
-
+            parent.spawn(PbrComponents {
+                mesh: meshes.add(Mesh::from(Cube { size: 0.5 })),
+                material: gun_color.clone(),
+                transform: Transform::from_translation(Vec3::new(1.0, 0.0, 0.0)),
+                ..Default::default()
+            });
         })
         // light
         .spawn(LightComponents {
@@ -48,7 +56,7 @@ fn setup(
         })
         // camera
         .spawn(Camera3dComponents {
-            transform: Transform::from_translation(Vec3::new(-3.0, 5.0, 8.0))
+            transform: Transform::from_translation(Vec3::new(3.0, 5.0, 8.0))
                 .looking_at(Vec3::default(), Vec3::unit_y()),
             ..Default::default()
         });
