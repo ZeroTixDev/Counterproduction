@@ -19,9 +19,7 @@ pub fn main() {
         .run();
 }
 
-fn setup(
-    mut commands: Commands,
-) {
+fn setup(mut commands: Commands) {
     commands
         .spawn(UnitProps::new(
             Default::default(),
