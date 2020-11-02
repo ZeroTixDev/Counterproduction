@@ -1,20 +1,74 @@
 use bevy::prelude::*;
+use shape::Cube;
 use derive_new::*;
 
-#[derive(Bundle)]
-pub struct Unit {
-    pub health: Health,
-    pub position: Position,
-    pub stats: Stats,
+pub struct EntityPlugin;
+
+impl Plugin for EntityPlugin {
+    fn build(&self, app: &mut AppBuilder) {
+        app
+            .add_startup_system(initialize_materials.system())
+            .add_system(fill_entity.system())
+            .add_system(fill_mesh.system());
+    }
 }
 
-impl Unit {
-    pub fn new(p: Vec3, s: Stats) -> Unit {
-        Unit {
-            health: Health(s.health.0),
-            position: Position(p),
-            stats: s,
-        }
+fn initialize_materials(mut commands: Commands, mut materials: ResMut<Assets<StandardMaterial>>) {
+    let body = materials.add(Color::rgb(0.8, 0.7, 0.6).into());
+    let gun = materials.add(Color::rgb(0.6, 0.7, 0.5).into());
+    commands.insert_resource(Materials { body, gun });
+}
+
+fn fill_entity(mut commands: Commands, query: Query<Without<Health, (Entity, &Stats, &Unit)>>) {
+    for x in query.iter() {
+        commands.insert_one(x.0, Health(x.1.health.0));
+    }
+}
+fn fill_mesh(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    materials: Res<Materials>,
+    query: Query<Without<Mesh, (Entity, &Stats, &Position, &Unit)>>,
+) {
+    for x in query.iter() {
+        commands
+            .insert(
+                x.0,
+                PbrComponents {
+                    material: materials.body.clone(),
+                    mesh: meshes.add(Mesh::from(Cube { size : 1.0 })),
+                    transform: Transform::from_translation(x.2.0),
+                    ..Default::default()
+                },
+            )
+            .with_children(|parent| {
+                parent.spawn(PbrComponents {
+                    material: materials.gun.clone(),
+                    mesh: meshes.add(Mesh::from(Cube { size: 0.5 })),
+                    transform: Transform::from_translation(Vec3::new(1.0, 0.0, 0.0)),
+                    ..Default::default()
+                });
+            });
+    }
+}
+
+struct Materials {
+    pub body: Handle<StandardMaterial>,
+    pub gun: Handle<StandardMaterial>,
+}
+
+pub struct Unit;
+
+#[derive(Bundle)]
+pub struct UnitProps {
+    pub stats: Stats,
+    pub position: Position,
+    pub unit: Unit,
+}
+
+impl UnitProps {
+    pub fn new(position: Vec3, stats: Stats) -> Self {
+        UnitProps { position: Position(position), stats, unit: Unit }
     }
 }
 

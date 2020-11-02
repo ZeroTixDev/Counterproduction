@@ -31,7 +31,7 @@ fn setup(
     commands
         // plane
         // cube
-        .spawn(Unit::new(
+        .spawn(UnitProps::new(
             Default::default(),
             Stats::new(5.0, 1.0, 5.0, 1.0),
         ))
