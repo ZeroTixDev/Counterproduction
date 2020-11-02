@@ -1,13 +1,12 @@
 use bevy::prelude::*;
-use shape::Cube;
 use derive_new::*;
+use shape::Cube;
 
 pub struct EntityPlugin;
 
 impl Plugin for EntityPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app
-            .add_startup_system(initialize_materials.system())
+        app.add_startup_system(initialize_materials.system())
             .add_system(fill_entity.system())
             .add_system(fill_mesh.system());
     }
@@ -36,8 +35,8 @@ fn fill_mesh(
                 x.0,
                 PbrComponents {
                     material: materials.body.clone(),
-                    mesh: meshes.add(Mesh::from(Cube { size : 1.0 })),
-                    transform: Transform::from_translation(x.2.0),
+                    mesh: meshes.add(Mesh::from(Cube { size: 1.0 })),
+                    transform: Transform::from_translation((x.2).0),
                     ..Default::default()
                 },
             )
@@ -68,7 +67,11 @@ pub struct UnitProps {
 
 impl UnitProps {
     pub fn new(position: Vec3, stats: Stats) -> Self {
-        UnitProps { position: Position(position), stats, unit: Unit }
+        UnitProps {
+            position: Position(position),
+            stats,
+            unit: Unit,
+        }
     }
 }
 
