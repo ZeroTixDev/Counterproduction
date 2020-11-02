@@ -2,6 +2,7 @@
 #![feature(arbitrary_self_types)]
 #![feature(generic_associated_types)]
 #![feature(const_generics)]
+#![allow(clippy::type_complexity)]
 // What's a test? Never heard of such a thing.
 
 pub mod entities;
