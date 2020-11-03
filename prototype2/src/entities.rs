@@ -175,7 +175,8 @@ impl Plugin for EntityPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.add_startup_system(Self::initialize_materials_system.system())
             .add_system(Self::fill_mesh_system.system())
-            .add_system_to_stage(stage::POST_UPDATE, Self::move_system.system())
-            .add_system_to_stage(stage::POST_UPDATE, Self::fire_system.system());
+            .add_system_to_stage(stage::POST_UPDATE, Self::fire_system.system())
+            .add_system_to_stage(stage::POST_UPDATE, Self::move_system.system());
+        // First fire then move so that AIs work out correctly.
     }
 }
