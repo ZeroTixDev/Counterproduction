@@ -28,7 +28,10 @@ fn setup(mut commands: Commands) {
     commands
         .spawn(UnitProps::new(Default::default(), Default::default()))
         .with(AI::Nothing)
-        .spawn(UnitProps::new(Vec3::new(5.0, 2.0, 1.0) * 2.0, Default::default()))
+        .spawn(UnitProps::new(
+            Vec3::new(5.0, 2.0, 1.0) * 3.0,
+            Default::default(),
+        ))
         .with(AI::Simple)
         .spawn(LightComponents {
             transform: Transform::from_translation(Vec3::new(12.0, 24.0, 12.0)),
