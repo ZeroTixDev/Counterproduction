@@ -16,10 +16,17 @@ pub struct Unit;
 
 #[derive(Bundle)]
 pub struct UnitProps {
+    stats: Stats,
+    position: Position,
+    unit: Unit,
+    health: Health,
+}
+
+#[derive(Clone, PartialEq, Debug)]
+pub struct UnitData {
     pub stats: Stats,
-    pub position: Position,
-    pub unit: Unit,
-    pub health: Health,
+    pub position: Transform,
+    pub health: f32,
 }
 
 impl UnitProps {
@@ -36,7 +43,7 @@ impl UnitProps {
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
 pub struct Health(pub f32);
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
-pub struct Position(pub Transform);
+struct Position(pub Transform);
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
 pub struct Move {
     /// The delta must be normalized to between zero and one.
@@ -173,12 +180,7 @@ impl EntityPlugin {
             commands.remove_one::<Fire>(e);
         }
     }
-    fn death_system(
-        mut commands: Commands,
-        e: Entity,
-        health: &Health,
-        _: &Unit
-    ) {
+    fn death_system(mut commands: Commands, e: Entity, health: &Health, _: &Unit) {
         if health.0 < 0.0 {
             commands.despawn(e);
         }
