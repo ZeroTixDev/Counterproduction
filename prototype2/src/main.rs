@@ -28,14 +28,14 @@ fn setup(mut commands: Commands) {
     commands
         .spawn(UnitProps::new(Default::default(), Default::default()))
         .with(AI::Nothing)
-        .spawn(UnitProps::new(Vec3::new(5.0, 2.0, 1.0), Default::default()))
+        .spawn(UnitProps::new(Vec3::new(5.0, 2.0, 1.0) * 2.0, Default::default()))
         .with(AI::Simple)
         .spawn(LightComponents {
             transform: Transform::from_translation(Vec3::new(12.0, 24.0, 12.0)),
             ..Default::default()
         })
         .spawn(Camera3dComponents {
-            transform: Transform::from_translation(Vec3::new(4.0, 5.0, 8.0) * 10.0)
+            transform: Transform::from_translation(Vec3::new(-4.0, 5.0, 8.0) * 10.0)
                 .looking_at(Vec3::default(), Vec3::unit_y()),
             ..Default::default()
         });
