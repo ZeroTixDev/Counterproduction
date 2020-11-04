@@ -55,13 +55,18 @@ pub struct Move {
 pub struct Fire {
     pub target: Entity,
 }
+#[derive(new, Clone, Copy, PartialEq, Debug)]
+struct FireAt {
+    pub target: Entity,
+    pub position: Vec3,
+}
 
 #[derive(Clone, Copy, PartialEq, Default, Debug)]
 pub struct Stats {
-    pub health: Bounded<0.0, 10.0>,
-    pub firepower: Bounded<0.0, 2.0>,
-    pub range: Bounded<0.0, 10.0>,
-    pub movement: Bounded<0.0, 2.0>,
+    pub health: Bounded<1.0, 10.0>,
+    pub firepower: Bounded<1.0, 3.0>,
+    pub range: Bounded<5.0, 50.0>,
+    pub movement: Bounded<1.0, 3.0>,
 }
 
 impl Stats {
@@ -75,7 +80,7 @@ impl Stats {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, PartialOrd, Default, Debug)]
+#[derive(Clone, Copy, PartialEq, PartialOrd, Debug)]
 pub struct Bounded<const MIN: f32, const MAX: f32>(pub f32);
 
 impl<const MIN: f32, const MAX: f32> Bounded<{ MIN }, { MAX }> {
@@ -94,6 +99,12 @@ impl<const MIN: f32, const MAX: f32> Bounded<{ MIN }, { MAX }> {
 
     pub fn between(self) -> f32 {
         (self.0 - MIN) / (MAX - MIN)
+    }
+}
+
+impl<const MIN: f32, const MAX: f32> Default for Bounded<{ MIN }, { MAX }> {
+    fn default() -> Self {
+        Bounded((MIN + MAX) / 2.0)
     }
 }
 
@@ -131,9 +142,9 @@ impl EntityPlugin {
                     material: materials.gun.clone(),
                     mesh: meshes.add(Mesh::from(Cube { size: gunsize })),
                     transform: Transform::from_translation(Vec3::new(
-                        size - gunsize + stats.range.between() * 2.0 * gunsize,
                         0.0,
                         0.0,
+                        -size + gunsize - stats.range.between() * 2.0 * gunsize,
                     )),
                     ..Default::default()
                 })
@@ -145,6 +156,7 @@ impl EntityPlugin {
     }
     fn move_system(
         mut commands: Commands,
+        time: Res<Time>,
         mut query: Query<(Entity, &Move, &Stats, &mut Transform, &Unit)>,
     ) {
         for (e, delta, stats, mut position, _) in query.iter_mut() {
@@ -153,36 +165,53 @@ impl EntityPlugin {
                 panic!("Movement value too large. Delta is {:?}, which has a magnitude greater than 1.", delta);
             }
             let delta = delta * stats.movement.0;
-            *position = *position * Transform::from_translation(delta);
+            *position = Transform::from_translation(delta * time.delta.as_secs_f32()) * *position;
             commands.remove_one::<Move>(e);
         }
     }
-    fn fire_system(
+    fn find_target_system(
         mut commands: Commands,
-        query: Query<(Entity, &Fire, &Transform, &Stats, &Unit)>,
-        mut others: Query<(&Transform, &mut Health)>,
+        fire_query: Query<(Entity, &Fire, &Transform, &Stats, &Unit)>,
+        target_query: Query<(&Transform, &Unit)>,
     ) {
-        for (e, fire, position, stats, _) in query.iter() {
-            let target = fire.target;
-            let firepower = stats.firepower;
-            let range = stats.range;
-            let (other_position, mut other_health) =
-                others.get_mut(target).expect("Invalid Target");
+        for (e, fire, position, stats, _) in fire_query.iter() {
+            commands.remove_one::<Fire>(e);
+            let (other_position, _) = target_query.get(fire.target).expect("Invalid Target");
             if (other_position.translation - position.translation).length()
-                > FIRE_TOLERANCE * range.0
+                > FIRE_TOLERANCE * stats.range.0
             {
-                panic!(
+                eprintln!(
                     "Target at position {:?} is too far away for entity at position {:?} to fire at. Entity's stats are {:#?}",
                     (other_position).translation, position.translation, stats
                 );
             }
-            other_health.0 -= firepower.0;
-            commands.remove_one::<Fire>(e);
+            commands.insert_one(
+                e,
+                FireAt {
+                    target: fire.target,
+                    position: other_position.translation,
+                },
+            );
+        }
+    }
+    fn fire_system(
+        mut commands: Commands,
+        time: Res<Time>,
+        mut query: Query<(Entity, &FireAt, &mut Transform, &Stats, &Unit)>,
+        mut others: Query<(&mut Health, &Unit)>,
+    ) {
+        for (e, fire, mut position, stats, _) in query.iter_mut() {
+            let target = fire.target;
+            let firepower = stats.firepower;
+            let mut other_health = others.get_mut(target).expect("Invalid Target");
+            position.look_at(fire.position, Vec3::unit_z());
+            (other_health.0).0 -= firepower.0 * time.delta.as_secs_f32();
+            commands.remove_one::<FireAt>(e);
         }
     }
     fn death_system(mut commands: Commands, e: Entity, health: &Health, _: &Unit) {
         if health.0 < 0.0 {
-            commands.despawn(e);
+            commands.despawn_recursive(e);
         }
     }
 }
@@ -190,6 +219,7 @@ impl Plugin for EntityPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.add_startup_system(Self::initialize_materials_system.system())
             .add_system(Self::fill_mesh_system.system())
+            .add_system_to_stage(stage::POST_UPDATE, Self::find_target_system.system())
             .add_system_to_stage(stage::POST_UPDATE, Self::fire_system.system())
             .add_system_to_stage(stage::POST_UPDATE, Self::move_system.system())
             .add_system_to_stage(stage::POST_UPDATE, Self::death_system.system());

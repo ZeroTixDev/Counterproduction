@@ -10,37 +10,53 @@ pub enum AI {
 pub struct AIPlugin;
 
 impl AI {
-    fn move_step(self, this: UnitData, all: impl Iterator<Item = UnitData>) -> Move {
+    #[allow(unused_variables)]
+    fn move_step(self, this: UnitData, all: impl Iterator<Item = UnitData>) -> Option<Move> {
         match self {
-            AI::Nothing => todo!(),
-            AI::Simple => todo!(),
+            AI::Nothing => None,
+            AI::Simple => Some(Move::new(Vec3::new(1.0, 0.0, 0.0))),
         }
     }
 
-    fn fire_step(self, this: UnitData, all: impl Iterator<Item = (Entity, UnitData)>) -> Fire {
+    #[allow(unused_variables)]
+    fn fire_step(
+        self,
+        this: UnitData,
+        mut all: impl Iterator<Item = (Entity, UnitData)>,
+    ) -> Option<Fire> {
         match self {
-            AI::Nothing => todo!(),
-            AI::Simple => todo!(),
+            AI::Nothing => None,
+            AI::Simple => all.next().map(|a| Fire::new(a.0)),
         }
     }
 }
 impl AIPlugin {
-    fn move_system(query: Query<(&AI, &Health, &Transform, &Stats, &Unit)>) {
-        let map = |a: (&AI, &Health, &Transform, &Stats, &Unit)| {
+    fn move_system(
+        mut commands: Commands,
+        query: Query<(&AI, Entity, &Health, &Transform, &Stats, &Unit)>,
+    ) {
+        let map = |a: (&AI, Entity, &Health, &Transform, &Stats, &Unit)| {
             (
                 *a.0,
+                a.1,
                 UnitData {
-                    health: (*a.1).0,
-                    position: *a.2,
-                    stats: *a.3,
+                    health: (*a.2).0,
+                    position: *a.3,
+                    stats: *a.4,
                 },
             )
         };
-        for (ai, data) in query.iter().map(map) {
-            AI::move_step(ai, data, query.iter().map(map).map(|a| a.1));
+        for (ai, e, data) in query.iter().map(map) {
+            let step = AI::move_step(ai, data, query.iter().map(map).map(|a| a.2));
+            if let Some(step) = step {
+                commands.insert_one(e, step);
+            }
         }
     }
-    fn fire_system(query: Query<(&AI, Entity, &Health, &Transform, &Stats, &Unit)>) {
+    fn fire_system(
+        mut commands: Commands,
+        query: Query<(&AI, Entity, &Health, &Transform, &Stats, &Unit)>,
+    ) {
         let map = |a: (&AI, Entity, &Health, &Transform, &Stats, &Unit)| {
             (
                 *a.0,
@@ -54,8 +70,11 @@ impl AIPlugin {
                 ),
             )
         };
-        for (ai, (_, data)) in query.iter().map(map) {
-            AI::fire_step(ai, data, query.iter().map(map).map(|a| a.1));
+        for (ai, (e, data)) in query.iter().map(map) {
+            let step = AI::fire_step(ai, data, query.iter().map(map).map(|a| a.1));
+            if let Some(step) = step {
+                commands.insert_one(e, step);
+            }
         }
     }
 }
