@@ -7,7 +7,7 @@ const FIRE_TOLERANCE: f32 = 1.01;
 
 #[derive(Clone, Eq, PartialEq, Default, Debug)]
 struct Materials {
-    pub body: Handle<StandardMaterial>,
+    pub damaged: Handle<StandardMaterial>,
     pub gun: Handle<StandardMaterial>,
 }
 
@@ -20,6 +20,7 @@ pub struct UnitProps {
     position: Position,
     unit: Unit,
     health: Health,
+    material: EntityColor,
 }
 
 #[derive(Clone, PartialEq, Debug)]
@@ -27,15 +28,17 @@ pub struct UnitData {
     pub stats: Stats,
     pub position: Transform,
     pub health: f32,
+    pub parent: Entity,
 }
 
 impl UnitProps {
-    pub fn new(position: Vec3, stats: Stats) -> Self {
+    pub fn new(position: Vec3, stats: Stats, material: Handle<StandardMaterial>) -> Self {
         UnitProps {
             position: Position(Transform::from_translation(position)),
             stats,
             unit: Unit,
             health: Health(stats.health.0),
+            material: EntityColor(material),
         }
     }
 }
@@ -43,7 +46,9 @@ impl UnitProps {
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
 pub struct Health(pub f32);
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
-struct Position(pub Transform);
+struct Position(Transform);
+#[derive(new, Clone, PartialEq, Default, Debug)]
+struct EntityColor(Handle<StandardMaterial>);
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
 pub struct Move {
     /// The delta must be normalized to between zero and one.
@@ -77,6 +82,10 @@ impl Stats {
             range: Bounded::new(r),
             movement: Bounded::new(m),
         }
+    }
+
+    pub fn price(&self) -> f32 {
+        todo!()
     }
 }
 
@@ -115,24 +124,30 @@ impl EntityPlugin {
         mut commands: Commands,
         mut materials: ResMut<Assets<StandardMaterial>>,
     ) {
-        let body = materials.add(Color::rgb(0.8, 0.7, 0.6).into());
-        let gun = materials.add(Color::rgb(0.6, 0.7, 0.5).into());
-        commands.insert_resource(Materials { body, gun });
+        let damaged = materials.add(Color::rgb_u8(230, 18, 18).into());
+        let gun = materials.add(Color::rgb_u8(204, 178, 153).into());
+        commands.insert_resource(Materials { damaged, gun });
+    }
+    fn color_reset_system(mut commands: Commands, query: Query<(Entity, &EntityColor, &Unit)>) {
+        for (e, color, _) in query.iter() {
+            commands.insert_one(e, color.0.clone());
+            commands.remove_one::<EntityColor>(e);
+        }
     }
     fn fill_mesh_system(
         mut commands: Commands,
         mut meshes: ResMut<Assets<Mesh>>,
         materials: Res<Materials>,
-        query: Query<Without<Mesh, (Entity, &Stats, &Position, &Unit)>>,
+        query: Query<Without<Mesh, (Entity, &Stats, &Position, &EntityColor, &Unit)>>,
     ) {
-        for (e, stats, position, _) in query.iter() {
+        for (e, stats, position, color, _) in query.iter() {
             let size = 3.0 + stats.health.between();
             let gunsize = stats.firepower.between() * size;
             let child = commands
                 .insert(
                     e,
                     PbrComponents {
-                        material: materials.body.clone(),
+                        material: color.0.clone(),
                         mesh: meshes.add(Mesh::from(Cube { size })),
                         transform: position.0,
                         ..Default::default()
@@ -162,10 +177,12 @@ impl EntityPlugin {
         for (e, delta, stats, mut position, _) in query.iter_mut() {
             let delta = delta.delta;
             if delta.length_squared() > MOVEMENT_TOLERANCE {
-                panic!("Movement value too large. Delta is {:?}, which has a magnitude greater than 1.", delta);
+                eprintln!("Movement value too large. Delta is {:?}, which has a magnitude greater than 1.", delta);
+            } else {
+                let delta = delta * stats.movement.0;
+                *position =
+                    Transform::from_translation(delta * time.delta.as_secs_f32()) * *position;
             }
-            let delta = delta * stats.movement.0;
-            *position = Transform::from_translation(delta * time.delta.as_secs_f32()) * *position;
             commands.remove_one::<Move>(e);
         }
     }
@@ -180,33 +197,40 @@ impl EntityPlugin {
             if (other_position.translation - position.translation).length()
                 > FIRE_TOLERANCE * stats.range.0
             {
-                eprintln!(
+                panic!(
                     "Target at position {:?} is too far away for entity at position {:?} to fire at. Entity's stats are {:#?}",
                     (other_position).translation, position.translation, stats
                 );
+            } else {
+                commands.insert_one(
+                    e,
+                    FireAt {
+                        target: fire.target,
+                        position: other_position.translation,
+                    },
+                );
             }
-            commands.insert_one(
-                e,
-                FireAt {
-                    target: fire.target,
-                    position: other_position.translation,
-                },
-            );
         }
     }
     fn fire_system(
         mut commands: Commands,
         time: Res<Time>,
+        materials: Res<Materials>,
         mut query: Query<(Entity, &FireAt, &mut Transform, &Stats, &Unit)>,
-        mut others: Query<(&mut Health, &Unit)>,
+        mut others: Query<(Entity, &mut Health, &Handle<StandardMaterial>, &Unit)>,
     ) {
         for (e, fire, mut position, stats, _) in query.iter_mut() {
             let target = fire.target;
             let firepower = stats.firepower;
-            let mut other_health = others.get_mut(target).expect("Invalid Target");
+            let (other_entity, mut other_health, other_color, _) =
+                others.get_mut(target).expect("Invalid Target");
             position.look_at(fire.position, Vec3::unit_z());
-            (other_health.0).0 -= firepower.0 * time.delta.as_secs_f32();
-            commands.remove_one::<FireAt>(e);
+            other_health.0 -= firepower.0 * time.delta.as_secs_f32();
+            commands
+                .remove_one::<FireAt>(e)
+                .remove_one::<Handle<StandardMaterial>>(other_entity)
+                .insert_one(other_entity, materials.damaged.clone())
+                .insert_one(other_entity, EntityColor(other_color.clone()));
         }
     }
     fn death_system(mut commands: Commands, e: Entity, health: &Health, _: &Unit) {
@@ -218,7 +242,8 @@ impl EntityPlugin {
 impl Plugin for EntityPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.add_startup_system(Self::initialize_materials_system.system())
-            .add_system(Self::fill_mesh_system.system())
+            .add_system_to_stage(stage::PRE_UPDATE, Self::fill_mesh_system.system())
+            .add_system(Self::color_reset_system.system())
             .add_system_to_stage(stage::POST_UPDATE, Self::find_target_system.system())
             .add_system_to_stage(stage::POST_UPDATE, Self::fire_system.system())
             .add_system_to_stage(stage::POST_UPDATE, Self::move_system.system())

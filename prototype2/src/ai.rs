@@ -9,6 +9,16 @@ pub enum AI {
 
 pub struct AIPlugin;
 
+type UnitAIQuery<'a> = (
+    &'a AI,
+    Entity,
+    &'a Health,
+    &'a Transform,
+    &'a Stats,
+    &'a Parent,
+    &'a Unit,
+);
+
 impl AI {
     #[allow(unused_variables)]
     fn move_step(self, this: UnitData, all: impl Iterator<Item = UnitData>) -> Option<Move> {
@@ -31,47 +41,51 @@ impl AI {
     }
 }
 impl AIPlugin {
-    fn move_system(
-        mut commands: Commands,
-        query: Query<(&AI, Entity, &Health, &Transform, &Stats, &Unit)>,
-    ) {
-        let map = |a: (&AI, Entity, &Health, &Transform, &Stats, &Unit)| {
+    fn move_system(mut commands: Commands, query: Query<UnitAIQuery>) {
+        let map = |a: UnitAIQuery| {
             (
                 *a.0,
                 a.1,
                 UnitData {
-                    health: (*a.2).0,
+                    health: (a.2).0,
                     position: *a.3,
                     stats: *a.4,
+                    parent: (a.5).0,
                 },
             )
         };
         for (ai, e, data) in query.iter().map(map) {
-            let step = AI::move_step(ai, data, query.iter().map(map).map(|a| a.2));
+            let step = AI::move_step(
+                ai,
+                data,
+                query.iter().map(map).filter(|a| a.1 != e).map(|a| a.2),
+            );
             if let Some(step) = step {
                 commands.insert_one(e, step);
             }
         }
     }
-    fn fire_system(
-        mut commands: Commands,
-        query: Query<(&AI, Entity, &Health, &Transform, &Stats, &Unit)>,
-    ) {
-        let map = |a: (&AI, Entity, &Health, &Transform, &Stats, &Unit)| {
+    fn fire_system(mut commands: Commands, query: Query<UnitAIQuery>) {
+        let map = |a: UnitAIQuery| {
             (
                 *a.0,
                 (
                     a.1,
                     UnitData {
-                        health: (*a.2).0,
+                        health: (a.2).0,
                         position: *a.3,
                         stats: *a.4,
+                        parent: (a.5).0,
                     },
                 ),
             )
         };
         for (ai, (e, data)) in query.iter().map(map) {
-            let step = AI::fire_step(ai, data, query.iter().map(map).map(|a| a.1));
+            let step = AI::fire_step(
+                ai,
+                data,
+                query.iter().map(map).filter(|a| (a.1).0 != e).map(|a| a.1),
+            );
             if let Some(step) = step {
                 commands.insert_one(e, step);
             }
