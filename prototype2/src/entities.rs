@@ -85,7 +85,7 @@ impl Stats {
     }
 
     pub fn price(&self) -> f32 {
-        todo!()
+        0.0
     }
 }
 

@@ -39,7 +39,6 @@ impl PlayerPlugin {
         e: Entity,
         color: &PlayerColorUninitialized,
     ) {
-        println!("Filling: {:?}", color);
         commands
             .insert_one(e, PlayerColor(materials.add(color.0.into())))
             .remove_one::<PlayerColorUninitialized>(e);
@@ -53,7 +52,6 @@ impl PlayerPlugin {
         unit: Query<(Entity, &Parent, &PlayerUnit)>,
     ) {
         for (e, Parent(player), PlayerUnit(stats, ai)) in unit.iter() {
-            eprintln!("Player: {:?}", player);
             let (material, mut resources, position) =
                 players.get_mut(*player).expect("Invalid Player");
             let price = stats.price();

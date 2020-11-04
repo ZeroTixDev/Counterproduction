@@ -26,7 +26,7 @@ pub fn main() {
 }
 
 fn setup(mut commands: Commands) {
-    let entity = commands
+    commands
         .spawn(PlayerProps::new(
             Vec3::new(0.0, 0.0, 0.0),
             5.0,
@@ -34,22 +34,21 @@ fn setup(mut commands: Commands) {
         ))
         .with_children(|parent| {
             parent.spawn((PlayerUnit(Default::default(), AI::Simple),));
-        }).current_entity().unwrap();
-    println!("Player Entity: {:?}", entity);
-        /*.spawn(UnitProps::new(Default::default(), Default::default()))
-        .with(AI::Nothing)
-        .spawn(UnitProps::new(
-            Vec3::new(5.0, 2.0, 1.0) * 3.0,
-            Default::default(),
+        })
+        .spawn(PlayerProps::new(
+            Vec3::new(10.0, 10.0, 10.0),
+            5.0,
+            Color::rgb_u8(66, 135, 245),
         ))
-        .with(AI::Simple)*/
-    commands
+        .with_children(|parent| {
+            parent.spawn((PlayerUnit(Default::default(), AI::Simple),));
+        })
         .spawn(LightComponents {
             transform: Transform::from_translation(Vec3::new(12.0, 24.0, 12.0)),
             ..Default::default()
         })
         .spawn(Camera3dComponents {
-            transform: Transform::from_translation(Vec3::new(-4.0, 5.0, 8.0) * 10.0)
+            transform: Transform::from_translation(Vec3::new(-4.0, 5.0, 8.0) * 20.0)
                 .looking_at(Vec3::default(), Vec3::unit_y()),
             ..Default::default()
         });
