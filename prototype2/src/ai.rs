@@ -21,10 +21,19 @@ type UnitAIQuery<'a> = (
 
 impl AI {
     #[allow(unused_variables)]
-    fn move_step(self, this: UnitData, all: impl Iterator<Item = UnitData>) -> Option<Move> {
+    fn move_step(
+        self,
+        this: UnitData,
+        all: impl Iterator<Item = UnitData>,
+        players: &Query<(Entity, &Vec3)>,
+    ) -> Option<Move> {
         match self {
             AI::Nothing => None,
-            AI::Simple => Some(Move::new(Vec3::new(1.0, 0.0, 0.0))),
+            AI::Simple => players
+                .iter()
+                .filter(|x| x.0 != this.player)
+                .next()
+                .map(|x| Move::new((*x.1 - this.position.translation).normalize())),
         }
     }
 
@@ -32,16 +41,34 @@ impl AI {
     fn fire_step(
         self,
         this: UnitData,
-        mut all: impl Iterator<Item = (Entity, UnitData)>,
+        all: impl Iterator<Item = (Entity, UnitData)>,
+        players: &Query<(Entity, &Vec3)>,
     ) -> Option<Fire> {
         match self {
             AI::Nothing => None,
-            AI::Simple => all.next().map(|a| Fire::new(a.0)),
+            AI::Simple => all
+                .filter(|x| {
+                    x.0 != this.player
+                        && (x.1.position.translation - this.position.translation).length()
+                            <= this.stats.range.0
+                })
+                .fold_first(|a, b| {
+                    if a.1.stats.priority > b.1.stats.priority {
+                        a
+                    } else {
+                        b
+                    }
+                })
+                .map(|x| Fire::new(x.0)),
         }
     }
 }
 impl AIPlugin {
-    fn move_system(mut commands: Commands, query: Query<UnitAIQuery>) {
+    fn move_system(
+        mut commands: Commands,
+        query: Query<UnitAIQuery>,
+        players: Query<(Entity, &Vec3)>,
+    ) {
         let map = |a: UnitAIQuery| {
             (
                 *a.0,
@@ -55,17 +82,17 @@ impl AIPlugin {
             )
         };
         for (ai, e, data) in query.iter().map(map) {
-            let step = AI::move_step(
-                ai,
-                data,
-                query.iter().map(map).filter(|a| a.1 != e).map(|a| a.2),
-            );
+            let step = AI::move_step(ai, data, query.iter().map(|a| map(a).2), &players);
             if let Some(step) = step {
                 commands.insert_one(e, step);
             }
         }
     }
-    fn fire_system(mut commands: Commands, query: Query<UnitAIQuery>) {
+    fn fire_system(
+        mut commands: Commands,
+        query: Query<UnitAIQuery>,
+        players: Query<(Entity, &Vec3)>,
+    ) {
         let map = |a: UnitAIQuery| {
             (
                 *a.0,
@@ -85,6 +112,7 @@ impl AIPlugin {
                 ai,
                 data,
                 query.iter().map(map).filter(|a| (a.1).0 != e).map(|a| a.1),
+                &players,
             );
             if let Some(step) = step {
                 commands.insert_one(e, step);

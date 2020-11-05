@@ -2,6 +2,7 @@
 #![feature(arbitrary_self_types)]
 #![feature(generic_associated_types)]
 #![feature(const_generics)]
+#![feature(iterator_fold_self)]
 #![allow(clippy::type_complexity)]
 // What's a test? Never heard of such a thing.
 
@@ -28,7 +29,7 @@ pub fn main() {
 fn setup(mut commands: Commands) {
     commands
         .spawn(PlayerProps::new(
-            Vec3::new(0.0, 0.0, 0.0),
+            Vec3::new(100.0, 0.0, 0.0),
             5.0,
             Color::rgb_u8(50, 168, 82),
         ))
@@ -36,7 +37,7 @@ fn setup(mut commands: Commands) {
             parent.spawn((PlayerUnit(Default::default(), AI::Simple),));
         })
         .spawn(PlayerProps::new(
-            Vec3::new(20.0, 5.0, 0.0),
+            Vec3::new(-100.0, 5.0, 0.0),
             5.0,
             Color::rgb_u8(66, 135, 245),
         ))
@@ -48,7 +49,7 @@ fn setup(mut commands: Commands) {
             ..Default::default()
         })
         .spawn(Camera3dComponents {
-            transform: Transform::from_translation(Vec3::new(-4.0, -5.0, -8.0) * 20.0)
+            transform: Transform::from_translation(Vec3::new(0.0, 0.0, 200.0))
                 .looking_at(Vec3::default(), Vec3::unit_y()),
             ..Default::default()
         });

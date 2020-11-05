@@ -29,13 +29,15 @@ impl PlayerProps {
             firepower: Bounded::min_b(),
             movement: Bounded::min_b(),
             range: Bounded::min_b(),
+            priority: -1.0,
+            price: 0.0,
         }
     }
 
     pub fn new(position: Vec3, gain: f32, color: Color) -> Self {
         PlayerProps {
             position,
-            starting: Resources(Self::player_stats().price()),
+            starting: Resources(9999.0), // Enough resources for now.
             gain: ResourceGain(gain),
             color: PlayerColorUninitialized(color),
         }
@@ -55,7 +57,11 @@ impl PlayerPlugin {
             .spawn((PlayerUnit(PlayerProps::player_stats(), AI::Nothing),))
             .with(Parent(e));
     }
-    fn gain_resources(time: Res<Time>, mut resources: Mut<Resources>, resource_gain: &ResourceGain) {
+    fn gain_resources(
+        time: Res<Time>,
+        mut resources: Mut<Resources>,
+        resource_gain: &ResourceGain,
+    ) {
         resources.0 += resource_gain.0 * time.delta.as_secs_f32();
     }
     fn spawn(
@@ -66,7 +72,7 @@ impl PlayerPlugin {
         for (e, Parent(player), PlayerUnit(stats, ai)) in unit.iter() {
             let (material, mut resources, position) =
                 players.get_mut(*player).expect("Invalid Player");
-            let price = stats.price();
+            let price = stats.price;
             if price > resources.0 {
                 eprintln!(
                     "Unit Price too large. Player {:?} has resources {:?}, which less than price {} for stats {:#?}",

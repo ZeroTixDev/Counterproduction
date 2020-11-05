@@ -69,26 +69,53 @@ struct FireAt {
     pub position: Vec3,
 }
 
-#[derive(Clone, Copy, PartialEq, Default, Debug)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Stats {
     pub health: Bounded<1.0, 10.0>,
     pub firepower: Bounded<1.0, 3.0>,
     pub range: Bounded<5.0, 50.0>,
     pub movement: Bounded<1.0, 3.0>,
+    pub priority: f32,
+    pub price: f32,
 }
 
 impl Stats {
     pub fn new(h: f32, f: f32, r: f32, m: f32) -> Self {
-        Stats {
+        let mut s = Stats {
             health: Bounded::new(h),
             firepower: Bounded::new(f),
             range: Bounded::new(r),
             movement: Bounded::new(m),
-        }
+            priority: 0.0,
+            price: 0.0,
+        };
+        s.price = s.compute_price();
+        s.priority = s.compute_priority();
+        s
     }
 
-    pub fn price(&self) -> f32 {
-        0.0
+    fn compute_price(&self) -> f32 {
+        self.movement.0 * 2.0
+            + self.range.0.powf(1.2) * (self.firepower.0 + 1.0 / 2.0) * (self.health.0 / 2.0 + 1.0)
+    }
+    fn compute_priority(&self) -> f32 {
+        self.compute_price()
+    }
+}
+
+impl Default for Stats {
+    fn default() -> Self {
+        let mut s = Stats {
+            health: Default::default(),
+            firepower: Default::default(),
+            range: Default::default(),
+            movement: Default::default(),
+            priority: 0.0,
+            price: 0.0,
+        };
+        s.price = s.compute_price();
+        s.priority = s.compute_priority();
+        s
     }
 }
 
@@ -136,7 +163,11 @@ impl EntityPlugin {
         let damaged = materials.add(Color::rgb_u8(230, 18, 18).into());
         let gun = materials.add(Color::rgb_u8(204, 178, 153).into());
         let targeting_area = materials.add(Color::rgba_u8(230, 18, 18, 100).into());
-        commands.insert_resource(Materials { damaged, gun, targeting_area });
+        commands.insert_resource(Materials {
+            damaged,
+            gun,
+            targeting_area,
+        });
     }
     fn color_reset_system(mut commands: Commands, query: Query<(Entity, &EntityColor, &Unit)>) {
         for (e, color, _) in query.iter() {
@@ -176,7 +207,10 @@ impl EntityPlugin {
                 .with(Parent(e))
                 .spawn(PbrComponents {
                     material: materials.targeting_area.clone(),
-                    mesh: meshes.add(Mesh::from(Icosphere { radius: stats.range.0, subdivisions: 5 })),
+                    mesh: meshes.add(Mesh::from(Icosphere {
+                        radius: stats.range.0,
+                        subdivisions: 5,
+                    })),
                     draw: Draw {
                         is_transparent: true,
                         ..Default::default()
@@ -184,8 +218,7 @@ impl EntityPlugin {
                     ..Default::default()
                 })
                 .with(Parent(e));
-            commands
-                .remove_one::<Position>(e);
+            commands.remove_one::<Position>(e);
         }
     }
     fn move_system(
