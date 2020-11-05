@@ -81,7 +81,7 @@ pub struct Stats {
 
 impl Stats {
     pub fn new(h: f32, f: f32, r: f32, m: f32) -> Self {
-        let mut s = Stats {
+        let mut stats = Stats {
             health: Bounded::new(h),
             firepower: Bounded::new(f),
             range: Bounded::new(r),
@@ -89,9 +89,9 @@ impl Stats {
             priority: 0.0,
             price: 0.0,
         };
-        s.price = s.compute_price();
-        s.priority = s.compute_priority();
-        s
+        stats.price = stats.compute_price();
+        stats.priority = stats.compute_priority();
+        stats
     }
 
     fn compute_price(&self) -> f32 {

@@ -31,8 +31,7 @@ impl AI {
             AI::Nothing => None,
             AI::Simple => players
                 .iter()
-                .filter(|x| x.0 != this.player)
-                .next()
+                .find(|x| x.0 != this.player)
                 .map(|x| Move::new((*x.1 - this.position.translation).normalize())),
         }
     }
