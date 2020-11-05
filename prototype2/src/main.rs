@@ -45,11 +45,11 @@ fn setup(mut commands: Commands) {
             parent.spawn((PlayerUnit(Default::default(), AI::Simple),));
         })
         .spawn(LightComponents {
-            transform: Transform::from_translation(Vec3::new(12.0, 24.0, 12.0)),
+            transform: Transform::from_translation(Vec3::new(0.0, 200.0, 100.0)),
             ..Default::default()
         })
         .spawn(Camera3dComponents {
-            transform: Transform::from_translation(Vec3::new(0.0, 0.0, 200.0))
+            transform: Transform::from_translation(Vec3::new(0.0, 50.0, 200.0))
                 .looking_at(Vec3::default(), Vec3::unit_y()),
             ..Default::default()
         });
