@@ -230,6 +230,8 @@ impl EntityPlugin {
                 let delta = delta * stats.movement.0;
                 *position =
                     Transform::from_translation(delta * time.delta.as_secs_f32()) * *position;
+                let translation = position.translation;
+                position.look_at(translation + delta, Vec3::unit_y());
             }
             commands.remove_one::<Move>(e);
         }
@@ -272,7 +274,7 @@ impl EntityPlugin {
             let firepower = stats.firepower;
             let (other_entity, mut other_health, mut other_color, _) =
                 others.get_mut(target).expect("Invalid Target");
-            position.look_at(fire.position, Vec3::unit_z());
+            position.look_at(fire.position, Vec3::unit_y());
             other_health.0 -= firepower.0 * time.delta.as_secs_f32();
             commands
                 .remove_one::<FireAt>(e)
