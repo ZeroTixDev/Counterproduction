@@ -34,7 +34,7 @@ pub struct UnitData {
 impl UnitProps {
     pub fn new(position: Vec3, stats: Stats, material: Handle<StandardMaterial>) -> Self {
         UnitProps {
-            position: Position(Transform::from_translation(position)),
+            position: Position(position),
             stats,
             unit: Unit,
             health: Health(stats.health.0),
@@ -46,7 +46,7 @@ impl UnitProps {
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
 pub struct Health(pub f32);
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
-struct Position(Transform);
+struct Position(Vec3);
 #[derive(new, Clone, PartialEq, Default, Debug)]
 struct EntityColor(Handle<StandardMaterial>);
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
@@ -138,18 +138,19 @@ impl EntityPlugin {
         mut commands: Commands,
         mut meshes: ResMut<Assets<Mesh>>,
         materials: Res<Materials>,
-        query: Query<Without<Mesh, (Entity, &Stats, &Position, &EntityColor, &Unit)>>,
+        query: Query<Without<Handle<Mesh>, (Entity, &Stats, &Position, &EntityColor, &Unit)>>,
     ) {
         for (e, stats, position, color, _) in query.iter() {
+            println!("Pos: {:?}", e);
             let size = 3.0 + stats.health.between();
             let gunsize = stats.firepower.between() * size;
-            let child = commands
+            commands
                 .insert(
                     e,
                     PbrComponents {
                         material: color.0.clone(),
                         mesh: meshes.add(Mesh::from(Cube { size })),
-                        transform: position.0,
+                        transform: Transform::from_translation(position.0),
                         ..Default::default()
                     },
                 )
@@ -163,9 +164,8 @@ impl EntityPlugin {
                     )),
                     ..Default::default()
                 })
-                .current_entity();
+                .with(Parent(e));
             commands
-                .push_children(e, &[child.unwrap()])
                 .remove_one::<Position>(e);
         }
     }
