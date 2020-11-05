@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use derive_new::*;
-use shape::Cube;
+use shape::*;
 
 const MOVEMENT_TOLERANCE: f32 = 1.01;
 const FIRE_TOLERANCE: f32 = 1.01;
@@ -9,6 +9,7 @@ const FIRE_TOLERANCE: f32 = 1.01;
 struct Materials {
     pub damaged: Handle<StandardMaterial>,
     pub gun: Handle<StandardMaterial>,
+    pub targeting_area: Handle<StandardMaterial>,
 }
 
 #[derive(Clone, Eq, PartialEq, Default, Debug)]
@@ -107,6 +108,12 @@ impl<const MIN: f32, const MAX: f32> Bounded<{ MIN }, { MAX }> {
     pub fn max(self) -> f32 {
         MAX
     }
+    pub fn min_b() -> Self {
+        Bounded(MIN)
+    }
+    pub fn max_b() -> Self {
+        Bounded(MAX)
+    }
 
     pub fn between(self) -> f32 {
         (self.0 - MIN) / (MAX - MIN)
@@ -128,7 +135,8 @@ impl EntityPlugin {
     ) {
         let damaged = materials.add(Color::rgb_u8(230, 18, 18).into());
         let gun = materials.add(Color::rgb_u8(204, 178, 153).into());
-        commands.insert_resource(Materials { damaged, gun });
+        let targeting_area = materials.add(Color::rgba_u8(230, 18, 18, 100).into());
+        commands.insert_resource(Materials { damaged, gun, targeting_area });
     }
     fn color_reset_system(mut commands: Commands, query: Query<(Entity, &EntityColor, &Unit)>) {
         for (e, color, _) in query.iter() {
@@ -165,6 +173,16 @@ impl EntityPlugin {
                     )),
                     ..Default::default()
                 })
+                .with(Parent(e))
+                .spawn(PbrComponents {
+                    material: materials.targeting_area.clone(),
+                    mesh: meshes.add(Mesh::from(Icosphere { radius: stats.range.0, subdivisions: 5 })),
+                    draw: Draw {
+                        is_transparent: true,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                })
                 .with(Parent(e));
             commands
                 .remove_one::<Position>(e);
@@ -198,7 +216,7 @@ impl EntityPlugin {
             if (other_position.translation - position.translation).length()
                 > FIRE_TOLERANCE * stats.range.0
             {
-                panic!(
+                eprintln!(
                     "Target at position {:?} is too far away for entity at position {:?} to fire at. Entity's stats are {:#?}",
                     (other_position).translation, position.translation, stats
                 );

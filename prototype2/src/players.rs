@@ -22,10 +22,20 @@ pub struct PlayerProps {
     color: PlayerColorUninitialized,
 }
 impl PlayerProps {
+    fn player_stats() -> Stats {
+        Stats {
+            // Bounded override.
+            health: Bounded(100.0),
+            firepower: Bounded::min_b(),
+            movement: Bounded::min_b(),
+            range: Bounded::min_b(),
+        }
+    }
+
     pub fn new(position: Vec3, gain: f32, color: Color) -> Self {
         PlayerProps {
             position,
-            starting: Resources(0.0),
+            starting: Resources(Self::player_stats().price()),
             gain: ResourceGain(gain),
             color: PlayerColorUninitialized(color),
         }
@@ -33,7 +43,7 @@ impl PlayerProps {
 }
 pub struct PlayerPlugin;
 impl PlayerPlugin {
-    fn fill_color(
+    fn initialize(
         mut commands: Commands,
         mut materials: ResMut<Assets<StandardMaterial>>,
         e: Entity,
@@ -41,10 +51,12 @@ impl PlayerPlugin {
     ) {
         commands
             .insert_one(e, PlayerColor(materials.add(color.0.into())))
-            .remove_one::<PlayerColorUninitialized>(e);
+            .remove_one::<PlayerColorUninitialized>(e)
+            .spawn((PlayerUnit(PlayerProps::player_stats(), AI::Nothing),))
+            .with(Parent(e));
     }
-    fn gain_resources(mut resources: Mut<Resources>, resource_gain: &ResourceGain) {
-        resources.0 += resource_gain.0;
+    fn gain_resources(time: Res<Time>, mut resources: Mut<Resources>, resource_gain: &ResourceGain) {
+        resources.0 += resource_gain.0 * time.delta.as_secs_f32();
     }
     fn spawn(
         mut commands: Commands,
@@ -73,7 +85,7 @@ impl PlayerPlugin {
 }
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app.add_system_to_stage(stage::PRE_UPDATE, Self::fill_color.system())
+        app.add_system_to_stage(stage::PRE_UPDATE, Self::initialize.system())
             .add_system(Self::gain_resources.system())
             .add_system(Self::spawn.system());
     }
