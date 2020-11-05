@@ -89,17 +89,14 @@ impl Stats {
             priority: 0.0,
             price: 0.0,
         };
-        stats.price = stats.compute_price();
-        stats.priority = stats.compute_priority();
+        stats.compute();
         stats
     }
 
-    fn compute_price(&self) -> f32 {
-        self.movement.0 * 2.0
-            + self.range.0.powf(1.2) * (self.firepower.0 + 1.0 / 2.0) * (self.health.0 / 2.0 + 1.0)
-    }
-    fn compute_priority(&self) -> f32 {
-        self.compute_price()
+    fn compute(&mut self) {
+        self.price = self.movement.0 * 2.0
+            + self.range.0.powf(1.2) * (self.firepower.0 + 1.0 / 2.0) * (self.health.0 / 2.0 + 1.0);
+        self.priority = self.price;
     }
 }
 
@@ -113,8 +110,7 @@ impl Default for Stats {
             priority: 0.0,
             price: 0.0,
         };
-        s.price = s.compute_price();
-        s.priority = s.compute_priority();
+        s.compute();
         s
     }
 }
