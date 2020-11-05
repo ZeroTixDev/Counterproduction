@@ -29,6 +29,7 @@ impl PlayerProps {
             firepower: Bounded::min_b(),
             movement: Bounded::min_b(),
             range: Bounded::min_b(),
+            reload: Bounded::min_b(),
             priority: -1.0,
             price: 0.0,
         }

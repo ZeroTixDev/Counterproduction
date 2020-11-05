@@ -47,7 +47,7 @@ impl AI {
             AI::Nothing => None,
             AI::Simple => all
                 .filter(|x| {
-                    x.0 != this.player
+                    x.1.player != this.player
                         && (x.1.position.translation - this.position.translation).length()
                             <= this.stats.range.0
                 })

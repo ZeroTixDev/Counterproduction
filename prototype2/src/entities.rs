@@ -22,6 +22,7 @@ pub struct UnitProps {
     unit: Unit,
     health: Health,
     material: EntityColor,
+    loading: LoadingStatus,
 }
 
 #[derive(Clone, PartialEq, Debug)]
@@ -40,12 +41,15 @@ impl UnitProps {
             unit: Unit,
             health: Health(stats.health.0),
             material: EntityColor(material),
+            loading: LoadingStatus(0.0),
         }
     }
 }
 
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
 pub struct Health(pub f32);
+#[derive(new, Clone, Copy, PartialEq, Default, Debug)]
+pub struct LoadingStatus(pub f32);
 #[derive(new, Clone, Copy, PartialEq, Debug)]
 pub struct PlayerControl(pub Entity);
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
@@ -72,20 +76,22 @@ struct FireAt {
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Stats {
     pub health: Bounded<1.0, 10.0>,
-    pub firepower: Bounded<1.0, 3.0>,
+    pub firepower: Bounded<0.5, 3.0>,
     pub range: Bounded<5.0, 50.0>,
     pub movement: Bounded<1.0, 3.0>,
+    pub reload: Bounded<0.015, 7.0>,
     pub priority: f32,
     pub price: f32,
 }
 
 impl Stats {
-    pub fn new(h: f32, f: f32, r: f32, m: f32) -> Self {
+    pub fn new(h: f32, f: f32, r: f32, m: f32, re: f32) -> Self {
         let mut stats = Stats {
             health: Bounded::new(h),
             firepower: Bounded::new(f),
             range: Bounded::new(r),
             movement: Bounded::new(m),
+            reload: Bounded::new(re),
             priority: 0.0,
             price: 0.0,
         };
@@ -107,6 +113,7 @@ impl Default for Stats {
             firepower: Default::default(),
             range: Default::default(),
             movement: Default::default(),
+            reload: Default::default(),
             priority: 0.0,
             price: 0.0,
         };
@@ -266,20 +273,34 @@ impl EntityPlugin {
         mut commands: Commands,
         time: Res<Time>,
         materials: Res<Materials>,
-        mut query: Query<(Entity, &FireAt, &mut Transform, &Stats, &Unit)>,
+        mut query: Query<(
+            Entity,
+            &FireAt,
+            &mut Transform,
+            &Stats,
+            &mut LoadingStatus,
+            &Unit,
+        )>,
         mut others: Query<(Entity, &mut Health, &mut Handle<StandardMaterial>, &Unit)>,
     ) {
-        for (e, fire, mut position, stats, _) in query.iter_mut() {
+        for (e, fire, mut position, stats, mut loading, _) in query.iter_mut() {
             let target = fire.target;
             let firepower = stats.firepower;
             let (other_entity, mut other_health, mut other_color, _) =
                 others.get_mut(target).expect("Invalid Target");
             position.look_at(fire.position, Vec3::unit_y());
-            other_health.0 -= firepower.0 * time.delta.as_secs_f32();
-            commands
-                .remove_one::<FireAt>(e)
-                .insert_one(other_entity, EntityColor(other_color.clone()));
-            *other_color = materials.damaged.clone();
+            let t = time.time_since_startup().as_secs_f32();
+            if t - loading.0 > stats.reload.0 {
+                println!("Self: {:?}, Other: {:?}", e, target);
+                println!("dP: {:?}", position.translation - fire.position);
+                println!("Firing: {}", t - loading.0);
+                println!("Health diff: {}", firepower.0 * stats.reload.0);
+                other_health.0 -= firepower.0 * stats.reload.0;
+                loading.0 = t;
+                commands.insert_one(other_entity, EntityColor(other_color.clone()));
+                *other_color = materials.damaged.clone();
+            }
+            commands.remove_one::<FireAt>(e);
         }
     }
     fn death_system(mut commands: Commands, e: Entity, health: &Health, _: &Unit) {

@@ -34,7 +34,10 @@ fn setup(mut commands: Commands) {
             Color::rgb_u8(50, 168, 82),
         ))
         .with_children(|parent| {
-            parent.spawn((PlayerUnit(Default::default(), AI::Simple),));
+            parent.spawn((PlayerUnit(
+                Stats::new(1.1, 0.51, 27.5, 2.9, 1.0),
+                AI::Simple,
+            ),));
         })
         .spawn(PlayerProps::new(
             Vec3::new(-100.0, 5.0, 0.0),
@@ -42,7 +45,7 @@ fn setup(mut commands: Commands) {
             Color::rgb_u8(66, 135, 245),
         ))
         .with_children(|parent| {
-            parent.spawn((PlayerUnit(Default::default(), AI::Simple),));
+            parent.spawn((PlayerUnit(Stats::new(6.0, 2.9, 49.9, 1.5, 1.0), AI::Simple),));
         })
         .spawn(LightComponents {
             transform: Transform::from_translation(Vec3::new(0.0, 200.0, 100.0)),
