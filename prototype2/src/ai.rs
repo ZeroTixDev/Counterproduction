@@ -15,7 +15,7 @@ type UnitAIQuery<'a> = (
     &'a Health,
     &'a Transform,
     &'a Stats,
-    &'a Parent,
+    &'a PlayerControl,
     &'a Unit,
 );
 
@@ -50,7 +50,7 @@ impl AIPlugin {
                     health: (a.2).0,
                     position: *a.3,
                     stats: *a.4,
-                    parent: (a.5).0,
+                    player: (a.5).0,
                 },
             )
         };
@@ -75,7 +75,7 @@ impl AIPlugin {
                         health: (a.2).0,
                         position: *a.3,
                         stats: *a.4,
-                        parent: (a.5).0,
+                        player: (a.5).0,
                     },
                 ),
             )

@@ -33,7 +33,7 @@ fn setup(mut commands: Commands) {
             Color::rgb_u8(50, 168, 82),
         ))
         .with_children(|parent| {
-            parent.spawn((PlayerUnit(Default::default(), AI::Nothing),));
+            parent.spawn((PlayerUnit(Default::default(), AI::Simple),));
         })
         .spawn(PlayerProps::new(
             Vec3::new(10.0, 0.0, 0.0),

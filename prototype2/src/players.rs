@@ -65,7 +65,7 @@ impl PlayerPlugin {
                 commands
                     .spawn(UnitProps::new(*position, *stats, material.0.clone()))
                     .with(*ai)
-                    .with(Parent(*player));
+                    .with(PlayerControl(*player));
             }
             commands.despawn(e);
         }

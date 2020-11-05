@@ -28,7 +28,7 @@ pub struct UnitData {
     pub stats: Stats,
     pub position: Transform,
     pub health: f32,
-    pub parent: Entity,
+    pub player: Entity,
 }
 
 impl UnitProps {
@@ -45,6 +45,8 @@ impl UnitProps {
 
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
 pub struct Health(pub f32);
+#[derive(new, Clone, Copy, PartialEq, Debug)]
+pub struct PlayerControl(pub Entity);
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
 struct Position(Vec3);
 #[derive(new, Clone, PartialEq, Default, Debug)]
@@ -141,7 +143,6 @@ impl EntityPlugin {
         query: Query<Without<Handle<Mesh>, (Entity, &Stats, &Position, &EntityColor, &Unit)>>,
     ) {
         for (e, stats, position, color, _) in query.iter() {
-            println!("Pos: {:?}", e);
             let size = 3.0 + stats.health.between();
             let gunsize = stats.firepower.between() * size;
             commands
@@ -217,20 +218,19 @@ impl EntityPlugin {
         time: Res<Time>,
         materials: Res<Materials>,
         mut query: Query<(Entity, &FireAt, &mut Transform, &Stats, &Unit)>,
-        mut others: Query<(Entity, &mut Health, &Handle<StandardMaterial>, &Unit)>,
+        mut others: Query<(Entity, &mut Health, &mut Handle<StandardMaterial>, &Unit)>,
     ) {
         for (e, fire, mut position, stats, _) in query.iter_mut() {
             let target = fire.target;
             let firepower = stats.firepower;
-            let (other_entity, mut other_health, other_color, _) =
+            let (other_entity, mut other_health, mut other_color, _) =
                 others.get_mut(target).expect("Invalid Target");
             position.look_at(fire.position, Vec3::unit_z());
             other_health.0 -= firepower.0 * time.delta.as_secs_f32();
             commands
                 .remove_one::<FireAt>(e)
-                .remove_one::<Handle<StandardMaterial>>(other_entity)
-                .insert_one(other_entity, materials.damaged.clone())
                 .insert_one(other_entity, EntityColor(other_color.clone()));
+            *other_color = materials.damaged.clone();
         }
     }
     fn death_system(mut commands: Commands, e: Entity, health: &Health, _: &Unit) {
