@@ -36,12 +36,12 @@ fn setup(mut commands: Commands) {
             parent.spawn((PlayerUnit(Default::default(), AI::Simple),));
         })
         .spawn(PlayerProps::new(
-            Vec3::new(10.0, 0.0, 0.0),
+            Vec3::new(20.0, 5.0, 0.0),
             5.0,
             Color::rgb_u8(66, 135, 245),
         ))
         .with_children(|parent| {
-            parent.spawn((PlayerUnit(Default::default(), AI::Nothing),));
+            parent.spawn((PlayerUnit(Default::default(), AI::Simple),));
         })
         .spawn(LightComponents {
             transform: Transform::from_translation(Vec3::new(12.0, 24.0, 12.0)),
