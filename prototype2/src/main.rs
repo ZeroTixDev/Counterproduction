@@ -3,6 +3,7 @@
 #![feature(generic_associated_types)]
 #![feature(const_generics)]
 #![feature(iterator_fold_self)]
+#![feature(clamp)]
 #![allow(clippy::type_complexity)]
 // What's a test? Never heard of such a thing.
 
@@ -12,6 +13,8 @@ pub mod players;
 use players::*;
 pub mod ai;
 use ai::*;
+pub mod camera;
+use camera::*;
 
 use bevy::prelude::*;
 
@@ -22,6 +25,7 @@ pub fn main() {
         .add_plugin(EntityPlugin)
         .add_plugin(AIPlugin)
         .add_plugin(PlayerPlugin)
+        .add_plugin(CameraPlugin)
         .add_startup_system(setup.system())
         .run();
 }
@@ -40,7 +44,7 @@ fn setup(mut commands: Commands) {
             ),));
         })
         .spawn(PlayerProps::new(
-            Vec3::new(-100.0, 5.0, 0.0),
+            Vec3::new(-100.0, 0.0, 0.0),
             5.0,
             Color::rgb_u8(66, 135, 245),
         ))
@@ -53,7 +57,13 @@ fn setup(mut commands: Commands) {
         })
         .spawn(Camera3dComponents {
             transform: Transform::from_translation(Vec3::new(0.0, 50.0, 200.0))
-                .looking_at(Vec3::default(), Vec3::unit_y()),
+                .looking_at(Vec3::zero(), Vec3::unit_y()),
             ..Default::default()
-        });
+        })
+        .with(CameraLook::new(
+            std::f32::consts::PI,
+            0.5,
+            230.0,
+            Vec3::zero(),
+        ));
 }
