@@ -250,7 +250,8 @@ impl EntityPlugin {
             }
             position.translation += delta;
             position.look_at(*target, Vec3::unit_y());
-            commands.remove_one::<Move>(e);
+            commands.remove_one::<Move>(e)
+                .remove_one::<Repulsor>(e);
         }
     }
     fn find_target_system(

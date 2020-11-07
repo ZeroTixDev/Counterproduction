@@ -81,8 +81,10 @@ impl AIPlugin {
             )
         };
         for (ai, e, data) in query.iter().map(map) {
+            let pos = data.position.translation;
             let step = AI::move_step(ai, data, query.iter().map(|a| map(a).2), &players);
             if let Some(step) = step {
+                println!("Current Pos: {:?}, Other: {:?}", pos, step.target);
                 commands.insert_one(e, step);
             }
         }
