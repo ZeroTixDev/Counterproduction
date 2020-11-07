@@ -82,7 +82,11 @@ impl PlayerPlugin {
             } else {
                 resources.0 -= price;
                 commands
-                    .spawn(UnitProps::new(*position, *stats, material.0.clone()))
+                    .spawn(UnitProps::new(
+                        *position + Vec3::new(rand::random(), rand::random(), rand::random()) * 30.0,
+                        *stats,
+                        material.0.clone(),
+                    ))
                     .with(*ai)
                     .with(PlayerControl(*player));
             }

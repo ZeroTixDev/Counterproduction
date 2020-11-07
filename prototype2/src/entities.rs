@@ -2,8 +2,8 @@ use bevy::prelude::*;
 use derive_new::*;
 use shape::*;
 
-const MOVEMENT_TOLERANCE: f32 = 1.01;
 const FIRE_TOLERANCE: f32 = 1.01;
+const FLOCKING_FACTOR: f32 = 1.0;
 
 #[derive(Clone, Eq, PartialEq, Default, Debug)]
 struct Materials {
@@ -58,11 +58,10 @@ struct Position(Vec3);
 struct EntityColor(Handle<StandardMaterial>);
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
 pub struct Move {
-    /// The delta must be normalized to between zero and one.
-    /// If it is larger, an error will be thrown.
-    /// Before movement, the delta is multiplied by the movement of the entity.
-    pub delta: Vec3,
+    pub target: Vec3,
 }
+#[derive(new, Clone, Copy, PartialEq, Default, Debug)]
+struct Repulsor(Vec3);
 #[derive(new, Clone, Copy, PartialEq, Debug)]
 pub struct Fire {
     pub target: Entity,
@@ -224,22 +223,33 @@ impl EntityPlugin {
             commands.remove_one::<Position>(e);
         }
     }
+    fn repulsor_system(mut commands: Commands, query: Query<(Entity, &Transform, &Unit)>) {
+        for (e, transform, _) in query.iter() {
+            let position = transform.translation;
+            let repulsor = query.iter().filter(|x| x.1.translation != position).fold(
+                Vec3::zero(),
+                |total, x| {
+                    let delta = x.1.translation - position;
+                    let force = delta / delta.length_squared() * FLOCKING_FACTOR;
+                    total + force
+                },
+            );
+            commands.insert_one(e, Repulsor(repulsor));
+        }
+    }
     fn move_system(
         mut commands: Commands,
         time: Res<Time>,
-        mut query: Query<(Entity, &Move, &Stats, &mut Transform, &Unit)>,
+        mut query: Query<(Entity, &Move, &Stats, &mut Transform, &Repulsor, &Unit)>,
     ) {
-        for (e, delta, stats, mut position, _) in query.iter_mut() {
-            let delta = delta.delta;
-            if delta.length_squared() > MOVEMENT_TOLERANCE {
-                eprintln!("Movement value too large. Delta is {:?}, which has a magnitude greater than 1.", delta);
-            } else {
-                let delta = delta * stats.movement.0;
-                *position =
-                    Transform::from_translation(delta * time.delta.as_secs_f32()) * *position;
-                let translation = position.translation;
-                position.look_at(translation + delta, Vec3::unit_y());
+        for (e, Move { target }, stats, mut position, repulsor, _) in query.iter_mut() {
+            let delta = *target - position.translation;
+            let mut delta = delta.normalize() + repulsor.0;
+            if delta != Vec3::zero() {
+                delta = delta.normalize() * stats.movement.0 * time.delta.as_secs_f32();
             }
+            position.translation += delta;
+            position.look_at(*target, Vec3::unit_y());
             commands.remove_one::<Move>(e);
         }
     }
@@ -314,6 +324,7 @@ impl Plugin for EntityPlugin {
         app.add_startup_system(Self::initialize_materials_system.system())
             .add_system_to_stage(stage::PRE_UPDATE, Self::fill_mesh_system.system())
             .add_system(Self::color_reset_system.system())
+            .add_system(Self::repulsor_system.system())
             .add_system_to_stage(stage::POST_UPDATE, Self::find_target_system.system())
             .add_system_to_stage(stage::POST_UPDATE, Self::fire_system.system())
             .add_system_to_stage(stage::POST_UPDATE, Self::move_system.system())

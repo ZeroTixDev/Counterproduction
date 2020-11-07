@@ -32,7 +32,7 @@ impl AI {
             AI::Simple => players
                 .iter()
                 .find(|x| x.0 != this.player)
-                .map(|x| Move::new((*x.1 - this.position.translation).normalize())),
+                .map(|x| Move::new(*x.1)),
         }
     }
 
