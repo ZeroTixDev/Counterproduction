@@ -1,4 +1,5 @@
 use super::entities::*;
+use super::players::*;
 use bevy::prelude::*;
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
@@ -25,7 +26,7 @@ impl AI {
         self,
         this: UnitData,
         all: impl Iterator<Item = UnitData>,
-        players: &Query<(Entity, &Vec3)>,
+        players: &Query<(Entity, &Vec3, &Player)>,
     ) -> Option<Move> {
         match self {
             AI::Nothing => None,
@@ -41,7 +42,7 @@ impl AI {
         self,
         this: UnitData,
         all: impl Iterator<Item = (Entity, UnitData)>,
-        players: &Query<(Entity, &Vec3)>,
+        players: &Query<(Entity, &Vec3, &Player)>,
     ) -> Option<Fire> {
         match self {
             AI::Nothing => None,
@@ -66,7 +67,7 @@ impl AIPlugin {
     fn move_system(
         mut commands: Commands,
         query: Query<UnitAIQuery>,
-        players: Query<(Entity, &Vec3)>,
+        players: Query<(Entity, &Vec3, &Player)>,
     ) {
         let map = |a: UnitAIQuery| {
             (
@@ -81,10 +82,8 @@ impl AIPlugin {
             )
         };
         for (ai, e, data) in query.iter().map(map) {
-            let pos = data.position.translation;
             let step = AI::move_step(ai, data, query.iter().map(|a| map(a).2), &players);
             if let Some(step) = step {
-                println!("Current Pos: {:?}, Other: {:?}", pos, step.target);
                 commands.insert_one(e, step);
             }
         }
@@ -92,7 +91,7 @@ impl AIPlugin {
     fn fire_system(
         mut commands: Commands,
         query: Query<UnitAIQuery>,
-        players: Query<(Entity, &Vec3)>,
+        players: Query<(Entity, &Vec3, &Player)>,
     ) {
         let map = |a: UnitAIQuery| {
             (
@@ -116,6 +115,7 @@ impl AIPlugin {
                 &players,
             );
             if let Some(step) = step {
+                println!("Firing: {:?}", step);
                 commands.insert_one(e, step);
             }
         }

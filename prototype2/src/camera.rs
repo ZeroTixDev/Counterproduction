@@ -31,12 +31,6 @@ impl Default for CameraLook {
 
 pub struct CameraPlugin;
 impl CameraPlugin {
-    fn setup(mut windows: ResMut<Windows>) {
-        let window = windows.get_primary_mut().unwrap();
-        window.set_cursor_lock_mode(true);
-        window.set_cursor_visibility(false);
-    }
-
     fn toggle_cursor(input: Res<Input<KeyCode>>, mut windows: ResMut<Windows>) {
         let window = windows.get_primary_mut().unwrap();
         if input.just_pressed(KeyCode::Space) {
@@ -76,7 +70,6 @@ impl CameraPlugin {
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.init_resource::<State>()
-            .add_startup_system(Self::setup.system())
             .add_system(Self::mouse_motion_system.system())
             .add_system(Self::toggle_cursor.system());
     }

@@ -2,6 +2,7 @@ use super::entities::*;
 use super::AI;
 use bevy::prelude::*;
 use derive_new::*;
+use rand::distributions::Distribution;
 
 #[derive(new, Clone, Copy, PartialEq, Default, Debug)]
 pub struct Resources(pub f32);
@@ -20,7 +21,10 @@ pub struct PlayerProps {
     starting: Resources,
     gain: ResourceGain,
     color: PlayerColorUninitialized,
+    player: Player,
 }
+pub struct Player;
+struct NoRandomize;
 impl PlayerProps {
     fn player_stats() -> Stats {
         Stats {
@@ -41,6 +45,7 @@ impl PlayerProps {
             starting: Resources(9999.0), // Enough resources for now.
             gain: ResourceGain(gain),
             color: PlayerColorUninitialized(color),
+            player: Player,
         }
     }
 }
@@ -55,7 +60,10 @@ impl PlayerPlugin {
         commands
             .insert_one(e, PlayerColor(materials.add(color.0.into())))
             .remove_one::<PlayerColorUninitialized>(e)
-            .spawn((PlayerUnit(PlayerProps::player_stats(), AI::Nothing),))
+            .spawn((
+                PlayerUnit(PlayerProps::player_stats(), AI::Nothing),
+                NoRandomize,
+            ))
             .with(Parent(e));
     }
     fn gain_resources(
@@ -69,7 +77,10 @@ impl PlayerPlugin {
         mut commands: Commands,
         mut players: Query<(&PlayerColor, &mut Resources, &Vec3)>,
         unit: Query<(Entity, &Parent, &PlayerUnit)>,
+        norandom: Query<&NoRandomize>,
     ) {
+        let dist = rand::distributions::Uniform::from(-10.0..10.0);
+        let mut rng = rand::thread_rng();
         for (e, Parent(player), PlayerUnit(stats, ai)) in unit.iter() {
             let (material, mut resources, position) =
                 players.get_mut(*player).expect("Invalid Player");
@@ -83,7 +94,16 @@ impl PlayerPlugin {
                 resources.0 -= price;
                 commands
                     .spawn(UnitProps::new(
-                        *position + Vec3::new(rand::random(), rand::random(), rand::random()) * 30.0,
+                        *position
+                            + if norandom.get(e).is_ok() {
+                                Vec3::zero()
+                            } else {
+                                Vec3::new(
+                                    dist.sample(&mut rng),
+                                    dist.sample(&mut rng),
+                                    dist.sample(&mut rng),
+                                )
+                            },
                         *stats,
                         material.0.clone(),
                     ))

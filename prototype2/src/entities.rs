@@ -231,7 +231,7 @@ impl EntityPlugin {
                 |total, x| {
                     let delta = x.1.translation - position;
                     let force = delta / delta.length_squared() * FLOCKING_FACTOR;
-                    total + force
+                    total - force
                 },
             );
             commands.insert_one(e, Repulsor(repulsor));
@@ -246,12 +246,11 @@ impl EntityPlugin {
             let delta = *target - position.translation;
             let mut delta = delta.normalize() + repulsor.0;
             if delta != Vec3::zero() {
-                delta = delta.normalize() * stats.movement.0 * time.delta.as_secs_f32();
+                delta = delta.normalize() * stats.movement.0 * time.delta.as_secs_f32() * 8.0;
             }
             position.translation += delta;
             position.look_at(*target, Vec3::unit_y());
-            commands.remove_one::<Move>(e)
-                .remove_one::<Repulsor>(e);
+            commands.remove_one::<Move>(e).remove_one::<Repulsor>(e);
         }
     }
     fn find_target_system(
@@ -270,6 +269,7 @@ impl EntityPlugin {
                     (other_position).translation, position.translation, stats
                 );
             } else {
+                println!("Inserting: {:?}", fire.target);
                 commands.insert_one(
                     e,
                     FireAt {
@@ -295,27 +295,26 @@ impl EntityPlugin {
         mut others: Query<(Entity, &mut Health, &mut Handle<StandardMaterial>, &Unit)>,
     ) {
         for (e, fire, mut position, stats, mut loading, _) in query.iter_mut() {
+            commands.remove_one::<FireAt>(e);
             let target = fire.target;
             let firepower = stats.firepower;
+            println!("Self: {:?}", e);
+            println!("Targeting: {:?}", target);
             let (other_entity, mut other_health, mut other_color, _) =
                 others.get_mut(target).expect("Invalid Target");
             position.look_at(fire.position, Vec3::unit_y());
             let t = time.time_since_startup().as_secs_f32();
             if t - loading.0 > stats.reload.0 {
-                println!("Self: {:?}, Other: {:?}", e, target);
-                println!("dP: {:?}", position.translation - fire.position);
-                println!("Firing: {}", t - loading.0);
-                println!("Health diff: {}", firepower.0 * stats.reload.0);
                 other_health.0 -= firepower.0 * stats.reload.0;
                 loading.0 = t;
                 commands.insert_one(other_entity, EntityColor(other_color.clone()));
                 *other_color = materials.damaged.clone();
             }
-            commands.remove_one::<FireAt>(e);
         }
     }
     fn death_system(mut commands: Commands, e: Entity, health: &Health, _: &Unit) {
         if health.0 < 0.0 {
+            println!("Despawning: {:?}", e);
             commands.despawn_recursive(e);
         }
     }

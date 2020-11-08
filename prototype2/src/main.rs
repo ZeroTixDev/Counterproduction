@@ -4,7 +4,6 @@
 #![feature(const_generics)]
 #![feature(iterator_fold_self)]
 #![feature(clamp)]
-#![feature(move_ref_pattern)]
 #![allow(clippy::type_complexity)]
 // What's a test? Never heard of such a thing.
 
@@ -28,7 +27,12 @@ pub fn main() {
         .add_plugin(PlayerPlugin)
         .add_plugin(CameraPlugin)
         .add_startup_system(setup.system())
+        .add_system_to_stage(stage::FIRST, step.system())
         .run();
+}
+
+fn step() {
+    println!("=============================================================");
 }
 
 fn setup(mut commands: Commands) {
@@ -39,8 +43,16 @@ fn setup(mut commands: Commands) {
             Color::rgb_u8(50, 168, 82),
         ))
         .with_children(|parent| {
-            parent.spawn((PlayerUnit(Stats::new(6.0, 2.9, 30.0, 1.5, 1.0), AI::Simple),));
-            parent.spawn((PlayerUnit(Stats::new(6.0, 2.9, 30.0, 1.5, 1.0), AI::Simple),));
+            parent
+                .spawn((PlayerUnit(Stats::new(6.0, 2.9, 30.0, 1.5, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(6.0, 2.9, 30.0, 1.5, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(6.0, 2.9, 30.0, 1.5, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(6.0, 2.9, 30.0, 1.5, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(6.0, 2.9, 30.0, 1.5, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(6.0, 2.9, 30.0, 1.5, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(6.0, 2.9, 30.0, 1.5, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(6.0, 2.9, 30.0, 1.5, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(6.0, 2.9, 30.0, 1.5, 1.0), AI::Simple),));
         })
         .spawn(PlayerProps::new(
             Vec3::new(-100.0, 0.0, 0.0),
@@ -48,7 +60,6 @@ fn setup(mut commands: Commands) {
             Color::rgb_u8(66, 135, 245),
         ))
         .with_children(|parent| {
-            parent.spawn((PlayerUnit(Stats::new(6.0, 2.9, 30.0, 1.5, 1.0), AI::Simple),));
         })
         .spawn(LightComponents {
             transform: Transform::from_translation(Vec3::new(0.0, 200.0, 100.0)),
