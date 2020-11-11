@@ -77,7 +77,7 @@ pub struct Stats {
     pub health: Bounded<1.0, 10.0>,
     pub firepower: Bounded<0.5, 3.0>,
     pub range: Bounded<5.0, 50.0>,
-    pub movement: Bounded<1.0, 3.0>,
+    pub movement: Bounded<0.5, 3.0>,
     pub reload: Bounded<0.015, 7.0>,
     pub priority: f32,
     pub price: f32,
@@ -184,7 +184,7 @@ impl EntityPlugin {
         query: Query<Without<Handle<Mesh>, (Entity, &Stats, &Position, &EntityColor, &Unit)>>,
     ) {
         for (e, stats, position, color, _) in query.iter() {
-            let size = 3.0 + stats.health.between();
+            let size = 1.5 + stats.health.between() * 0.5;
             let gunsize = stats.firepower.between() * size;
             commands
                 .insert(
@@ -246,7 +246,7 @@ impl EntityPlugin {
             let delta = *target - position.translation;
             let mut delta = delta.normalize() + repulsor.0;
             if delta != Vec3::zero() {
-                delta = delta.normalize() * stats.movement.0 * time.delta.as_secs_f32() * 8.0;
+                delta = delta.normalize() * stats.movement.0 * time.delta.as_secs_f32();
             }
             position.translation += delta;
             position.look_at(*target, Vec3::unit_y());
@@ -269,7 +269,6 @@ impl EntityPlugin {
                     (other_position).translation, position.translation, stats
                 );
             } else {
-                println!("Inserting: {:?}", fire.target);
                 commands.insert_one(
                     e,
                     FireAt {
@@ -298,17 +297,16 @@ impl EntityPlugin {
             commands.remove_one::<FireAt>(e);
             let target = fire.target;
             let firepower = stats.firepower;
-            println!("Self: {:?}", e);
-            println!("Targeting: {:?}", target);
-            let (other_entity, mut other_health, mut other_color, _) =
-                others.get_mut(target).expect("Invalid Target");
-            position.look_at(fire.position, Vec3::unit_y());
-            let t = time.time_since_startup().as_secs_f32();
-            if t - loading.0 > stats.reload.0 {
-                other_health.0 -= firepower.0 * stats.reload.0;
-                loading.0 = t;
-                commands.insert_one(other_entity, EntityColor(other_color.clone()));
-                *other_color = materials.damaged.clone();
+            if let Ok((other_entity, mut other_health, mut other_color, _)) = others.get_mut(target)
+            {
+                position.look_at(fire.position, Vec3::unit_y());
+                let t = time.time_since_startup().as_secs_f32();
+                if t - loading.0 > stats.reload.0 {
+                    other_health.0 -= firepower.0 * stats.reload.0;
+                    loading.0 = t;
+                    commands.insert_one(other_entity, EntityColor(other_color.clone()));
+                    *other_color = materials.damaged.clone();
+                }
             }
         }
     }
@@ -326,8 +324,8 @@ impl Plugin for EntityPlugin {
             .add_system(Self::color_reset_system.system())
             .add_system(Self::repulsor_system.system())
             .add_system_to_stage(stage::POST_UPDATE, Self::find_target_system.system())
-            .add_system_to_stage(stage::POST_UPDATE, Self::fire_system.system())
             .add_system_to_stage(stage::POST_UPDATE, Self::move_system.system())
+            .add_system_to_stage(stage::POST_UPDATE, Self::fire_system.system())
             .add_system_to_stage(stage::POST_UPDATE, Self::death_system.system());
         // First fire then move so that AIs work out correctly.
     }

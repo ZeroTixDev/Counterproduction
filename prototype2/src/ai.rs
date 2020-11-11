@@ -115,7 +115,6 @@ impl AIPlugin {
                 &players,
             );
             if let Some(step) = step {
-                println!("Firing: {:?}", step);
                 commands.insert_one(e, step);
             }
         }
