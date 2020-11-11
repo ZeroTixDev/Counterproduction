@@ -74,10 +74,10 @@ struct FireAt {
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Stats {
-    pub health: Bounded<1.0, 10.0>,
+    pub health: Bounded<1.0, 15.0>,
     pub firepower: Bounded<0.5, 3.0>,
     pub range: Bounded<5.0, 50.0>,
-    pub movement: Bounded<0.5, 3.0>,
+    pub movement: Bounded<0.5, 4.0>,
     pub reload: Bounded<0.015, 7.0>,
     pub priority: f32,
     pub price: f32,
@@ -126,7 +126,7 @@ pub struct Bounded<const MIN: f32, const MAX: f32>(pub f32);
 
 impl<const MIN: f32, const MAX: f32> Bounded<{ MIN }, { MAX }> {
     pub fn new(x: f32) -> Self {
-        if x < MIN || x >= MAX {
+        if x < MIN || x > MAX {
             panic!("Value out of bounds: {}", x);
         }
         Bounded(x)
@@ -185,7 +185,7 @@ impl EntityPlugin {
     ) {
         for (e, stats, position, color, _) in query.iter() {
             let size = 1.5 + stats.health.between() * 0.5;
-            let gunsize = stats.firepower.between() * size;
+            let gunsize = stats.firepower.between() * size * 0.9; // Avoid the triangle same size glitch.
             commands
                 .insert(
                     e,

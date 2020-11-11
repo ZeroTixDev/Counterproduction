@@ -34,40 +34,41 @@ pub fn main() {
 fn setup(mut commands: Commands) {
     commands
         .spawn(PlayerProps::new(
-            Vec3::new(40.0, 0.0, 0.0),
+            Vec3::new(80.0, 0.0, 0.0),
             5.0,
             Color::rgb_u8(50, 168, 82),
         ))
         .with_children(|parent| {
             parent
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 2.9, 1.0), AI::Simple),));
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(9.0, 3.0, 30.0, 0.5, 5.0), AI::Simple),));
         })
         .spawn(PlayerProps::new(
-            Vec3::new(-40.0, 0.0, 0.0),
+            Vec3::new(-80.0, 0.0, 0.0),
             5.0,
             Color::rgb_u8(66, 135, 245),
         ))
         .with_children(|parent| {
             parent
-                .spawn((PlayerUnit(Stats::new(9.0, 2.9, 49.0, 0.51, 3.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(9.0, 2.9, 49.0, 0.51, 3.0), AI::Simple),))
-                .spawn((PlayerUnit(Stats::new(9.0, 2.9, 49.0, 0.51, 3.0), AI::Simple),));
+                .spawn((PlayerUnit(Stats::new(9.0, 3.0, 30.0, 1.0, 3.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(9.0, 3.0, 30.0, 1.0, 3.0), AI::Simple),))
+                .spawn((PlayerUnit(Stats::new(9.0, 3.0, 30.0, 1.0, 3.0), AI::Simple),));
         })
         .spawn(LightComponents {
             transform: Transform::from_translation(Vec3::new(0.0, 200.0, 100.0)),
@@ -81,7 +82,7 @@ fn setup(mut commands: Commands) {
         .with(CameraLook::new(
             std::f32::consts::PI,
             0.5,
-            230.0,
+            150.0,
             Vec3::zero(),
         ));
 }
