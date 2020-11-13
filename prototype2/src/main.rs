@@ -17,13 +17,11 @@ pub mod camera;
 use camera::*;
 
 use bevy::prelude::*;
-// use bevy::diagnostic::PrintDiagnosticsPlugin;
 
 pub fn main() {
     App::build()
         .add_resource(Msaa { samples: 4 })
         .add_plugins(DefaultPlugins)
-        //.add_plugin(PrintDiagnosticsPlugin::default())
         .add_plugin(EntityPlugin)
         .add_plugin(AIPlugin)
         .add_plugin(PlayerPlugin)
@@ -31,6 +29,7 @@ pub fn main() {
         .add_startup_system(setup.system())
         .run();
 }
+
 
 fn setup(mut commands: Commands) {
     commands
