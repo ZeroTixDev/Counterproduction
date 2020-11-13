@@ -244,11 +244,11 @@ impl EntityPlugin {
     ) {
         for (e, Move { target }, stats, mut position, repulsor, _) in query.iter_mut() {
             let delta = *target - position.translation;
-            let mut delta = delta.normalize() + repulsor.0;
             if delta != Vec3::zero() {
-                delta = delta.normalize() * stats.movement.0 * time.delta.as_secs_f32();
+                position.translation +=
+                    delta.normalize() * stats.movement.0 * time.delta.as_secs_f32();
             }
-            position.translation += delta;
+            position.translation += repulsor.0 * time.delta.as_secs_f32();
             position.look_at(*target, Vec3::unit_y());
             commands.remove_one::<Move>(e).remove_one::<Repulsor>(e);
         }
