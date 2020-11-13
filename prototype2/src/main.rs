@@ -30,7 +30,6 @@ pub fn main() {
         .run();
 }
 
-
 fn setup(mut commands: Commands) {
     commands
         .spawn(PlayerProps::new(
@@ -75,7 +74,7 @@ fn setup(mut commands: Commands) {
             ..Default::default()
         })
         .spawn(Camera3dComponents {
-            transform: Transform::from_translation(Vec3::new(0.0, 50.0, 200.0))
+            transform: Transform::from_translation(Vec3::new(0.0, 0.0, 150.0))
                 .looking_at(Vec3::zero(), Vec3::unit_y()),
             ..Default::default()
         })
