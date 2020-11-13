@@ -27,7 +27,7 @@ impl ChunkBlockStorage {
         blocks: Ref<'a, Box<[[[Block; CHUNK_SIZE]; CHUNK_SIZE]; CHUNK_SIZE]>, T>,
         coords: BlockLocation,
     ) -> Option<Ref<'a, Block, T>> {
-        if Points::any(|a| a < 0 || a >= CHUNK_SIZEI, coords) {
+        if Points::any(|a| !(0..CHUNK_SIZEI).contains(&a), coords) {
             None
         } else {
             Some(

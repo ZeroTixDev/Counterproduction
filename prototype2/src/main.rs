@@ -15,6 +15,8 @@ pub mod ai;
 use ai::*;
 pub mod camera;
 use camera::*;
+pub mod objective;
+use objective::*;
 
 use bevy::prelude::*;
 
@@ -58,6 +60,7 @@ fn setup(mut commands: Commands) {
                 .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
                 .spawn((PlayerUnit(Stats::new(9.0, 3.0, 30.0, 0.5, 5.0), AI::Simple),));
         })
+        .with(Objective::new(Vec3::zero()))
         .spawn(PlayerProps::new(
             Vec3::new(-80.0, 0.0, 0.0),
             5.0,
@@ -74,7 +77,7 @@ fn setup(mut commands: Commands) {
             ..Default::default()
         })
         .spawn(Camera3dComponents {
-            transform: Transform::from_translation(Vec3::new(0.0, 0.0, 150.0))
+            transform: Transform::from_translation(Vec3::new(0.0, 25.0, 150.0))
                 .looking_at(Vec3::zero(), Vec3::unit_y()),
             ..Default::default()
         })
@@ -82,6 +85,6 @@ fn setup(mut commands: Commands) {
             std::f32::consts::PI,
             0.5,
             150.0,
-            Vec3::zero(),
+            Vec3::new(0.0, 25.0, 0.0),
         ));
 }

@@ -1,4 +1,5 @@
 use super::entities::*;
+use super::objective::*;
 use super::players::*;
 use bevy::prelude::*;
 
@@ -27,13 +28,19 @@ impl AI {
         this: UnitData,
         all: impl Iterator<Item = UnitData>,
         players: &Query<(Entity, &Vec3, &Player)>,
+        objective: Option<&Objective>,
     ) -> Option<Move> {
         match self {
             AI::Nothing => None,
-            AI::Simple => players
-                .iter()
-                .find(|x| x.0 != this.player)
-                .map(|x| Move::new(*x.1)),
+            AI::Simple => objective.map_or_else(
+                || {
+                    players
+                        .iter()
+                        .find(|x| x.0 != this.player)
+                        .map(|x| Move::new(*x.1))
+                },
+                |x| Some(Move::new(x.0)),
+            ),
         }
     }
 
@@ -68,6 +75,7 @@ impl AIPlugin {
         mut commands: Commands,
         query: Query<UnitAIQuery>,
         players: Query<(Entity, &Vec3, &Player)>,
+        obj: Query<&Objective>,
     ) {
         let map = |a: UnitAIQuery| {
             (
@@ -82,7 +90,14 @@ impl AIPlugin {
             )
         };
         for (ai, e, data) in query.iter().map(map) {
-            let step = AI::move_step(ai, data, query.iter().map(|a| map(a).2), &players);
+            let objective = obj.get(data.player).ok();
+            let step = AI::move_step(
+                ai,
+                data,
+                query.iter().map(|a| map(a).2),
+                &players,
+                objective,
+            );
             if let Some(step) = step {
                 commands.insert_one(e, step);
             }
