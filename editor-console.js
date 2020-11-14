@@ -25,19 +25,16 @@ function consoleRenderTarget(
 ) {
     return function render(strings, ...colors) {
         const outStr = strings.map((a) => a.replace('%', '%%')).join('%c');
-        const cssArr = colors.reduce(
-            (acc, c) => {
-                Object.assign(acc.last, c);
-                acc.arr.push(
-                    Object.entries(acc.last)
-                        .map(([a, b]) => `${a}:${b};`)
-                        .join('')
-                );
-                return acc;
-            },
-            { arr: [], last: globalCSS }
-        ).arr;
-        console.log(outStr, ...cssArr);
+        const acc = { arr: [], last: globalCSS };
+        colors.forEach((c) => {
+            Object.assign(acc.last, c);
+            acc.arr.push(
+                Object.entries(acc.last)
+                    .map(([a, b]) => `${a}:${b};`)
+                    .join('')
+            );
+        });
+        console.log(outStr, ...acc.arr);
     };
 }
 
@@ -92,7 +89,23 @@ function combineInPlace(root, ...snippets) {
     return root;
 }
 const cip = combineInPlace;
-function cut(snippet, start, total) {}
+// TODO: MAKE THIS DECENTLY EFFICIENT
+function cut(snippet, start, total) {
+    const strings = [];
+    let position = 0;
+    snippet.strings.forEach((str) => {
+        strings.push(str.substring(start - position, start - position + total));
+        position += str.length;
+    });
+    if (position < start + total) {
+        strings[strings.length - 1] += ' '.repeat(start + total - position);
+    }
+    return {
+        strings,
+        colors: snippet.colors,
+        length: total,
+    };
+}
 
 function ws(n) {
     return snippet(' '.repeat(n));
