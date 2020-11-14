@@ -1,0 +1,52 @@
+#343d46 editor bg
+#2c333d folders
+#37474f scrollbars
+#6499cc text (method)
+#d8dee9 text (normal)
+#f9ae58 text (argument)
+#59b2b4 text (parenthesis)
+#c695c6 text (constructor / keyword)
+#4e5a65 current line indicator
+#d59954 cursor
+#2f3841 selected tab hover
+#80ccc4 tab bottom
+#546e7a Inactive things (inactive files / x button in tab)
+#85bb48 Active file
+#868e98 Line number
+
+TODO: Git diffs, other text colors, tab text colors, minimap hover color, left-bar folder, selected folder colors, and open file color.
+
+
+==============================================================================================
+||                                                                                          ||
+|| FOLDERS              ❮  ❯   text-colors.txt    ×  editor-console.js ×                 ☰  ||
+||                            ______________________                                        ||
+|| ▼ Autofactory     ▄    1   #343d46 text                                                 ▄||
+||                   █    2   #2c333d folders                                              █||
+||   ▶ .github       █    3   #37474f scrollbars                                           █||
+||                   █    4                                                                █||
+||   ▶  core         █    5                                                                █||
+||                   █    6                                                                █||
+||   ▶ node_modules  █    7                                                                █||
+||                   █    8                                                                █||
+||   ▶ prototype     █    9                                                                █||
+||                   █   10                                                                █||
+||     .eslintrc.js  █   11                                                                █||
+||                   ▀   12                                                                █||
+||                       13                                                                █||
+||                       14                                                                ▀||
+||                    ███15███                                                              ||
+||                                                                                          ||
+||                                                                                          ||
+||                                                                                          ||
+||                                                                                          ||
+||                                                                                          ||
+||                                                                                          ||
+||                                                                                          ||
+||                                                                                          ||
+||                                                                                          ||
+||                                                                                          ||
+||                                                                                          ||
+||▅▅▅▅▅▅▅▅▅▅▅                                                                               ||
+==============================================================================================
+
