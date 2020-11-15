@@ -20,7 +20,7 @@ TODO: Git diffs, other text colors, tab text colors, minimap hover color, left-b
 
 ==============================================================================================
 ||                                                                                          ||
-|| FOLDERS              ❮  ❯   text-colors.txt    ×  editor-console.js ×                 ☰  ||
+|| FOLDERS              <  >   text-colors.txt    ×  editor-console.js ×                 ☰  ||
 ||                            ______________________                                        ||
 || ▼ Autofactory     ▄    1   #343d46 text                                                 ▄||
 ||                   █    2   #2c333d folders                                              █||
