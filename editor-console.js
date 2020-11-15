@@ -20,7 +20,7 @@ function consoleRenderTarget(
     globalCSS = {
         'font-family': `'Fira Code'`,
         'font-size': '12px',
-        'line-height': '12px',
+        'line-height': '15px',
     }
 ) {
     return function render(strings, ...colors) {
@@ -125,15 +125,18 @@ function render(settings = {}) {
 Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
 Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`,
+        // TODO: ALLOW SUPPORT FOR MD VIEWER AND WRAPPED TEXT
         lineNumberStart: 1,
         currentLine: 1,
         lineNumPaddingLeft: 3,
         lineNumPaddingRight: 3,
+        editorCorner: [0, 0],
         sidebarSize: 30,
         sidebarPadding: 3,
         menuPadding: 2,
         folderIndentation: 2,
         folderSpacing: 1,
+        folderCorner: [0, 0],
         tabs: ['foo', 'bar', 'some-really-long-file-name'],
         tabActiveIndex: 0,
         tabHoverIndex: 2,
@@ -179,8 +182,8 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
         const height = lines.length;
         const leftWidth = Math.max(0, ...left.map((l) => l.length));
         const res = Array(eBox.height)
-            .fill(() => snip``)
-            .map((x) => x());
+            .fill(null)
+            .map(() => snip``);
 
         const iBox = {
             left: eBox.left,
@@ -248,8 +251,8 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
     }
 
     const lines = Array(s.totalSize[1])
-        .fill(() => snip``)
-        .map((x) => x());
+        .fill(null)
+        .map(() => snip``);
     // Sidebar
     {
         // TODO: ACTUALLY ADD FOLDERS
@@ -285,8 +288,8 @@ v Autofactory
             .map((a) => snip(' '.repeat(s.sidebarPadding) + a));
 
         const box = {
-            top: 0,
-            left: 0,
+            left: s.folderCorner[0],
+            top: s.folderCorner[1],
             width: s.sidebarSize,
             height: s.totalSize[1] - 1,
         };
@@ -345,32 +348,41 @@ v Autofactory
     {
         // TODO: MAKE SURE THAT IT DOES THE CURRENT LINE HIGHLIGHT
         const editorStart = 3;
-        const editorSpace = [s.totalSize[0] - s.sidebarSize - 1, s.totalSize[1] - editorStart];
-        const textLines = s.text.split('\n'); // What if s.text is ''?
-        const maxLineNumber = Math.min(textLines.length, editorSpace[1] + s.lineNumberStart);
-        const lineNumberSize = `${maxLineNumber}`.length;
-        const editorLinesWithText = lines.filter((_, i) => i >= editorStart && i - editorStart < maxLineNumber);
-        lines.forEach((l, i) => {
-            if (i < editorStart) return;
-            cip(l, app('', bg(s.colors.editorBg)));
-            if (i - editorStart < maxLineNumber) {
-                const lineIndex = i - editorStart + s.lineNumberStart;
-                cip(
-                    l,
-                    ws(s.lineNumPaddingLeft),
-                    app(`${lineIndex}`.padStart(lineNumberSize), clr(s.colors.lineNumber)),
-                    ws(s.lineNumPaddingRight),
-                    app(textLines[i - editorStart], clr(s.colors.text))
-                );
-            }
-            cip(l, ws(editorSpace[0] + s.sidebarSize - l.length));
+        const editorSpace = [s.totalSize[0] - s.sidebarSize, s.totalSize[1] - editorStart];
+        const textLines = s.text.split('\n').map((a) => app(a, bg(s.colors.editorBg, clr(s.colors.text))));
+        // What if s.text is ''?
+        const maxLineLength = `${textLines.length}`.length;
+        console.log(maxLineLength);
+        const leftLines = textLines.map((_, i) => {
+            const lineNum = `${i + 1}`;
+            return combine(
+                app('', bg(i === s.currentLine ? s.colors.currentLine : s.colors.editorBg)),
+                ws(s.lineNumPaddingLeft),
+                app(lineNum, clr(s.colors.lineNumber)),
+                ws(maxLineLength - lineNum.length),
+                ws(s.lineNumPaddingRight)
+            );
         });
+        textLines.push(
+            ...Array(editorSpace[1] - 1)
+                .fill(null)
+                .map(() => snip``)
+        );
+        leftLines.push(
+            ...Array(editorSpace[1] - 1)
+                .fill(null)
+                .map(() =>
+                    app(' '.repeat(s.lineNumPaddingLeft + maxLineLength + s.lineNumPaddingRight), bg(s.colors.editorBg))
+                )
+        );
+        const box = {
+            left: s.editorCorner[0],
+            top: s.editorCorner[1],
+            width: editorSpace[0],
+            height: editorSpace[1],
+        };
+        extend(lines, scroll(textLines, box, leftLines, s.colors.editorBg), editorStart);
         // Right Scrollbar
-        {
-            lines.forEach((l, i) => {
-                if (i >= editorStart) cip(l, app(' ', bg(s.colors.sidebarBg)));
-            });
-        }
     }
     const entireText = combine(...lines.map((l) => cip(snip`\n`, l)));
     s.renderTarget(entireText.strings, ...entireText.colors);
