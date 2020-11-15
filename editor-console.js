@@ -247,7 +247,7 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
     }
 
     const lines = Array(s.totalSize[1])
-        .fill(() => snip`\n`)
+        .fill(() => snip``)
         .map((x) => x());
     // Sidebar
     {
@@ -363,7 +363,7 @@ THINGY THIPSUM
             });
         }
     }
-    const entireText = combine(...lines);
+    const entireText = combine(...lines.map((l) => cip(snip`\n`, l)));
     s.renderTarget(entireText.strings, ...entireText.colors);
 }
 render();
