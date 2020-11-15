@@ -266,13 +266,30 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
                     .map(() => snip``)
             );
             if (file.folder) {
-
+                const l = ws(leftIndent);
+                if (file.open) {
+                    cip(l, app(s.symbols.openFolder, clr(s.colors.tabHighlight)));
+                } else {
+                    cip(l, app(s.symbols.closedFolder, clr(s.colors.inactive)), app('', clr(s.colors.inactiveFolder)));
+                }
+                cip(l, ws(1), snip(file.name));
+                fLines.push(l);
                 if (file.open) {
                     file.contents.forEach((a) => descend(leftIndent + s.folderIndentation, a));
                 }
             } else {
-                // TODO: ACTIVE FILE
-                fLines.push(app(' '.repeat(leftIndent + 2) + file.name, clr(s.colors.inactive)));
+                const l = snip``;
+                if (file.open) {
+                    cip(
+                        l,
+                        app(s.symbols.fileActive, clr(s.colors.activeFile)),
+                        app(' '.repeat(leftIndent + 1), clr(s.colors.text))
+                    );
+                } else {
+                    cip(l, app(' '.repeat(leftIndent + 2), clr(s.colors.inactive)));
+                }
+                cip(l, snip(file.name));
+                fLines.push(l);
             }
         };
 
