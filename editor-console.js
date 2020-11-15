@@ -377,7 +377,7 @@ function render(settings = {}) {
             cip(lines[2], snip(bottom.repeat(s.tabSize)));
         });
         [0, 1, 2].forEach((l) =>
-            cip(lines[l], app(' '.repeat(s.totalSize[0] - s.menuPadding - 1 - lines[l].length), bg(s.colors.sidebarBg)))
+            cip(lines[l], app(' '.repeat(s.totalSize[0] - s.menuPadding - 2 - lines[l].length), bg(s.colors.sidebarBg)))
         );
         cip(lines[1], app(s.symbols.tabSelect, clr(s.colors.inactive)), ws(s.menuPadding));
         [0, 2].forEach((l) => cip(lines[l], ws(s.menuPadding + 1)));
