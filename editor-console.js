@@ -97,8 +97,10 @@ function cut(snippet, start, total) {
         strings.push(str.substring(start - position, start - position + total));
         position += str.length;
     });
-    if (position < start + total) {
-        strings[strings.length - 1] += ' '.repeat(start + total - position);
+    if (start > position) {
+        strings[strings.length - 1] += ' '.repeat(total);
+    } else if (total + start > position) {
+        strings[strings.length - 1] += ' '.repeat(total + start - position);
     }
     return {
         strings,
@@ -131,6 +133,7 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
         sidebarPadding: 3,
         menuPadding: 2,
         folderIndentation: 2,
+        folderSpacing: 1,
         tabs: ['foo', 'bar', 'some-really-long-file-name'],
         tabActiveIndex: 0,
         tabHoverIndex: 2,
@@ -149,6 +152,7 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
             tabHighlight: '#80ccc4',
             inactive: '#546e7a',
             activeFile: '#85bb48',
+            inactiveFolder: '#afbdc4',
             lineNumber: '#868e98',
         },
         symbols: {
@@ -171,15 +175,9 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
     Object.assign(s, settings);
 
     function scroll(lines, eBox, left, bgColor) {
-        const width = Math.max(
-            0,
-            lines.map((l) => l.length)
-        );
+        const width = Math.max(0, ...lines.map((l) => l.length));
         const height = lines.length;
-        const leftWidth = Math.max(
-            0,
-            left.map((l) => l.length)
-        );
+        const leftWidth = Math.max(0, ...left.map((l) => l.length));
         const res = Array(eBox.height)
             .fill(() => snip``)
             .map((x) => x());
@@ -197,11 +195,11 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
             throw new Error('Invalid Scrolling Box.');
         }
 
-        const hasVerticalScrollbar = iBox.height !== height;
+        const hasVerticalScrollbar = iBox.height < height;
         if (hasVerticalScrollbar) {
             iBox.width--;
         }
-        const hasHorizontalScrollbar = iBox.width !== width;
+        const hasHorizontalScrollbar = iBox.width < width;
         if (hasHorizontalScrollbar) {
             iBox.height--;
         }
@@ -224,13 +222,16 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
         res.forEach((l, i) => {
             if (i >= iBox.height) return;
             const loc = iBox.top + i;
-            cip(l, left[loc] ?? app(' '.repeat(leftWidth), bg(bgColor)), cut(lines[loc], iBox.left, iBox.width));
+            cip(
+                l,
+                left[loc] ?? app(' '.repeat(leftWidth), bg(bgColor)),
+                lines[loc] === undefined ? snip`` : cut(lines[loc], iBox.left, iBox.width)
+            );
         });
         if (hasHorizontalScrollbar) {
             const l = res[iBox.height];
-            cip(l, app(' ', bg(bgColor)));
+            cip(l, app('', bg(bgColor)));
             for (let i = 0; i < iBox.width; i++) {
-                console.log(hScrollbar.color(i));
                 cip(l, app(s.symbols.bottomScroll, clr(hScrollbar.color(i))));
             }
         }
@@ -251,46 +252,54 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
         .map((x) => x());
     // Sidebar
     {
-        lines.forEach((l) => cip(l, app(' '.repeat(s.sidebarPadding), bg(s.colors.sidebarBg))));
-        cip(lines[1], app('FOLDERS', clr(s.colors.text)));
         // TODO: ACTUALLY ADD FOLDERS
-        const fLines = `THING
-MORE THINGS
-EVEN MORE
-LOREM IPSUM
-THINGY THIPSUM
-MORE THINGSfffffffffffffffffffffffffffffffff
-EVEN MORE
-LOREM IPSUM
-THINGY THIPSUM
-MORE THINGS
-EVEN MORE
-LOREM IPSUM
-THINGY THIPSUM
-MORE THINGS
-EVEN MORE
-LOREM IPSUM
-THINGY THIPSUM
-MORE THINGS
-EVEN MORE
-LOREM IPSUM
-THINGY THIPSUM
-MORE THINGS
-EVEN MORE
-LOREM IPSUM
-THINGY THIPSUM
+        const fLines = `FOLDERS
+
+v Autofactory
+
+  > .github
+
+  > core
+
+  > node_modules
+
+  > prototype
+
+  > prototype2
+
+  > target
+
+  > test
+
+  > ui
+
+    .eslintrc.js
+
+    .gitignore
+
+    .prettierrc.js
+
+    .stylelintrc.js
 `
             .split('\n')
-            .map((a) => snip(a));
+            .map((a) => snip(' '.repeat(s.sidebarPadding) + a));
 
         const box = {
-            top: 3,
-            left: 2,
-            width: 15,
-            height: 10,
+            top: 0,
+            left: 0,
+            width: s.sidebarSize,
+            height: s.totalSize[1] - 1,
         };
-        console.log(scroll(fLines, box, [], s.colors.editorBg));
-        extend(lines, scroll(fLines, box, [], s.colors.editorBg), 4);
+        extend(
+            lines,
+            scroll(
+                fLines,
+                box,
+                fLines.map(() => app('', bg(s.colors.sidebarBg, clr(s.colors.text)))),
+                s.colors.sidebarBg
+            ),
+            1
+        );
         lines.forEach((l) => cip(l, app(' '.repeat(s.sidebarSize - l.length), bg(s.colors.sidebarBg))));
     }
     // Tabs

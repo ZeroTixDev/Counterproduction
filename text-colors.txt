@@ -13,7 +13,8 @@
 #546e7a Inactive things (inactive files / x button in tab)
 #85bb48 Active file
 #868e98 Line number
-
+#afbdc4 Folder (inactive)
+#546e7a Folder
 TODO: Git diffs, other text colors, tab text colors, minimap hover color, left-bar folder, selected folder colors, and open file color.
 
 
