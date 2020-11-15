@@ -111,6 +111,10 @@ function ws(n) {
     return snippet(' '.repeat(n));
 }
 
+function extend(a, b, start) {
+    b.forEach((l, i) => cip(a[start + i], l));
+}
+
 function render(settings = {}) {
     // Default settings
     const s = {
@@ -177,7 +181,7 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
             left.map((l) => l.length)
         );
         const res = Array(eBox.height)
-            .fill(() => snip`\n`)
+            .fill(() => snip``)
             .map((x) => x());
 
         const iBox = {
@@ -226,6 +230,7 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
             const l = res[iBox.height];
             cip(l, app(' ', bg(bgColor)));
             for (let i = 0; i < iBox.width; i++) {
+                console.log(hScrollbar.color(i));
                 cip(l, app(s.symbols.bottomScroll, clr(hScrollbar.color(i))));
             }
         }
@@ -238,6 +243,7 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
         if (hasVerticalScrollbar && hasHorizontalScrollbar) {
             cip(res[iBox.height], app(' ', bg(s.colors.sidebarBg)));
         }
+        return res;
     }
 
     const lines = Array(s.totalSize[1])
@@ -247,8 +253,45 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
     {
         lines.forEach((l) => cip(l, app(' '.repeat(s.sidebarPadding), bg(s.colors.sidebarBg))));
         cip(lines[1], app('FOLDERS', clr(s.colors.text)));
-        lines.forEach((l) => cip(l, ws(s.sidebarSize - l.length)));
         // TODO: ACTUALLY ADD FOLDERS
+        const fLines = `THING
+MORE THINGS
+EVEN MORE
+LOREM IPSUM
+THINGY THIPSUM
+MORE THINGSfffffffffffffffffffffffffffffffff
+EVEN MORE
+LOREM IPSUM
+THINGY THIPSUM
+MORE THINGS
+EVEN MORE
+LOREM IPSUM
+THINGY THIPSUM
+MORE THINGS
+EVEN MORE
+LOREM IPSUM
+THINGY THIPSUM
+MORE THINGS
+EVEN MORE
+LOREM IPSUM
+THINGY THIPSUM
+MORE THINGS
+EVEN MORE
+LOREM IPSUM
+THINGY THIPSUM
+`
+            .split('\n')
+            .map((a) => snip(a));
+
+        const box = {
+            top: 3,
+            left: 2,
+            width: 15,
+            height: 10,
+        };
+        console.log(scroll(fLines, box, [], s.colors.editorBg));
+        extend(lines, scroll(fLines, box, [], s.colors.editorBg), 4);
+        lines.forEach((l) => cip(l, app(' '.repeat(s.sidebarSize - l.length), bg(s.colors.sidebarBg))));
     }
     // Tabs
     {
