@@ -120,7 +120,7 @@ function extend(a, b, start) {
 function render(settings = {}) {
     // Default settings
     const s = {
-        files: folder('Folder', true, folder('Interior', false), file('A', false), file('B', true)),
+        files: folder('Folder', true, folder('Interior'), file('A'), file('B', true)),
         text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
@@ -254,38 +254,29 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
         .fill(null)
         .map(() => snip``);
     // Sidebar
+
     {
         // TODO: ACTUALLY ADD FOLDERS
-        const fLines = `FOLDERS
+        const fLines = [snip(' '.repeat(s.sidebarPadding) + 'FOLDERS')];
 
-v Autofactory
+        const descend = function descend(leftIndent, file) {
+            fLines.push(
+                ...Array(s.folderSpacing)
+                    .fill(null)
+                    .map(() => snip``)
+            );
+            if (file.folder) {
 
-  > .github
+                if (file.open) {
+                    file.contents.forEach((a) => descend(leftIndent + s.folderIndentation, a));
+                }
+            } else {
+                // TODO: ACTIVE FILE
+                fLines.push(app(' '.repeat(leftIndent + 2) + file.name, clr(s.colors.inactive)));
+            }
+        };
 
-  > core
-
-  > node_modules
-
-  > prototype
-
-  > prototype2
-
-  > target
-
-  > test
-
-  > ui
-
-    .eslintrc.js
-
-    .gitignore
-
-    .prettierrc.js
-
-    .stylelintrc.js
-`
-            .split('\n')
-            .map((a) => snip(' '.repeat(s.sidebarPadding) + a));
+        descend(s.sidebarPadding, s.files);
 
         const box = {
             left: s.folderCorner[0],
