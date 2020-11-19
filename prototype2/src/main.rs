@@ -21,6 +21,8 @@ use objective::*;
 use bevy::prelude::*;
 use bevy_mod_picking::*;
 
+struct CurrentPlayer(Entity);
+
 pub fn main() {
     App::build()
         .add_resource(Msaa { samples: 4 })
@@ -31,12 +33,16 @@ pub fn main() {
         .add_plugin(CameraPlugin)
         .add_plugin(PickingPlugin)
         .add_startup_system(setup.system())
-        .add_system(get_picks.system())
+        .add_system(set_objective.system())
         .run();
 }
 
-fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
-    commands
+fn setup(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
+    let current_player = commands
         .spawn(PlayerProps::new(
             Vec3::new(80.0, 0.0, 0.0),
             5.0,
@@ -63,7 +69,9 @@ fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
                 .spawn((PlayerUnit(Stats::new(1.0, 1.0, 5.0, 3.0, 1.0), AI::Simple),))
                 .spawn((PlayerUnit(Stats::new(9.0, 3.0, 30.0, 0.5, 5.0), AI::Simple),));
         })
-        .with(Objective::new(Vec3::zero()))
+        .current_entity()
+        .unwrap();
+    commands
         .spawn(PlayerProps::new(
             Vec3::new(-80.0, 0.0, 0.0),
             5.0,
@@ -74,11 +82,25 @@ fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
                 .spawn((PlayerUnit(Stats::new(9.0, 3.0, 30.0, 1.0, 3.0), AI::Simple),))
                 .spawn((PlayerUnit(Stats::new(9.0, 3.0, 30.0, 1.0, 3.0), AI::Simple),))
                 .spawn((PlayerUnit(Stats::new(9.0, 3.0, 30.0, 1.0, 3.0), AI::Simple),));
-        })
-        .spawn((meshes.add(Mesh::from(shape::Plane { size: 1000.0 })),))
+        });
+    commands.insert_resource(CurrentPlayer(current_player));
+    commands
+        .spawn((
+            meshes.add(Mesh::from(shape::Plane { size: 1000.0 })),
+            Transform::default(),
+            GlobalTransform::default(),
+            Draw::default(),
+        ))
+        .with(PickableMesh::default())
+        .spawn((
+            meshes.add(Mesh::from(shape::Plane { size: 1000.0 })),
+            Transform::from_rotation(Quat::from_rotation_x(3.14159)),
+            GlobalTransform::default(),
+            Draw::default(),
+        ))
         .with(PickableMesh::default())
         .spawn(LightComponents {
-            transform: Transform::from_translation(Vec3::new(0.0, 200.0, 100.0)),
+            transform: Transform::from_translation(Vec3::new(0.0, 200.0, 0.0)),
             ..Default::default()
         })
         .spawn(Camera3dComponents {
@@ -94,9 +116,18 @@ fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
         ))
         .with(PickSource::default());
 }
-fn get_picks(
+fn set_objective(
+    mut commands: Commands,
     pick_state: Res<PickState>,
+    mouse_button_input: Res<Input<MouseButton>>,
+    player: Res<CurrentPlayer>,
 ) {
-    println!("All entities:\n{:?}", pick_state.list(Group::default()));
-    println!("Top entity:\n{:?}", pick_state.top(Group::default()));
+    if let Some(pick) = pick_state.top(Group::default()) {
+        let location = pick.1.position();
+        if mouse_button_input.just_pressed(MouseButton::Left) {
+            commands
+                .remove_one::<Objective>(player.0)
+                .insert_one(player.0, Objective::new(*location));
+        }
+    }
 }

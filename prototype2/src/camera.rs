@@ -48,7 +48,7 @@ impl CameraPlugin {
             delta += event.delta;
         }
         for (mut look, mut transform, _) in query.iter_mut() {
-            if mouse_button_input.pressed(MouseButton::Left) {
+            if mouse_button_input.pressed(MouseButton::Middle) {
                 look.x -= delta.x() * ROTATE_SENSITIVITY * time.delta_seconds;
                 look.y -= delta.y() * ROTATE_SENSITIVITY * time.delta_seconds;
 
