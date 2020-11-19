@@ -19,6 +19,7 @@ pub mod objective;
 use objective::*;
 
 use bevy::prelude::*;
+use bevy_mod_picking::*;
 
 pub fn main() {
     App::build()
@@ -28,6 +29,7 @@ pub fn main() {
         .add_plugin(AIPlugin)
         .add_plugin(PlayerPlugin)
         .add_plugin(CameraPlugin)
+        .add_plugin(PickingPlugin)
         .add_startup_system(setup.system())
         .run();
 }
@@ -86,5 +88,6 @@ fn setup(mut commands: Commands) {
             0.5,
             150.0,
             Vec3::new(0.0, -25.0, 0.0),
-        ));
+        ))
+        .with(PickSource::default());
 }

@@ -11,5 +11,6 @@ publish = false
 [dependencies]
 derive-new = "0.5.8"
 rand = "0.7.3"
+bevy_mod_picking = "0.2.0"
 [dependencies.bevy]
 git = "https://github.com/bevyengine/bevy"

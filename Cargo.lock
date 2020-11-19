@@ -218,6 +218,7 @@ name = "autofactory-prototype"
 version = "1.0.0"
 dependencies = [
  "bevy",
+ "bevy_mod_picking",
  "derive-new",
  "rand",
 ]
@@ -504,6 +505,15 @@ version = "0.3.0"
 source = "git+https://github.com/bevyengine/bevy#5bd6deb9749067143efb2dbb681448d94af54e83"
 dependencies = [
  "glam",
+]
+
+[[package]]
+name = "bevy_mod_picking"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "940b1e8b3e80efc78008db1e4982aa88c60119cf933530de97b25f62f8f2bac6"
+dependencies = [
+ "bevy",
 ]
 
 [[package]]
