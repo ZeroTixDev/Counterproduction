@@ -31,10 +31,11 @@ pub fn main() {
         .add_plugin(CameraPlugin)
         .add_plugin(PickingPlugin)
         .add_startup_system(setup.system())
+        .add_system(get_picks.system())
         .run();
 }
 
-fn setup(mut commands: Commands) {
+fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
     commands
         .spawn(PlayerProps::new(
             Vec3::new(80.0, 0.0, 0.0),
@@ -74,6 +75,8 @@ fn setup(mut commands: Commands) {
                 .spawn((PlayerUnit(Stats::new(9.0, 3.0, 30.0, 1.0, 3.0), AI::Simple),))
                 .spawn((PlayerUnit(Stats::new(9.0, 3.0, 30.0, 1.0, 3.0), AI::Simple),));
         })
+        .spawn((meshes.add(Mesh::from(shape::Plane { size: 1000.0 })),))
+        .with(PickableMesh::default())
         .spawn(LightComponents {
             transform: Transform::from_translation(Vec3::new(0.0, 200.0, 100.0)),
             ..Default::default()
@@ -90,4 +93,10 @@ fn setup(mut commands: Commands) {
             Vec3::new(0.0, -25.0, 0.0),
         ))
         .with(PickSource::default());
+}
+fn get_picks(
+    pick_state: Res<PickState>,
+) {
+    println!("All entities:\n{:?}", pick_state.list(Group::default()));
+    println!("Top entity:\n{:?}", pick_state.top(Group::default()));
 }
