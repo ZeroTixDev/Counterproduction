@@ -37,11 +37,7 @@ pub fn main() {
         .run();
 }
 
-fn setup(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
+fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
     let current_player = commands
         .spawn(PlayerProps::new(
             Vec3::new(80.0, 0.0, 0.0),
@@ -94,7 +90,7 @@ fn setup(
         .with(PickableMesh::default())
         .spawn((
             meshes.add(Mesh::from(shape::Plane { size: 1000.0 })),
-            Transform::from_rotation(Quat::from_rotation_x(3.14159)),
+            Transform::from_rotation(Quat::from_rotation_x(std::f32::consts::PI)),
             GlobalTransform::default(),
             Draw::default(),
         ))

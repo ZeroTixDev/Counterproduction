@@ -3,5 +3,5 @@ members = [
     "core",
     "prototype2",
 ]
-[patch.crates-io]
-bevy = { git = 'https://github.com/bevyengine/bevy' }
+# [patch.crates-io]
+# bevy = { version = "0.3.0" }

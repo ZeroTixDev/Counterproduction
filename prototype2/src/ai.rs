@@ -6,7 +6,7 @@ use bevy::prelude::*;
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub enum AI {
     Nothing,
-    Simple,
+        Simple,
 }
 
 pub struct AIPlugin;
