@@ -26,7 +26,7 @@ lazy_static = "1.4.0"
 enum_dispatch = "0.3.4"
 floating-duration = "0.1.2"
 parking_lot = { version = "0.11.0", features = ["nightly"] }
-ref_clone = "0.7.0"
+ref_clone = "0.8.0"
 [dependencies.bevy]
 # git = "https://github.com/bevyengine/bevy"
 version = "0.3.0"
