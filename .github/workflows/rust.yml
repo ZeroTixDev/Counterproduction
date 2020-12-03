@@ -44,9 +44,6 @@ jobs:
         profile: minimal
         toolchain: nightly
         override: true
-    - name: Install Dependencies
-      if: matrix.os == 'ubuntu-latest'
-      run: sudo apt install libasound2-dev libudev-dev lld
     - name: Attempt build
       uses: actions-rs/cargo@v1
       with:
