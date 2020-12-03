@@ -2,6 +2,7 @@
 members = [
     "core",
     "prototype2",
+    "vdb"
 ]
 # [patch.crates-io]
 # bevy = { version = "0.3.0" }

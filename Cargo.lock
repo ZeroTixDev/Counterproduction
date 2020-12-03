@@ -213,6 +213,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "autofactory-vdb"
+version = "1.0.0"
+
+[[package]]
 name = "backtrace"
 version = "0.3.55"
 source = "registry+https://github.com/rust-lang/crates.io-index"
