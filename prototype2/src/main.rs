@@ -3,7 +3,6 @@
 #![feature(generic_associated_types)]
 #![feature(const_generics)]
 #![feature(iterator_fold_self)]
-#![feature(clamp)]
 #![allow(clippy::type_complexity)]
 // What's a test? Never heard of such a thing.
 

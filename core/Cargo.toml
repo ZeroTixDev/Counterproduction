@@ -5,26 +5,13 @@ authors = ["iMplode nZ <rg@youxplode.com>"]
 license = "GPL-3.0-only"
 build = "build.rs"
 edition = "2018"
-exclude = ["artifacts.json", "index.node"]
 publish = false
 
 [lib]
 name = "autofactory"
 
-[[test]]
-name = "tests-main"
-path = "tests-main/main.rs"
-harness = false
-
 [dependencies]
-static_assertions = "1.1.0"
-array-macro = "1.0.5"
-rand = "0.7.3"
-euclid = "0.22.1"
-take_mut = "0.2.2"
-lazy_static = "1.4.0"
 enum_dispatch = "0.3.4"
-floating-duration = "0.1.2"
 parking_lot = { version = "0.11.0", features = ["nightly"] }
 ref_clone = "0.8.0"
 [dependencies.bevy]
