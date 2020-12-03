@@ -1,8 +1,8 @@
 /// A voxel storage.
 /// Type parameters:
-///   - T: The type of the Voxel
 /// Generally, the voxel storage constructor should take in a "default" voxel,
 /// which is used to cull to a reasonable size.
+///   - T: The type of the Voxel
 trait VoxelStorage<T: Eq> {
     type Position: Copy;
     type Mutable: Writer<T>;
@@ -21,6 +21,10 @@ trait VoxelStorage<T: Eq> {
     /// If this voxel storage is an IndexableVoxelStorage, `partition` must not
     /// change what `index` any of the voxels have.
     fn partition<F: Fn(Self::Position, &T) -> bool>(&mut self, test: F) -> Self;
+    /// Whether a position is contained within the storage.
+    /// If this is true, then the get_mut Writer set method should be O(1),
+    /// and should not allocate any memory
+    fn contains(&self, a: Self::Position) -> bool;
 }
 
 trait Writer<T> {
@@ -29,10 +33,14 @@ trait Writer<T> {
 }
 
 /// A voxel storage which allows indexing of voxels.
-/// The voxel index must be unique for the storage.
+/// The voxel index must be unique across all storages.
 trait IndexableVoxelStorage<T: Eq>: VoxelStorage<T> {
     type Index = u64;
+    /// Computes the index.
     fn index(&self, position: Self::Position) -> Self::Index;
+    /// Computes the index and the value of the voxel.
+    /// This purely exists as it may be more efficient than computing the index
+    /// separately in some cases.
     fn index_get(&self, position: Self::Position) -> (Self::Index, &T) {
         (self.index(position), self.get(position))
     }
