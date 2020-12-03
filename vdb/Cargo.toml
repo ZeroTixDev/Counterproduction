@@ -1,6 +1,0 @@
-[package]
-name = "autofactory-vdb"
-version = "1.0.0"
-authors = ["iMplode nZ <rg@youxplode.com>"]
-
-[dependencies]

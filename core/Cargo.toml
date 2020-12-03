@@ -14,9 +14,6 @@ name = "autofactory"
 enum_dispatch = "0.3.4"
 parking_lot = { version = "0.11.0", features = ["nightly"] }
 ref_clone = "0.8.0"
-[dependencies.bevy]
-# git = "https://github.com/bevyengine/bevy"
-version = "0.3.0"
 [dev-dependencies.cargo-husky]
 version = "1.5.0"
 default-features = false

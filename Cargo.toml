@@ -1,8 +1,7 @@
 [workspace]
 members = [
     "core",
-    "prototype2",
-    "vdb"
+    "prototype2"
 ]
 # [patch.crates-io]
 # bevy = { version = "0.3.0" }

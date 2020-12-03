@@ -194,7 +194,6 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 name = "autofactory"
 version = "1.0.0"
 dependencies = [
- "bevy",
  "cargo-husky",
  "enum_dispatch",
  "parking_lot",
@@ -211,10 +210,6 @@ dependencies = [
  "derive-new",
  "rand",
 ]
-
-[[package]]
-name = "autofactory-vdb"
-version = "1.0.0"
 
 [[package]]
 name = "backtrace"
