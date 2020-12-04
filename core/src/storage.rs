@@ -3,7 +3,7 @@
 /// Generally, the voxel storage constructor should take in a "default" voxel,
 /// which is used to cull to a reasonable size.
 ///   - T: The type of the Voxel
-trait VoxelStorage<T: Eq> {
+pub trait VoxelStorage<T: Eq> {
     type Position: Copy;
     type Mutable: Writer<T>;
     type PositionIterator: Iterator<Item = Self::Position>;
@@ -27,14 +27,14 @@ trait VoxelStorage<T: Eq> {
     fn contains(&self, a: Self::Position) -> bool;
 }
 
-trait Writer<T> {
+pub trait Writer<T> {
     fn get(&self) -> &T;
     fn set(&mut self, value: T) -> &mut T;
 }
 
 /// A voxel storage which allows indexing of voxels.
 /// The voxel index must be unique across all storages.
-trait IndexableVoxelStorage<T: Eq>: VoxelStorage<T> {
+pub trait IndexableVoxelStorage<T: Eq>: VoxelStorage<T> {
     type Index = u64;
     /// Computes the index.
     fn index(&self, position: Self::Position) -> Self::Index;
@@ -48,3 +48,5 @@ trait IndexableVoxelStorage<T: Eq>: VoxelStorage<T> {
         (self.index(position), self.get_mut(position))
     }
 }
+
+pub type Octree = building_blocks::partition::Octree;
