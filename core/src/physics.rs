@@ -6,7 +6,8 @@ pub struct Cube {
     /// Half of the length, width, and height of the cube.
     pub size: f32,
     /// The transform of the cube.
-    /// If this is the identity transform, the cube is positioned with the center being the origin.
+    /// If this is the identity transform, the cube is positioned with the
+    /// center being the origin.
     pub transform: Isometry,
 }
 
