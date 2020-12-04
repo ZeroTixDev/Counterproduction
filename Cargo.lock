@@ -855,13 +855,12 @@ checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
 
 [[package]]
 name = "building-blocks"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7d96131cbb27915a06513c3cc96247ef907fc2f3ee0dd0b84f28c48651977762"
+checksum = "78c99df1ded68c75938f990aa90eb89d2eee710e6eb193d1d4c0def350357f3a"
 dependencies = [
  "building_blocks_core",
  "building_blocks_mesh",
- "building_blocks_partition",
  "building_blocks_procgen",
  "building_blocks_search",
  "building_blocks_storage",
@@ -869,9 +868,9 @@ dependencies = [
 
 [[package]]
 name = "building_blocks_core"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a12ce22b0e6b46b693d23731de19487c6499e6540a365baa8c339432c902ee4"
+checksum = "a3f9befac521fa714b564ab0a3641efb21933b2b4c852092983fb18390a4809c"
 dependencies = [
  "itertools",
  "num",
@@ -880,20 +879,9 @@ dependencies = [
 
 [[package]]
 name = "building_blocks_mesh"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f22afa81868079a1c63e2b573d0ab693bf83ab38b1351a99fc5b2b90d57a30e8"
-dependencies = [
- "building_blocks_core",
- "building_blocks_storage",
- "fnv",
-]
-
-[[package]]
-name = "building_blocks_partition"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1907f64a0888ffe779221c0f3dc4c0925eb913cfa642be3273774258fa0e9abb"
+checksum = "3b0a86f1c429b7989f5aadafd1e1431e3778688a2ea5e9d54da15a316acfa9af"
 dependencies = [
  "building_blocks_core",
  "building_blocks_storage",
@@ -902,31 +890,31 @@ dependencies = [
 
 [[package]]
 name = "building_blocks_procgen"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "373bf67714bb859e11f5b226ab5d4e2c6ccdaefef826489dde0e09c218a63832"
+checksum = "53d5d9351f6a032b922931cc2f7dcdbe3ec8a485f05458d4b81403d85105f542"
 dependencies = [
  "building_blocks_core",
- "building_blocks_storage",
 ]
 
 [[package]]
 name = "building_blocks_search"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bd69479f9cfb0a3fb468fb7fdca31b6a5efd00fe38f770a160b5df2a357dc8e4"
+checksum = "a482b63cc01437863c6a936c939f4ace498ddf1cca4e5425b39498ad26994527"
 dependencies = [
  "building_blocks_core",
  "building_blocks_storage",
+ "fnv",
  "indexmap",
  "itertools",
 ]
 
 [[package]]
 name = "building_blocks_storage"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eff89276db165c8f942c70d0075c91c354ac806c86b1c0b7695f02bf2dd0a5d2"
+checksum = "980ed8c854a25510facc55a438632eca5a3a673893371c4b3a79e88ac63f46e6"
 dependencies = [
  "building_blocks_core",
  "compressible-map",
@@ -934,7 +922,6 @@ dependencies = [
  "fnv",
  "futures",
  "itertools",
- "lz4",
  "num",
  "serde",
 ]
@@ -1109,9 +1096,9 @@ dependencies = [
 
 [[package]]
 name = "compressible-map"
-version = "0.1.6"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cd98232953a6752bf18a462448f989a1c68d2846712bcbf97372210c4ecd2221"
+checksum = "581831132649b42cbe92d892ee22b87041bfe29474321793660472da995ebf76"
 dependencies = [
  "bincode",
  "lz4",
