@@ -50,3 +50,4 @@ pub trait IndexableVoxelStorage<T: Eq>: VoxelStorage<T> {
 }
 
 pub type Octree = building_blocks::storage::octree::OctreeSet;
+pub type OctreeNode = building_blocks::storage::octree::OctreeNode;
