@@ -1,6 +1,5 @@
 use crate::entity::Entity;
-use crate::geometry::Isometry;
-use crate::geometry::Vec3;
+use crate::geometry::*;
 use crate::storage::IndexableVoxelStorage;
 use crate::storage::OctreeNode;
 use crate::voxel::Voxel;
@@ -59,8 +58,8 @@ pub fn collide_entity<T: IndexableVoxelStorage<Voxel>>(
         let mut transform = e.transform;
         let size = (x.octant().edge_length() as f32) / 2.0;
         let min_vec = x.octant().minimum().0;
-        let min_vec: Vec3 = Vec3::new(min_vec[0] as f32, min_vec[1] as f32, min_vec[2] as f32);
-        transform.append_translation(min_vec + Vec3::broadcast(size));
+        let min_vec: FVec = FVec::new(min_vec[0] as f32, min_vec[1] as f32, min_vec[2] as f32);
+        transform.append_translation(min_vec + FVec::broadcast(size));
         Cube { size, transform }
     }
     let root_nodes = (a.tree.root_node().unwrap(), b.tree.root_node().unwrap());
@@ -138,4 +137,36 @@ pub fn collide_entity<T: IndexableVoxelStorage<Voxel>>(
         last_collisions = next_collisions;
     }
     all_collisions
+}
+
+// ████████╗███████╗███████╗████████╗
+// ╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝
+//    ██║   █████╗  ███████╗   ██║
+//    ██║   ██╔══╝  ╚════██║   ██║
+//    ██║   ███████╗███████║   ██║
+//    ╚═╝   ╚══════╝╚══════╝   ╚═╝
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_collide_cube() {
+        let cube1 = Cube::new(1.0, Isometry::identity());
+        let cube2 = Cube::new(
+            1.0,
+            Isometry::new(FVec::new(3.5, 0.0, 0.0), Rotation::identity()),
+        );
+        assert_eq!(collide_cube(cube1, cube2).collided, false);
+        let cube3 = Cube::new(
+            1.0,
+            Isometry::new(FVec::new(2.1, 2.1, 2.1), Rotation::identity()),
+        );
+        assert_eq!(collide_cube(cube1, cube3).collided, false);
+        let cube4 = Cube::new(
+            0.5,
+            Isometry::new(FVec::new(1.0, 1.0, 1.0), Rotation::identity()),
+        );
+        assert_eq!(collide_cube(cube1, cube4).collided, true);
+    }
+    #[test]
+    fn test_collide_entity() {}
 }

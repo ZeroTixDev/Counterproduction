@@ -1,7 +1,8 @@
-use ultraviolet::IVec3 as UIVec3;
+use ultraviolet::IVec3;
 use ultraviolet::Isometry3;
-use ultraviolet::Vec3 as UVec3;
-
-pub type Vec3 = UVec3;
-pub type IVec3 = UIVec3;
+use ultraviolet::Rotor3;
+use ultraviolet::Vec3;
+pub type FVec = Vec3;
+pub type IVec = IVec3;
 pub type Isometry = Isometry3;
+pub type Rotation = Rotor3;
