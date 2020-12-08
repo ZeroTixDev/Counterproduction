@@ -1,5 +1,5 @@
 <!-- markdownlint-disable no-inline-html no-bare-urls line-length header-increment commands-show-output first-line-heading -->
-![Counterproduction](./banner.png)
+<h1 align="center">Counterproduction</h1>
 
 <p align="center">
 <a href="https://discord.gg/GCz7KgG">
