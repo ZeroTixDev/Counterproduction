@@ -1,7 +1,7 @@
 'use strict';
 
-const ui = require('autofactory-ui');
-const { mod, m } = require('autofactory-ui/settings.js');
+const ui = require('counterproduction-ui');
+const { mod, m } = require('counterproduction-ui/settings.js');
 const root = mod('root', (css, use, $) => {
     css(require('./styles.scss'));
     use(ui.window);
@@ -41,7 +41,7 @@ const root = mod('root', (css, use, $) => {
                                 $._.bottom(face())
                             )
                         ),
-                        $._.centered($._.logoText($._.partA('Auto'), $._.partB('Factory')))
+                        $._.centered($._.logoText($._.partA('Counter'), $._.partB('Production')))
                     )
                 );
             } else return $._();
