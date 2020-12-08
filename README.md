@@ -56,4 +56,4 @@ There is also a very simple prototype<sup>[2](#fn2)</sup> that can be accessed b
 
 <a name="fn2">2</a>: Nothing in this will be kept; its purely for testing purposes.
 
-<a href="https://app.fossa.com/projects/git%2Bgithub.com%2FiMplode-nZ%2FCounterproduction?ref=badge_large" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FiMplode-nZ%2FCounterproduction.svg?type=large"/></a>
+<a href="https://app.fossa.com/projects/git%2Bgithub.com%2FiMplode-nZ%Autofactory?ref=badge_large" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FiMplode-nZ%Autofactory.svg?type=large"/></a>
