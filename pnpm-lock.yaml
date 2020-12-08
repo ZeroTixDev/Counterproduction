@@ -23,7 +23,7 @@ importers:
       mithril: ^2.0.4
   test:
     dependencies:
-      autofactory-ui: 'link:../ui'
+      counterproduction-ui: 'link:../ui'
     devDependencies:
       clean-webpack-plugin: 3.0.0_webpack@5.3.0
       cross-env: 7.0.2
@@ -47,8 +47,8 @@ importers:
       webpack-merge: 5.2.0
       webpackbar: 4.0.0_webpack@5.3.0
     specifiers:
-      autofactory-ui: 'workspace:*'
       clean-webpack-plugin: ^3.0.0
+      counterproduction-ui: 'workspace:*'
       cross-env: ^7.0.2
       css-loader: ^5.0.0
       css-minimizer-webpack-plugin: ^1.1.5
