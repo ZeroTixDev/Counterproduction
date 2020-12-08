@@ -1,5 +1,5 @@
 {
-  "name": "autofactory-gameplay-demo",
+  "name": "counterproduction-gameplay-demo",
   "version": "1.0.0",
   "description": "A very simple and abstract gameplay demo.",
   "main": "index.js",
@@ -11,11 +11,5 @@
   "dependencies": {
     "hyperscript-adapter": "^7.1.3",
     "mithril": "^2.0.4"
-  },
-  "devDependencies": {
-    "eslint": "^7.12.1",
-    "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "prettier": "^2.1.2"
   }
 }

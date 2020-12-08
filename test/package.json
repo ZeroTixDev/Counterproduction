@@ -1,5 +1,5 @@
 {
-    "name": "autofactory-test",
+    "name": "counterproduction-test",
     "version": "1.0.0",
     "description": "Tests.",
     "author": "iMplode nZ",
@@ -33,6 +33,6 @@
         "webpackbar": "^4.0.0"
     },
     "dependencies": {
-        "autofactory-ui": "workspace:*"
+        "counterproduction-ui": "workspace:*"
     }
 }

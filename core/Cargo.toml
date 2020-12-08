@@ -1,5 +1,5 @@
 [package]
-name = "autofactory"
+name = "counterproduction"
 version = "1.0.0"
 authors = ["iMplode nZ <rg@youxplode.com>"]
 license = "GPL-3.0-only"
@@ -8,7 +8,7 @@ edition = "2018"
 publish = false
 
 [lib]
-name = "autofactory"
+name = "counterproduction"
 
 [dependencies]
 enum_dispatch = "0.3.4"
