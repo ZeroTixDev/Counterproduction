@@ -191,31 +191,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 
 [[package]]
-name = "autofactory"
-version = "1.0.0"
-dependencies = [
- "building-blocks",
- "cargo-husky",
- "derive-new",
- "either",
- "enum_dispatch",
- "parking_lot",
- "ref_clone",
- "ultraviolet",
-]
-
-[[package]]
-name = "autofactory-prototype"
-version = "1.0.0"
-dependencies = [
- "bevy",
- "bevy_mod_picking",
- "cargo-husky",
- "derive-new",
- "rand",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.55"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1230,6 +1205,31 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f54dccdfa1035d478cc91ac758e4e31affb922c3e4068f02a34e062145a1db00"
 dependencies = [
  "bindgen",
+]
+
+[[package]]
+name = "counterproduction"
+version = "1.0.0"
+dependencies = [
+ "building-blocks",
+ "cargo-husky",
+ "derive-new",
+ "either",
+ "enum_dispatch",
+ "parking_lot",
+ "ref_clone",
+ "ultraviolet",
+]
+
+[[package]]
+name = "counterproduction-prototype"
+version = "1.0.0"
+dependencies = [
+ "bevy",
+ "bevy_mod_picking",
+ "cargo-husky",
+ "derive-new",
+ "rand",
 ]
 
 [[package]]
