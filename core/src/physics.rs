@@ -1,4 +1,3 @@
-use crate::entity::Entity;
 use crate::geometry::*;
 use crate::storage::IndexableVoxelStorage;
 use crate::storage::OctreeNode;

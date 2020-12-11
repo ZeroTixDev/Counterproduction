@@ -6,3 +6,4 @@ pub type FVec = Vec3;
 pub type IVec = IVec3;
 pub type Isometry = Isometry3;
 pub type Rotation = Rotor3;
+pub type Rot = Rotation;
