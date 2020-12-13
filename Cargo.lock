@@ -8,9 +8,9 @@ checksum = "fe438c63458706e03479442743baae6c88256498e6431708f6dfc520a26515d3"
 
 [[package]]
 name = "ab_glyph"
-version = "0.2.6"
+version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26a685fe66654266f321a8b572660953f4df36a2135706503a4c89981d76e1a2"
+checksum = "7a104f276ccf2299596c747b495582c8313bae3eca524bcf66db684848c50be9"
 dependencies = [
  "ab_glyph_rasterizer",
  "owned_ttf_parser",
@@ -45,9 +45,9 @@ checksum = "aae1277d39aeec15cb388266ecc24b11c80469deae6067e17a1a7aa9e5c1f234"
 
 [[package]]
 name = "ahash"
-version = "0.5.9"
+version = "0.5.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "062782ee945b38cab67201cd84c77ab3881c07125a1f1f7a5d2fd213f797a2d6"
+checksum = "19fac972e53443ba111b1ff866e9d3b6484df5c05030e13bc7c6a1ebc802e983"
 dependencies = [
  "getrandom 0.2.0",
  "lazy_static",
@@ -831,7 +831,7 @@ checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
 [[package]]
 name = "building-blocks"
 version = "0.3.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#532bb7df4ce42eadd9439cafc9557dcdf791eedc"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#e108b9b72afda01656182ef41790efa932f44800"
 dependencies = [
  "building_blocks_core",
  "building_blocks_mesh",
@@ -843,7 +843,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_core"
 version = "0.3.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#532bb7df4ce42eadd9439cafc9557dcdf791eedc"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#e108b9b72afda01656182ef41790efa932f44800"
 dependencies = [
  "itertools",
  "num",
@@ -853,7 +853,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_mesh"
 version = "0.3.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#532bb7df4ce42eadd9439cafc9557dcdf791eedc"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#e108b9b72afda01656182ef41790efa932f44800"
 dependencies = [
  "building_blocks_core",
  "building_blocks_storage",
@@ -863,7 +863,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_procgen"
 version = "0.3.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#532bb7df4ce42eadd9439cafc9557dcdf791eedc"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#e108b9b72afda01656182ef41790efa932f44800"
 dependencies = [
  "building_blocks_core",
 ]
@@ -871,7 +871,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_search"
 version = "0.3.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#532bb7df4ce42eadd9439cafc9557dcdf791eedc"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#e108b9b72afda01656182ef41790efa932f44800"
 dependencies = [
  "building_blocks_core",
  "building_blocks_storage",
@@ -883,14 +883,15 @@ dependencies = [
 [[package]]
 name = "building_blocks_storage"
 version = "0.3.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#532bb7df4ce42eadd9439cafc9557dcdf791eedc"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#e108b9b72afda01656182ef41790efa932f44800"
 dependencies = [
+ "bincode",
  "building_blocks_core",
- "compressible-map",
  "either",
  "fnv",
  "futures",
  "itertools",
+ "lz4",
  "num",
  "serde",
 ]
@@ -1052,17 +1053,6 @@ dependencies = [
  "bytes",
  "memchr",
  "pin-project-lite 0.1.11",
-]
-
-[[package]]
-name = "compressible-map"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "581831132649b42cbe92d892ee22b87041bfe29474321793660472da995ebf76"
-dependencies = [
- "bincode",
- "lz4",
- "serde",
 ]
 
 [[package]]
@@ -1301,9 +1291,9 @@ dependencies = [
 
 [[package]]
 name = "darling"
-version = "0.10.2"
+version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d706e75d87e35569db781a9b5e2416cff1236a47ed380831f959382ccd5f858"
+checksum = "15d658711a12632b5574c8d5b3fc5d2f0d2f87b9fbf9237ee0f759b88bb6bdec"
 dependencies = [
  "darling_core",
  "darling_macro",
@@ -1311,9 +1301,9 @@ dependencies = [
 
 [[package]]
 name = "darling_core"
-version = "0.10.2"
+version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0c960ae2da4de88a91b2d920c2a7233b400bc33cb28453a2987822d8392519b"
+checksum = "16d3514d243331d8acde56bfcf45d0147aabbda853c2f49dce081ea85f9a7220"
 dependencies = [
  "fnv",
  "ident_case",
@@ -1325,9 +1315,9 @@ dependencies = [
 
 [[package]]
 name = "darling_macro"
-version = "0.10.2"
+version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9b5a2f4ac4969822c62224815d069952656cadc7084fdca9751e6d959189b72"
+checksum = "44f63c369ef0c17ad17585d31d5f2bf10dece2710bf0766e01db57a6f9849a2e"
 dependencies = [
  "darling_core",
  "quote",
@@ -2463,9 +2453,9 @@ checksum = "c44922cb3dbb1c70b5e5f443d63b64363a898564d739ba5198e3a9138442868d"
 
 [[package]]
 name = "net2"
-version = "0.2.36"
+version = "0.2.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7cf75f38f16cb05ea017784dc6dbfd354f76c223dba37701734c4f5a9337d02"
+checksum = "391630d12b68002ae1e25e8f974306474966550ad82dac6886fb8910c19568ae"
 dependencies = [
  "cfg-if 0.1.10",
  "libc",
@@ -2702,9 +2692,9 @@ checksum = "13bd41f508810a131401606d54ac32a467c97172d74ba7662562ebba5ad07fa0"
 
 [[package]]
 name = "owned_ttf_parser"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb477c7fd2a3a6e04e1dc6ca2e4e9b04f2df702021dc5a5d1cf078c587dc59f7"
+checksum = "1035b3031937401c4d01719ec82c558b268f923dcfca86e0fb1c2701782b2e89"
 dependencies = [
  "ttf-parser",
 ]
@@ -3330,9 +3320,9 @@ dependencies = [
 
 [[package]]
 name = "strsim"
-version = "0.9.3"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6446ced80d6c486436db5c078dde11a9f73d42b57fb273121e160b84f63d894c"
+checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 
 [[package]]
 name = "svg_fmt"
@@ -3461,9 +3451,9 @@ dependencies = [
 
 [[package]]
 name = "ttf-parser"
-version = "0.8.3"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7622061403fd00f0820df288e5a580e87d3ce15a1c4313c59fd1ffb77129903f"
+checksum = "62ddb402ac6c2af6f7a2844243887631c4e94b51585b229fcfddb43958cd55ca"
 
 [[package]]
 name = "typed-arena"
