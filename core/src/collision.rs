@@ -1,12 +1,13 @@
 use crate::geometry::FVec;
 use crate::geometry::Rot;
 use crate::storage::CollidableVoxelGrid;
+use derive_new::*;
 use fnv::FnvHashMap;
 
 pub mod cube;
 pub mod octree;
 
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(new, Copy, Clone, PartialEq, Debug)]
 pub struct Positioned<T> {
     pub object: T,
     pub position: FVec,
@@ -18,6 +19,7 @@ pub struct Positioned<T> {
 }
 
 /// A collision result.
+#[derive(new, Copy, Clone, PartialEq, Debug)]
 pub struct CollisionResult {
     /// The penetration of the collision.
     pub penetration: f32,
@@ -25,6 +27,7 @@ pub struct CollisionResult {
 }
 
 pub type VoxelCollisionListInterior<P> = FnvHashMap<(usize, usize), Vec<(P, P, CollisionResult)>>;
+#[derive(new, Clone, PartialEq, Debug)]
 pub struct VoxelCollisionList<P> {
     /// The map of all collisions.
     /// The first index in the `(usize, usize)`
