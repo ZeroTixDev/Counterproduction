@@ -13,7 +13,7 @@ pub trait VoxelStorage<T: Eq + Copy> {
     /// Gets the voxel at a position.
     fn get(&self, position: Self::Position) -> &T;
     /// Gets the voxel at a position, with mutation.
-    fn get_mut<'a>(&'a mut self, position: Self::Position) -> Self::Mutator<'a>;
+    fn get_mut(&mut self, position: Self::Position) -> Self::Mutator<'_>;
     /// An iterator over all voxel positions.
     fn all(&self) -> Self::PositionIterator;
     /// Splits the world into two separate storages. The current storage
@@ -41,12 +41,17 @@ pub trait IndexableVoxelStorage<T: Eq + Copy>: VoxelStorage<T> {
     fn index_get(&self, position: Self::Position) -> (Self::Index, &T) {
         (self.index(position), self.get(position))
     }
-    fn index_get_mut<'a>(&'a mut self, position: Self::Position) -> (Self::Index, Self::Mutator<'a>) {
+    fn index_get_mut(&mut self, position: Self::Position) -> (Self::Index, Self::Mutator<'_>) {
         (self.index(position), self.get_mut(position))
     }
 }
 
-pub type Octree = building_blocks::storage::octree::OctreeSet;
-pub type OctreeNode = building_blocks::storage::octree::OctreeNode;
+/// A voxel storage which supports collisions.
+pub trait CollidableVoxelGrid<T: Eq + Copy>: VoxelStorage<T> {
+    /// Something that allows for easy collision detection
+    /// between two voxel grids of the same type.
+    type Collider;
+    fn collider(&self) -> Self::Collider;
+}
 
-pub mod chunk_map;
+// pub mod chunk_map;

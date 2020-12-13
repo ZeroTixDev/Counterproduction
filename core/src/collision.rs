@@ -1,12 +1,44 @@
-struct Positioned<T> {
-    t: T,
-    position: FVec,
-    rotation: Rot,
-    velocity: FVec,
-    angular_velocity: Rot,
+use crate::geometry::FVec;
+use crate::geometry::Rot;
+use crate::storage::CollidableVoxelGrid;
+use fnv::FnvHashMap;
+
+pub mod cube;
+pub mod octree;
+
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub struct Positioned<T> {
+    pub object: T,
+    pub position: FVec,
+    pub rotation: Rot,
+    /* Insert when necessary.
+    pub velocity: FVec,
+    pub angular_velocity: Rot,
+    */
 }
 
-trait VoxelCollisionResolver {
+/// A collision result.
+pub struct CollisionResult {
+    /// The penetration of the collision.
+    pub penetration: f32,
+    pub collided: bool,
+}
+
+pub type VoxelCollisionListInterior<P> = FnvHashMap<(usize, usize), Vec<(P, P, CollisionResult)>>;
+pub struct VoxelCollisionList<P> {
+    /// The map of all collisions.
+    /// The first index in the `(usize, usize)`
+    /// should always be the smaller one.
+    pub data: VoxelCollisionListInterior<P>,
+}
+
+trait CollisionResolver {
     type Collider;
-    fn collide<X: CollidableVoxelGrid<Collider = Self::Collider>>(collidables: impl Iterator<Item = Positioned<X>>) -> VoxelCollisionList;
+    type Position;
+    fn collide<
+        T: Eq + Copy,
+        X: CollidableVoxelGrid<T, Collider = Self::Collider, Position = Self::Position>,
+    >(
+        collidables: impl Iterator<Item = Positioned<Self::Collider>>,
+    ) -> VoxelCollisionList<Self::Position>;
 }

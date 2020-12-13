@@ -1,9 +1,9 @@
 use super::*;
-use std::sync::atomic::AtomicUsize;
-use std::sync::atomic::Ordering;
 use crate::geometry::IVec;
 use building_blocks::prelude::*;
 use building_blocks::storage::chunk_map::ChunkMap;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 
 static LAST_CHUNK_INDEX: AtomicUsize = AtomicUsize::new(0);
 
@@ -41,7 +41,10 @@ impl<'a, T: 'static + Eq + Copy> DerefMut for Mutator<'a, T> {
             }
         };
 
-        let (_, value) = self.storage.map.get_mut_or_insert_chunk_with(&convert_to_point(self.position), create_chunk);
+        let (_, value) = self
+            .storage
+            .map
+            .get_mut_or_insert_chunk_with(&convert_to_point(self.position), create_chunk);
         value
     }
 }
@@ -52,7 +55,9 @@ pub struct PositionIterator;
 
 impl Iterator for PositionIterator {
     type Item = IVec;
-    fn next(&mut self) -> Option<Self::Item> { todo!() }
+    fn next(&mut self) -> Option<Self::Item> {
+        todo!()
+    }
 }
 
 impl<T: 'static + Eq + Copy> VoxelStorage<T> for ChunkStorage<T> {
@@ -60,16 +65,25 @@ impl<T: 'static + Eq + Copy> VoxelStorage<T> for ChunkStorage<T> {
     type Mutator<'a> = Mutator<'a, T>;
     type PositionIterator = PositionIterator;
 
-    fn get(&self, position: Self::Position) -> &T { todo!() }
+    fn get(&self, position: Self::Position) -> &T {
+        todo!()
+    }
 
-    /// Finish this thing and make it create the thing and increment LAST_CHUNK_INDEX.
+    /// Finish this thing and make it create the thing and increment
+    /// LAST_CHUNK_INDEX.
     fn get_mut<'a>(&'a mut self, position: Self::Position) -> Self::Mutator<'a> {
         Mutator {
             storage: self,
             position,
         }
     }
-    fn all(&self) -> Self::PositionIterator { todo!() }
-    fn partition<F: Fn(Self::Position, &T) -> bool>(&mut self, test: F) -> Self { todo!() }
-    fn contains(&self, a: Self::Position) -> bool { todo!() }
+    fn all(&self) -> Self::PositionIterator {
+        todo!()
+    }
+    fn partition<F: Fn(Self::Position, &T) -> bool>(&mut self, test: F) -> Self {
+        todo!()
+    }
+    fn contains(&self, a: Self::Position) -> bool {
+        todo!()
+    }
 }

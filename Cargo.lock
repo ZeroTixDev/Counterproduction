@@ -1216,6 +1216,7 @@ dependencies = [
  "derive-new",
  "either",
  "enum_dispatch",
+ "fnv",
  "parking_lot",
  "ref_clone",
  "ultraviolet",
