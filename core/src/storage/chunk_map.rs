@@ -1,7 +1,6 @@
 use super::*;
 use crate::geometry::IVec;
 use building_blocks::prelude::*;
-use building_blocks::storage::chunk_map::ChunkMap;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
@@ -15,7 +14,7 @@ fn convert_to_point(a: IVec) -> PointN<[i32; 3]> {
 }
 
 pub struct ChunkStorage<T: 'static + Eq + Copy> {
-    map: ChunkMap<[i32; 3], T, ChunkIndex, Lz4>,
+    map: ChunkHashMap3<T, ChunkIndex>,
 }
 
 pub struct Mutator<'a, T: 'static + Eq + Copy> {
@@ -33,18 +32,18 @@ impl<'a, T: 'static + Eq + Copy> Deref for Mutator<'a, T> {
 impl<'a, T: 'static + Eq + Copy> DerefMut for Mutator<'a, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         let ambient = self.storage.map.ambient_value();
-        let create_chunk = |_: &PointN<[i32; 3]>, e: &ExtentN<[i32; 3]>| -> Chunk3<T, ChunkIndex> {
+        let create_chunk = |_: PointN<[i32; 3]>, e: ExtentN<[i32; 3]>| -> Chunk3<T, ChunkIndex> {
             let current_number = ChunkIndex(LAST_CHUNK_INDEX.fetch_add(1, Ordering::Relaxed));
             Chunk3 {
                 metadata: current_number,
-                array: Array3::fill(*e, ambient),
+                array: Array3::fill(e, ambient),
             }
         };
 
         let (_, value) = self
             .storage
             .map
-            .get_mut_or_insert_chunk_with(&convert_to_point(self.position), create_chunk);
+            .get_mut_point_or_insert_chunk_with(&convert_to_point(self.position), create_chunk);
         value
     }
 }

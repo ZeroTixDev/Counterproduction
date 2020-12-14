@@ -831,7 +831,7 @@ checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
 [[package]]
 name = "building-blocks"
 version = "0.3.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#e108b9b72afda01656182ef41790efa932f44800"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#77952a39598493d90cc52ed49c5e8074b01659b2"
 dependencies = [
  "building_blocks_core",
  "building_blocks_mesh",
@@ -843,7 +843,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_core"
 version = "0.3.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#e108b9b72afda01656182ef41790efa932f44800"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#77952a39598493d90cc52ed49c5e8074b01659b2"
 dependencies = [
  "itertools",
  "num",
@@ -853,7 +853,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_mesh"
 version = "0.3.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#e108b9b72afda01656182ef41790efa932f44800"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#77952a39598493d90cc52ed49c5e8074b01659b2"
 dependencies = [
  "building_blocks_core",
  "building_blocks_storage",
@@ -863,7 +863,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_procgen"
 version = "0.3.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#e108b9b72afda01656182ef41790efa932f44800"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#77952a39598493d90cc52ed49c5e8074b01659b2"
 dependencies = [
  "building_blocks_core",
 ]
@@ -871,7 +871,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_search"
 version = "0.3.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#e108b9b72afda01656182ef41790efa932f44800"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#77952a39598493d90cc52ed49c5e8074b01659b2"
 dependencies = [
  "building_blocks_core",
  "building_blocks_storage",
@@ -883,7 +883,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_storage"
 version = "0.3.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#e108b9b72afda01656182ef41790efa932f44800"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#77952a39598493d90cc52ed49c5e8074b01659b2"
 dependencies = [
  "bincode",
  "building_blocks_core",
