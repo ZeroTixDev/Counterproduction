@@ -35,13 +35,13 @@ impl VoxelType for Thing {
 struct ThingData(u8);
 
 #[contained]
-struct VoxelDataRecord<X: Mapping>;
+struct VoxelDataRecord;
 ```
 
 Becomes:
 
 ```rust
-trait VoxelDataRecordType {
+trait VoxelDataRecordType where Self: Sized {
     fn get<X: Mapping>(record: &VoxelDataRecord<X>) -> &X::To<Self>;
     fn get_mut<X: Mapping>(record: &mut VoxelDataRecord<X>) -> &mut X::To<Self>;
 }
@@ -59,17 +59,17 @@ struct VoxelDataRecord<X: Mapping> {
     thing_data: X::To<ThingData>,
 }
 
-impl<X: Mapping, A> VoxelDataRecord<X> {
+impl<X: Mapping> VoxelDataRecord<X> {
     pub fn new(arguments: X::Arguments) -> Self {
         VoxelDataRecord {
-            thing_data: X::create<ThingData>(&arguments),
+            thing_data: X::create::<ThingData>(&arguments),
         }
     }
     pub fn get<T: VoxelDataRecordType>(&self) -> &X::To<T> {
-        T::get(&self)
+        T::get(self)
     }
     pub fn get_mut<T: VoxelDataRecordType>(&mut self) -> &mut X::To<T> {
-        T::get_mut(&mut self)
+        T::get_mut(self)
     }
 }
 ```
@@ -80,13 +80,17 @@ Then:
 struct HashMapping;
 impl Mapping for HashMapping {
     type To<X> = HashMap<(usize, IVec), X>;
-    type Arguments = ()
-    fn create<X>(arguments: &Self::Arguments) -> Self::To<X> {
+    type Arguments = ();
+    fn create<X>(_: &Self::Arguments) -> Self::To<X> {
         HashMap::new()
     }
 }
-let record = VoxelDataRecord<HashMapping>::new(());
-record.get<ThingData>()[(0, IVec::zero())] = ThingData(16);
+
+fn main() {
+    let mut record = VoxelDataRecord::<HashMapping>::new(());
+    record.get_mut().insert((0, IVec(0, 0, 0)), ThingData(16));
+    println!("{:?}", record.get::<ThingData>()[&(0, IVec(0, 0, 0))].0);
+}
 ```
 
 Also, there needs to be a way to turn things like the `color` function into an array for efficient access. That would probably be solved by the `#[enum_dispatch]` things though.
