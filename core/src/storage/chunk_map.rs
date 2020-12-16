@@ -22,15 +22,12 @@ pub struct Mutator<'a, T: 'static + Eq + Copy> {
     position: IVec,
 }
 
-impl<'a, T: 'static + Eq + Copy> Deref for Mutator<'a, T> {
-    type Target = T;
-    fn deref(&self) -> &Self::Target {
-        &self.storage.get(self.position)
+impl<'a, T: 'static + Eq + Copy> Writer<T> for Mutator<'a, T> {
+    fn get(&mut self) -> T {
+        self.storage.get(self.position)
     }
-}
 
-impl<'a, T: 'static + Eq + Copy> DerefMut for Mutator<'a, T> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
+    fn get_mut(&mut self) -> &mut T {
         let ambient = self.storage.map.ambient_value();
         let create_chunk = |_: PointN<[i32; 3]>, e: ExtentN<[i32; 3]>| -> Chunk3<T, ChunkIndex> {
             let current_number = ChunkIndex(LAST_CHUNK_INDEX.fetch_add(1, Ordering::Relaxed));
@@ -48,8 +45,6 @@ impl<'a, T: 'static + Eq + Copy> DerefMut for Mutator<'a, T> {
     }
 }
 
-impl<'a, T: 'static + Eq + Copy> Writer<T> for Mutator<'a, T> {}
-
 pub struct PositionIterator;
 
 impl Iterator for PositionIterator {
@@ -64,25 +59,24 @@ impl<T: 'static + Eq + Copy> VoxelStorage<T> for ChunkStorage<T> {
     type Mutator<'a> = Mutator<'a, T>;
     type PositionIterator = PositionIterator;
 
-    fn get(&self, position: Self::Position) -> &T {
-        todo!()
+    fn get(&self, position: Self::Position) -> T {
+        self.map.get(&convert_to_point(position))
     }
-
-    /// Finish this thing and make it create the thing and increment
-    /// LAST_CHUNK_INDEX.
     fn get_mut<'a>(&'a mut self, position: Self::Position) -> Self::Mutator<'a> {
         Mutator {
             storage: self,
             position,
         }
     }
-    fn all(&self) -> Self::PositionIterator {
+    fn for_each(&self, f: impl FnMut(Self::Position, T)) {
         todo!()
     }
     fn partition<F: Fn(Self::Position, &T) -> bool>(&mut self, test: F) -> Self {
         todo!()
     }
-    fn contains(&self, a: Self::Position) -> bool {
-        todo!()
+    fn contains(&self, position: Self::Position) -> bool {
+        self.map
+            .get_chunk_containing_point(&convert_to_point(position))
+            .is_some()
     }
 }
