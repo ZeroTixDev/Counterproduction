@@ -12,6 +12,9 @@ struct ChunkIndex(usize);
 fn convert_to_point(a: IVec) -> PointN<[i32; 3]> {
     PointN(a.as_array())
 }
+fn convert_from_point(a: PointN<[i32; 3]>) -> IVec {
+    a.0.into()
+}
 
 pub struct ChunkStorage<T: 'static + Eq + Copy> {
     map: ChunkHashMap3<T, ChunkIndex>,
@@ -62,17 +65,16 @@ impl<T: 'static + Eq + Copy> VoxelStorage<T> for ChunkStorage<T> {
     fn get(&self, position: Self::Position) -> T {
         self.map.get(&convert_to_point(position))
     }
-    fn get_mut<'a>(&'a mut self, position: Self::Position) -> Self::Mutator<'a> {
+    fn get_mut(&mut self, position: Self::Position) -> Self::Mutator<'_> {
         Mutator {
             storage: self,
             position,
         }
     }
-    fn for_each(&self, f: impl FnMut(Self::Position, T)) {
-        todo!()
-    }
-    fn partition<F: Fn(Self::Position, &T) -> bool>(&mut self, test: F) -> Self {
-        todo!()
+    fn for_each(&self, mut f: impl FnMut(Self::Position, T)) {
+        let extent = self.map.bounding_extent();
+        self.map
+            .for_each(&extent, |p, t| f(convert_from_point(p), t));
     }
     fn contains(&self, position: Self::Position) -> bool {
         self.map

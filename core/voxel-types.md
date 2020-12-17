@@ -1,6 +1,7 @@
 Preexisting stuff:
 
 ```rust
+#![feature(generic_associated_types)]
 trait Mapping {
     type To<X>;
     type Arguments;
@@ -11,29 +12,15 @@ trait Mapping {
 Expected use:
 
 ```rust
-trait VoxelType {
-    fn color() -> (u8, u8, u8, u8);
-}
-
-struct Air;
-
-impl VoxelType for Air {
-    fn color() -> (u8, u8, u8, u8) {
-        (0, 0, 0, 0)
-    }
-}
-
-struct Thing;
-
-impl VoxelType for Thing {
-    fn color() -> (u8, u8, u8, u8) {
-        (0, 0, 0, 255)
-    }
-}
-
+// thing.rs
 #[contained(VoxelDataRecord)]
 struct ThingData(u8);
-
+// other_thing.rs
+#[contained(VoxelDataRecord)]
+struct OtherThingData(i64);
+// voxel_record.rs
+use thing::*;
+use other_thing::*;
 #[contained]
 struct VoxelDataRecord;
 ```
@@ -41,10 +28,8 @@ struct VoxelDataRecord;
 Becomes:
 
 ```rust
-trait VoxelDataRecordType where Self: Sized {
-    fn get<X: Mapping>(record: &VoxelDataRecord<X>) -> &X::To<Self>;
-    fn get_mut<X: Mapping>(record: &mut VoxelDataRecord<X>) -> &mut X::To<Self>;
-}
+// thing.rs
+struct ThingData(u8);
 
 impl VoxelDataRecordType for ThingData {
     fn get<X: Mapping>(record: &VoxelDataRecord<X>) -> &X::To<Self> {
@@ -54,15 +39,33 @@ impl VoxelDataRecordType for ThingData {
         &mut record.thing_data
     }
 }
+// other_thing.rs
+struct OtherThingData(i64);
 
+impl VoxelDataRecordType for OtherThingData {
+    fn get<X: Mapping>(record: &VoxelDataRecord<X>) -> &X::To<Self> {
+        &record.other_thing_data
+    }
+    fn get_mut<X: Mapping>(record: &mut VoxelDataRecord<X>) -> &mut X::To<Self> {
+        &mut record.other_thing_data
+    }
+}
+// voxel_record.rs
 struct VoxelDataRecord<X: Mapping> {
     thing_data: X::To<ThingData>,
+    other_thing_data: X::To<OtherThingData>,
+}
+
+trait VoxelDataRecordType where Self: Sized {
+    fn get<X: Mapping>(record: &VoxelDataRecord<X>) -> &X::To<Self>;
+    fn get_mut<X: Mapping>(record: &mut VoxelDataRecord<X>) -> &mut X::To<Self>;
 }
 
 impl<X: Mapping> VoxelDataRecord<X> {
     pub fn new(arguments: X::Arguments) -> Self {
         VoxelDataRecord {
             thing_data: X::create::<ThingData>(&arguments),
+            other_thing_data: X::create::<OtherThingData>(&arguments),
         }
     }
     pub fn get<T: VoxelDataRecordType>(&self) -> &X::To<T> {
@@ -77,7 +80,10 @@ impl<X: Mapping> VoxelDataRecord<X> {
 Then:
 
 ```rust
+use std::collections::HashMap;
 struct HashMapping;
+#[derive(Hash, Eq, PartialEq, Copy, Clone)]
+struct IVec(i32, i32, i32);
 impl Mapping for HashMapping {
     type To<X> = HashMap<(usize, IVec), X>;
     type Arguments = ();

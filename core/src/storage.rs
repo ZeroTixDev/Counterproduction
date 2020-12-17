@@ -13,11 +13,6 @@ pub trait VoxelStorage<T: Eq + Copy> {
     fn get_mut(&mut self, position: Self::Position) -> Self::Mutator<'_>;
     /// An iterator over all voxel positions.
     fn for_each(&self, f: impl FnMut(Self::Position, T));
-    /// Splits the world into two separate storages. The current storage
-    /// includes all voxels for which the function `test` returns `true`,
-    /// while the return value includes all voxels for which the function
-    /// `test` returns `false`.
-    fn partition<F: Fn(Self::Position, &T) -> bool>(&mut self, test: F) -> Self;
     /// Whether a position is contained within the storage.
     /// If this is true, then the get_mut Writer set method should be O(1),
     /// and should not allocate any memory
