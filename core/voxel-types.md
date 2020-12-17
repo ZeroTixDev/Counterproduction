@@ -1,11 +1,28 @@
+<!-- markdownlint-disable no-inline-html no-bare-urls line-length header-increment commands-show-output first-line-heading -->
 Preexisting stuff:
 
 ```rust
 #![feature(generic_associated_types)]
-trait Mapping {
+pub trait Mapping {
     type To<X>;
     type Arguments;
     fn create<X>(arguments: &Self::Arguments) -> Self::To<X>;
+}
+pub struct EmptyMapping;
+
+impl Mapping for EmptyMapping {
+    type To<X> = ();
+    type Arguments = ();
+    fn create<X>(_: &Self::Arguments) -> Self::To<X> { () }
+}
+pub trait RecordType<R> where Self: Sized {
+    type Record<X: Mapping>;
+    fn get<X: Mapping>(record: &Self::Record<X>) -> &X::To<Self>;
+    fn get_mut<X: Mapping>(record: &mut Self::Record<X>) -> &mut X::To<Self>;
+}
+pub trait Record<X: Mapping, U, T: RecordType<U>> {
+    fn _get(&self) -> &X::To<T>;
+    fn _get_mut(&mut self) -> &mut X::To<T>;
 }
 ```
 
@@ -21,8 +38,12 @@ struct OtherThingData(i64);
 // voxel_record.rs
 use thing::*;
 use other_thing::*;
-#[contained]
-struct VoxelDataRecord;
+container! {
+    VoxelDataRecord {
+        ThingData,
+        OtherThingData,
+    }
+}
 ```
 
 Becomes:
@@ -31,7 +52,8 @@ Becomes:
 // thing.rs
 struct ThingData(u8);
 
-impl VoxelDataRecordType for ThingData {
+impl RecordType<VoxelDataRecord<EmptyMapping>> for ThingData {
+    type Record<X: Mapping> = VoxelDataRecord<X>;
     fn get<X: Mapping>(record: &VoxelDataRecord<X>) -> &X::To<Self> {
         &record.thing_data
     }
@@ -42,7 +64,8 @@ impl VoxelDataRecordType for ThingData {
 // other_thing.rs
 struct OtherThingData(i64);
 
-impl VoxelDataRecordType for OtherThingData {
+impl RecordType<VoxelDataRecord<EmptyMapping>> for OtherThingData {
+    type Record<X: Mapping> = VoxelDataRecord<X>;
     fn get<X: Mapping>(record: &VoxelDataRecord<X>) -> &X::To<Self> {
         &record.other_thing_data
     }
@@ -56,11 +79,6 @@ struct VoxelDataRecord<X: Mapping> {
     other_thing_data: X::To<OtherThingData>,
 }
 
-trait VoxelDataRecordType where Self: Sized {
-    fn get<X: Mapping>(record: &VoxelDataRecord<X>) -> &X::To<Self>;
-    fn get_mut<X: Mapping>(record: &mut VoxelDataRecord<X>) -> &mut X::To<Self>;
-}
-
 impl<X: Mapping> VoxelDataRecord<X> {
     pub fn new(arguments: X::Arguments) -> Self {
         VoxelDataRecord {
@@ -68,11 +86,22 @@ impl<X: Mapping> VoxelDataRecord<X> {
             other_thing_data: X::create::<OtherThingData>(&arguments),
         }
     }
-    pub fn get<T: VoxelDataRecordType>(&self) -> &X::To<T> {
-        T::get(self)
+}
+
+impl<X: Mapping, U, T: RecordType<U>> Record<X, U, T> for T::Record<X> {
+    fn _get(&self) -> &X::To<T> {
+        T::get::<X>(self)
     }
-    pub fn get_mut<T: VoxelDataRecordType>(&mut self) -> &mut X::To<T> {
-        T::get_mut(self)
+    fn _get_mut(&mut self) -> &mut X::To<T> {
+        T::get_mut::<X>(self)
+    }
+}
+impl<X: Mapping> VoxelDataRecord<X> {
+    fn get<T: RecordType<VoxelDataRecord<EmptyMapping>>>(&self) -> &X::To<T> where Self: Record<X, VoxelDataRecord<EmptyMapping>, T> {
+        <Self as Record<X, _, T>>::_get(self)
+    }
+    fn get_mut<T: RecordType<VoxelDataRecord<EmptyMapping>>>(&mut self) -> &mut X::To<T> where Self: Record<X, VoxelDataRecord<EmptyMapping>, T> {
+        <Self as Record<X, _, T>>::_get_mut(self)
     }
 }
 ```
@@ -96,6 +125,8 @@ fn main() {
     let mut record = VoxelDataRecord::<HashMapping>::new(());
     record.get_mut().insert((0, IVec(0, 0, 0)), ThingData(16));
     println!("{:?}", record.get::<ThingData>()[&(0, IVec(0, 0, 0))].0);
+    record.get_mut().insert((0, IVec(0, 0, 0)), OtherThingData(1024));
+    println!("{:?}", record.get::<OtherThingData>()[&(0, IVec(0, 0, 0))].0);
 }
 ```
 
