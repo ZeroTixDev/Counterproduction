@@ -30,15 +30,13 @@ Expected use:
 
 ```rust
 // thing.rs
-#[contained(VoxelDataRecord)]
 struct ThingData(u8);
 // other_thing.rs
-#[contained(VoxelDataRecord)]
 struct OtherThingData(i64);
 // voxel_record.rs
 use thing::*;
 use other_thing::*;
-container! {
+type_record! {
     VoxelDataRecord {
         ThingData,
         OtherThingData,
@@ -51,7 +49,13 @@ Becomes:
 ```rust
 // thing.rs
 struct ThingData(u8);
-
+// other_thing.rs
+struct OtherThingData(i64);
+// voxel_record.rs
+struct VoxelDataRecord<X: Mapping> {
+    thing_data: X::To<ThingData>,
+    other_thing_data: X::To<OtherThingData>,
+}
 impl RecordType<VoxelDataRecord<EmptyMapping>> for ThingData {
     type Record<X: Mapping> = VoxelDataRecord<X>;
     fn get<X: Mapping>(record: &VoxelDataRecord<X>) -> &X::To<Self> {
@@ -61,9 +65,6 @@ impl RecordType<VoxelDataRecord<EmptyMapping>> for ThingData {
         &mut record.thing_data
     }
 }
-// other_thing.rs
-struct OtherThingData(i64);
-
 impl RecordType<VoxelDataRecord<EmptyMapping>> for OtherThingData {
     type Record<X: Mapping> = VoxelDataRecord<X>;
     fn get<X: Mapping>(record: &VoxelDataRecord<X>) -> &X::To<Self> {
@@ -73,12 +74,6 @@ impl RecordType<VoxelDataRecord<EmptyMapping>> for OtherThingData {
         &mut record.other_thing_data
     }
 }
-// voxel_record.rs
-struct VoxelDataRecord<X: Mapping> {
-    thing_data: X::To<ThingData>,
-    other_thing_data: X::To<OtherThingData>,
-}
-
 impl<X: Mapping> VoxelDataRecord<X> {
     pub fn new(arguments: X::Arguments) -> Self {
         VoxelDataRecord {
@@ -86,21 +81,10 @@ impl<X: Mapping> VoxelDataRecord<X> {
             other_thing_data: X::create::<OtherThingData>(&arguments),
         }
     }
-}
-
-impl<X: Mapping, U, T: RecordType<U>> Record<X, U, T> for T::Record<X> {
-    fn _get(&self) -> &X::To<T> {
-        T::get::<X>(self)
-    }
-    fn _get_mut(&mut self) -> &mut X::To<T> {
-        T::get_mut::<X>(self)
-    }
-}
-impl<X: Mapping> VoxelDataRecord<X> {
-    fn get<T: RecordType<VoxelDataRecord<EmptyMapping>>>(&self) -> &X::To<T> where Self: Record<X, VoxelDataRecord<EmptyMapping>, T> {
+    pub fn get<T: RecordType<VoxelDataRecord<EmptyMapping>>>(&self) -> &X::To<T> where Self: Record<X, VoxelDataRecord<EmptyMapping>, T> {
         <Self as Record<X, _, T>>::_get(self)
     }
-    fn get_mut<T: RecordType<VoxelDataRecord<EmptyMapping>>>(&mut self) -> &mut X::To<T> where Self: Record<X, VoxelDataRecord<EmptyMapping>, T> {
+    pub fn get_mut<T: RecordType<VoxelDataRecord<EmptyMapping>>>(&mut self) -> &mut X::To<T> where Self: Record<X, VoxelDataRecord<EmptyMapping>, T> {
         <Self as Record<X, _, T>>::_get_mut(self)
     }
 }
