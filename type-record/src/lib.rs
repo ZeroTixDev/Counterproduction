@@ -1,9 +1,67 @@
 #![allow(incomplete_features)]
 #![feature(generic_associated_types)]
+//! **WARNING:** This crate requires a nightly compiler and
+//! `generic_associated_types`.
+//!
+//! This crate provides a macro to create a type level record, in which values
+//! can be fetched by their types. The types of the things within the record are
+//! specified by an inputted `Mapping`.
+//!
+//! Example usage:
+//!
+//! ```rust
+//! #![allow(incomplete_features)]
+//! #![feature(generic_associated_types)]
+//! use type_record::{record, Mapping};
+//! struct Thing(u8);
+//! struct OtherThing(i64);
+//! // This creates a type level record, by the name of "Record",
+//! // with component types `Thing` and `OtherThing`.
+//! record! {
+//!     Record {
+//!         Thing,
+//!         OtherThing,
+//!     }
+//! }
+//!
+//! use std::collections::HashMap;
+//! struct HashMapping;
+//! impl Mapping for HashMapping {
+//!     type To<X> = HashMap<usize, X>;
+//!     // This type is the arguments inputted into the create function.
+//!     type Arguments = ();
+//!     // This create function is called for each type within the record.
+//!     fn create<X>(_: &Self::Arguments) -> Self::To<X> {
+//!         HashMap::new()
+//!     }
+//! }
+//!
+//! #[test]
+//! fn test() {
+//!     // Creates a record, using the `HashMapping` mapping, and arguments `()`.
+//!     let mut record = Record::<HashMapping>::new(());
+//!     // Gets a mutable reference to the `HashMap<usize, Thing>` within the record.
+//!     record.get_mut().insert(0, Thing(16));
+//!     // Gets a `HashMap<usize, Thing>` and finds the inserted `Thing`.
+//!     assert_eq!(16, record.get::<Thing>()[&0].0);
+//!     record
+//!         .get_mut()
+//!         .insert(18, OtherThing(1024));
+//!     assert_eq!(1024, record.get::<OtherThing>()[&18].0);
+//! }
+//! ```
+
 /// A mapping from a type to another type, with a function for creation.
 pub trait Mapping {
+    /// This type function controls what the record types are.
+    ///
+    /// If this is `type To<X> = Vec<X>`, then the record will consist of
+    /// vectors of the component types.
     type To<X>;
+    /// The arguments provided to the `create` function.
     type Arguments;
+    /// This function creates something of `To<X>` given the arguments.
+    /// In a record, this would be called for each component type.
     fn create<X>(arguments: &Self::Arguments) -> Self::To<X>;
 }
 
@@ -40,6 +98,9 @@ impl<X: Mapping, U, T: _RecordType<U>> _Record<X, U, T> for T::Record<X> {
 }
 
 #[macro_export]
+/// The macro to create a type level record.
+/// Always generates a `struct` with name `$record_name`, with a single generic
+/// argument, which is the Mapping that controls what the record contains.
 macro_rules! record {
     ($record_name:ident { $($record_contents:ident),+ $(,)? }) => {
         #[allow(non_snake_case)]

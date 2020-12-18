@@ -4,7 +4,7 @@ version = "1.0.0"
 authors = ["iMplode nZ <rg@youxplode.com>"]
 license = "ISC"
 edition = "2018"
-
+description = "A type-level record (see documentation for details)."
 [lib]
 name = "type_record"
 
