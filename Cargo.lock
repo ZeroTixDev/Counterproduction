@@ -3771,7 +3771,7 @@ checksum = "62ddb402ac6c2af6f7a2844243887631c4e94b51585b229fcfddb43958cd55ca"
 
 [[package]]
 name = "type-record"
-version = "1.0.0"
+version = "1.0.1"
 
 [[package]]
 name = "typed-arena"

@@ -6,6 +6,7 @@ license = "GPL-3.0-only"
 build = "build.rs"
 edition = "2018"
 publish = false
+repository = "https://github.com/Counterproduction-game/Counterproduction"
 
 [lib]
 name = "counterproduction"
