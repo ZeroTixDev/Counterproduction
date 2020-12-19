@@ -31,14 +31,17 @@ pub trait Writer<T> {
 pub trait IndexableVoxelStorage<T: Eq + Copy>: VoxelStorage<T> {
     type Index = u64;
     /// Computes the index.
-    fn index(&self, position: Self::Position) -> Self::Index;
+    fn index(&self, position: Self::Position) -> Option<Self::Index>;
     /// Computes the index and the value of the voxel.
     /// This purely exists as it may be more efficient than computing the index
     /// separately in some cases.
-    fn index_get(&self, position: Self::Position) -> (Self::Index, T) {
+    fn index_get(&self, position: Self::Position) -> (Option<Self::Index>, T) {
         (self.index(position), self.get(position))
     }
-    fn index_get_mut(&mut self, position: Self::Position) -> (Self::Index, Self::Mutator<'_>) {
+    fn index_get_mut(
+        &mut self,
+        position: Self::Position,
+    ) -> (Option<Self::Index>, Self::Mutator<'_>) {
         (self.index(position), self.get_mut(position))
     }
 }

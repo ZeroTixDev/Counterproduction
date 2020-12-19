@@ -1,13 +1,13 @@
 use super::*;
 use crate::geometry::IVec;
 use building_blocks::prelude::*;
-use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
-static LAST_CHUNK_INDEX: AtomicUsize = AtomicUsize::new(0);
+static LAST_CHUNK_INDEX: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone)]
-struct ChunkIndex(usize);
+struct ChunkIndex(u64);
 
 fn convert_to_point(a: IVec) -> PointN<[i32; 3]> {
     PointN(a.as_array())
@@ -57,7 +57,7 @@ impl Iterator for PositionIterator {
     }
 }
 
-impl<T: 'static + Eq + Copy> VoxelStorage<T> for ChunkStorage<T> {
+impl<T: Eq + Copy> VoxelStorage<T> for ChunkStorage<T> {
     type Position = IVec;
     type Mutator<'a> = Mutator<'a, T>;
     type PositionIterator = PositionIterator;
@@ -80,5 +80,12 @@ impl<T: 'static + Eq + Copy> VoxelStorage<T> for ChunkStorage<T> {
         self.map
             .get_chunk_containing_point(&convert_to_point(position))
             .is_some()
+    }
+}
+impl<T: Eq + Copy> IndexableVoxelStorage<T> for ChunkStorage<T> {
+    fn index(&self, position: Self::Position) -> Option<Self::Index> {
+        self.map
+            .get_chunk_containing_point(&convert_to_point(position))
+            .map(|(_, c)| c.metadata.0)
     }
 }
