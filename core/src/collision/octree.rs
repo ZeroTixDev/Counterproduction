@@ -3,7 +3,7 @@ use crate::collision::cube::collide_cube_sloppy;
 use crate::collision::cube::Cube;
 use crate::geometry::IVec;
 use crate::geometry::Isometry;
-use crate::storage::CollidableVoxelGrid;
+
 use building_blocks::storage::octree::OctreeNode;
 use building_blocks::storage::octree::OctreeSet as Octree;
 use building_blocks::storage::octree::OffsetTable;
@@ -15,10 +15,7 @@ pub struct OctreeCollisionResolver;
 impl CollisionResolver for OctreeCollisionResolver {
     type Collider = Octree;
     type Position = IVec;
-    fn collide<
-        T: Eq + Copy,
-        X: CollidableVoxelGrid<Collider = Self::Collider, Position = Self::Position>,
-    >(
+    fn collide(
         collidables: impl Iterator<Item = Positioned<Self::Collider>>,
     ) -> VoxelCollisionList<Self::Position> {
         let collidables = collidables.collect::<Vec<_>>();

@@ -1,6 +1,5 @@
 use crate::geometry::FVec;
 use crate::geometry::Rot;
-use crate::storage::CollidableVoxelGrid;
 use derive_new::*;
 use fnv::FnvHashMap;
 
@@ -38,10 +37,7 @@ pub struct VoxelCollisionList<P> {
 trait CollisionResolver {
     type Collider;
     type Position;
-    fn collide<
-        T: Eq + Copy,
-        X: CollidableVoxelGrid<Collider = Self::Collider, Position = Self::Position>,
-    >(
+    fn collide(
         collidables: impl Iterator<Item = Positioned<Self::Collider>>,
     ) -> VoxelCollisionList<Self::Position>;
 }
