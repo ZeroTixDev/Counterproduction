@@ -3,10 +3,8 @@ use bevy::input::mouse::MouseScrollUnit::Line;
 use bevy::input::mouse::MouseWheel;
 use bevy::prelude::*;
 use bevy::render::camera::Camera;
-use derive_new::*;
 
 const ROTATE_SENSITIVITY: f32 = 0.2;
-const DRAG_SENSITIVITY: f32 = 0.2;
 const ZOOM_SENSITIVITY: f32 = 0.8;
 
 #[derive(Default)]
@@ -15,17 +13,16 @@ struct State {
     scroll: EventReader<MouseWheel>,
 }
 
-#[derive(new)]
-pub struct CameraLook {
+pub struct OrbitCamera {
     x: f32,
     y: f32,
     distance: f32,
     center: Vec3,
 }
 
-impl Default for CameraLook {
+impl Default for OrbitCamera {
     fn default() -> Self {
-        CameraLook {
+        OrbitCamera {
             x: 0.0,
             y: 0.0,
             distance: 100.0,
@@ -41,30 +38,24 @@ impl CameraPlugin {
         mut state: ResMut<State>,
         mouse_motion_events: Res<Events<MouseMotion>>,
         mouse_button_input: Res<Input<MouseButton>>,
-        mut query: Query<(&mut CameraLook, &mut Transform, &mut Camera)>,
+        mut query: Query<(&mut OrbitCamera, &mut Transform, &mut Camera)>,
     ) {
         let mut delta = Vec2::zero();
         for event in state.motion.iter(&mouse_motion_events) {
             delta += event.delta;
         }
-        for (mut look, mut transform, _) in query.iter_mut() {
+        for (mut camera, mut transform, _) in query.iter_mut() {
             if mouse_button_input.pressed(MouseButton::Middle) {
-                look.x -= delta.x() * ROTATE_SENSITIVITY * time.delta_seconds;
-                look.y -= delta.y() * ROTATE_SENSITIVITY * time.delta_seconds;
+                camera.x -= delta.x * ROTATE_SENSITIVITY * time.delta_seconds();
+                camera.y -= delta.y * ROTATE_SENSITIVITY * time.delta_seconds();
 
-                look.y = look.y.clamp(0.01, 3.13);
+                camera.y = camera.y.clamp(0.01, 3.13);
 
-                let rot = Quat::from_axis_angle(Vec3::unit_y(), look.x)
-                    * Quat::from_axis_angle(-Vec3::unit_x(), look.y);
+                let rot = Quat::from_axis_angle(Vec3::unit_y(), camera.x)
+                    * Quat::from_axis_angle(-Vec3::unit_x(), camera.y);
                 transform.translation =
-                    (rot * Vec3::new(0.0, 1.0, 0.0)) * look.distance + look.center;
-                transform.look_at(look.center, Vec3::unit_y());
-            }
-            if mouse_button_input.pressed(MouseButton::Right) {
-                println!("Pressed right: {:?}", delta);
-                let delta = Vec3::new(delta.x(), 0.0, delta.y()) * DRAG_SENSITIVITY;
-                look.center += delta;
-                transform.translation += delta;
+                    (rot * Vec3::new(0.0, 1.0, 0.0)) * camera.distance + camera.center;
+                transform.look_at(camera.center, Vec3::unit_y());
             }
         }
     }
@@ -72,7 +63,7 @@ impl CameraPlugin {
     fn zoom_system(
         mut state: ResMut<State>,
         mouse_wheel_events: Res<Events<MouseWheel>>,
-        mut query: Query<(&mut CameraLook, &mut Transform, &mut Camera)>,
+        mut query: Query<(&mut OrbitCamera, &mut Transform, &mut Camera)>,
     ) {
         let mut total = 0.0;
         for event in state.scroll.iter(&mouse_wheel_events) {
@@ -82,10 +73,11 @@ impl CameraPlugin {
                 panic!("Invalid Scroll Event: {:?}", event);
             }
         }
-        for (mut look, mut transform, _) in query.iter_mut() {
-            look.distance *= ZOOM_SENSITIVITY.powf(total);
+        for (mut camera, mut transform, _) in query.iter_mut() {
+            camera.distance *= ZOOM_SENSITIVITY.powf(total);
             let translation = &mut transform.translation;
-            *translation = (*translation - look.center).normalize() * look.distance + look.center;
+            *translation =
+                (*translation - camera.center).normalize() * camera.distance + camera.center;
         }
     }
 }

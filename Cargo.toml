@@ -1,11 +1,9 @@
 [workspace]
 members = [
     "core",
-    "prototype2",
-    "type-record"
+    "type-record",
+    "bevy-orbit-controls"
 ]
-# [patch.crates-io]
-# bevy = { version = "0.3.0" }
 [profile.release]
 lto = "fat"
 codegen-units = 1
