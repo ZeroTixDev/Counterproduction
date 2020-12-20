@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::hash::Hash;
 use std::ops::Index;
 
@@ -22,6 +23,10 @@ pub trait VoxelStorage:
     /// If this is true, then the get_mut Writer set method should be O(1),
     /// and should not allocate any memory
     fn contains(&self, a: Self::Position) -> bool;
+    /// Gets the ambient value of the storage.
+    /// When the storage is initialized, calling `get` will always return the
+    /// ambient value.
+    fn ambient(&self) -> Self::T;
 }
 
 pub trait Writer<T> {
@@ -69,6 +74,27 @@ macro_rules! impl_index {
             }
         }
     };
+}
+
+pub fn test_storage<S: VoxelStorage>(storage: &mut S, value: S::T, pos: S::Position)
+where
+    S::T: Debug, {
+    let ambient = storage.ambient();
+    assert_eq!(storage[pos], ambient);
+    {
+        let mut mut_ref = storage.get_mut(pos);
+        assert_eq!(*mut_ref.get(), ambient);
+        *mut_ref.get_mut() = value;
+        assert_eq!(*mut_ref.get(), value);
+    }
+    assert_eq!(*storage.get(pos), value);
+    {
+        let mut mut_ref = storage.get_mut(pos);
+        assert_eq!(*mut_ref.get_mut(), value);
+        *mut_ref.get_mut() = ambient;
+        assert_eq!(*mut_ref.get(), ambient);
+    }
+    assert_eq!(*storage.get(pos), ambient);
 }
 
 pub mod chunk_map;

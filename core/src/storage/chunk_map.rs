@@ -82,6 +82,9 @@ impl<T: Eq + Copy> VoxelStorage for ChunkStorage<T> {
             .get_chunk_containing_point(&convert_to_point(position))
             .is_some()
     }
+    fn ambient(&self) -> T {
+        self.map.ambient_value()
+    }
 }
 impl<T: Eq + Copy> IndexableVoxelStorage for ChunkStorage<T> {
     type Index = (ChunkIndex, IVec);
@@ -90,6 +93,25 @@ impl<T: Eq + Copy> IndexableVoxelStorage for ChunkStorage<T> {
             .get_chunk_containing_point(&convert_to_point(position))
             .map(|(p, c)| (c.metadata, position - convert_from_point(p)))
     }
+}
+impl<T: Eq + Copy> ChunkStorage<T> {
+    pub fn new(ambient: T, chunk_size: i32) -> Self {
+        let builder = ChunkMapBuilder {
+            chunk_shape: PointN([chunk_size; 3]),
+            ambient_value: ambient,
+            default_chunk_metadata: ChunkIndex(0),
+        };
+        let map = builder.build_with_hash_map_storage();
+        ChunkStorage { map }
+    }
+}
+
+#[test]
+fn test_chunk_storage() {
+    let mut storage = ChunkStorage::new(0, 16);
+    test_storage(&mut storage, 1, IVec::new(0, 0, 0));
+    test_storage(&mut storage, 1, IVec::new(0, 20, 0));
+    test_storage(&mut storage, 1, IVec::new(18, 93, -3));
 }
 
 impl_index!(ChunkStorage, T);
