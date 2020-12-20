@@ -1,13 +1,15 @@
 use std::hash::Hash;
+use std::ops::Index;
 
 /// A voxel storage.
 /// Type parameters:
 /// Generally, the voxel storage constructor should take in a "default" voxel,
 /// which is used to cull to a reasonable size.
-pub trait VoxelStorage {
+pub trait VoxelStorage:
+    Index<<Self as VoxelStorage>::Position, Output = <Self as VoxelStorage>::T> {
     /// The voxel type.
     type T: Eq + Copy;
-    type Position: Copy;
+    type Position: Eq + Copy;
     type Mutator<'a>: Writer<Self::T>;
     type PositionIterator: Iterator<Item = Self::Position>;
     /// Gets the voxel at a position.
@@ -34,18 +36,18 @@ pub trait Writer<T> {
 pub trait IndexableVoxelStorage: VoxelStorage {
     type Index: Hash + Eq + Copy;
     /// Computes the index.
-    fn index(&self, position: Self::Position) -> Option<Self::Index>;
+    fn index_of(&self, position: Self::Position) -> Option<Self::Index>;
     /// Computes the index and the value of the voxel.
     /// This purely exists as it may be more efficient than computing the index
     /// separately in some cases.
     fn index_get(&self, position: Self::Position) -> (Option<Self::Index>, &Self::T) {
-        (self.index(position), self.get(position))
+        (self.index_of(position), self.get(position))
     }
     fn index_get_mut(
         &mut self,
         position: Self::Position,
     ) -> (Option<Self::Index>, Self::Mutator<'_>) {
-        (self.index(position), self.get_mut(position))
+        (self.index_of(position), self.get_mut(position))
     }
 }
 
@@ -56,6 +58,17 @@ pub trait CollidableVoxelGrid: VoxelStorage {
     type Collider;
     /// Gets the collider for the storage.
     fn collider(&self) -> Self::Collider;
+}
+
+macro_rules! impl_index {
+    ($name: ident, $ty: ident) => {
+        impl<$ty: Eq + Copy> Index<<Self as VoxelStorage>::Position> for $name<$ty> {
+            type Output = $ty;
+            fn index(&self, position: <Self as VoxelStorage>::Position) -> &Self::Output {
+                self.get(position)
+            }
+        }
+    };
 }
 
 pub mod chunk_map;

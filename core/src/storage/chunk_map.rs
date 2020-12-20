@@ -85,9 +85,11 @@ impl<T: Eq + Copy> VoxelStorage for ChunkStorage<T> {
 }
 impl<T: Eq + Copy> IndexableVoxelStorage for ChunkStorage<T> {
     type Index = (ChunkIndex, IVec);
-    fn index(&self, position: Self::Position) -> Option<Self::Index> {
+    fn index_of(&self, position: Self::Position) -> Option<Self::Index> {
         self.map
             .get_chunk_containing_point(&convert_to_point(position))
             .map(|(p, c)| (c.metadata, position - convert_from_point(p)))
     }
 }
+
+impl_index!(ChunkStorage, T);
