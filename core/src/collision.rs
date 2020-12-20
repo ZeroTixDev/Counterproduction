@@ -40,7 +40,7 @@ trait CollisionResolver {
     type Position;
     fn collide<
         T: Eq + Copy,
-        X: CollidableVoxelGrid<T, Collider = Self::Collider, Position = Self::Position>,
+        X: CollidableVoxelGrid<Collider = Self::Collider, Position = Self::Position>,
     >(
         collidables: impl Iterator<Item = Positioned<Self::Collider>>,
     ) -> VoxelCollisionList<Self::Position>;

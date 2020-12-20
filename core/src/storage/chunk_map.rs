@@ -1,13 +1,13 @@
 use super::*;
 use crate::geometry::IVec;
 use building_blocks::prelude::*;
-use std::sync::atomic::AtomicU64;
+use std::sync::atomic::AtomicU32;
 use std::sync::atomic::Ordering;
 
-static LAST_CHUNK_INDEX: AtomicU64 = AtomicU64::new(0);
+static LAST_CHUNK_INDEX: AtomicU32 = AtomicU32::new(0);
 
-#[derive(Clone)]
-struct ChunkIndex(u64);
+#[derive(Hash, Eq, PartialEq, Copy, Clone, Debug)]
+pub struct ChunkIndex(u32);
 
 fn convert_to_point(a: IVec) -> PointN<[i32; 3]> {
     PointN(a.as_array())
@@ -26,7 +26,7 @@ pub struct Mutator<'a, T: 'static + Eq + Copy> {
 }
 
 impl<'a, T: 'static + Eq + Copy> Writer<T> for Mutator<'a, T> {
-    fn get(&mut self) -> T {
+    fn get(&mut self) -> &T {
         self.storage.get(self.position)
     }
 
@@ -57,13 +57,14 @@ impl Iterator for PositionIterator {
     }
 }
 
-impl<T: Eq + Copy> VoxelStorage<T> for ChunkStorage<T> {
+impl<T: Eq + Copy> VoxelStorage for ChunkStorage<T> {
+    type T = T;
     type Position = IVec;
     type Mutator<'a> = Mutator<'a, T>;
     type PositionIterator = PositionIterator;
 
-    fn get(&self, position: Self::Position) -> T {
-        self.map.get(&convert_to_point(position))
+    fn get(&self, position: Self::Position) -> &T {
+        self.map.get_ref(&convert_to_point(position))
     }
     fn get_mut(&mut self, position: Self::Position) -> Self::Mutator<'_> {
         Mutator {
@@ -82,10 +83,11 @@ impl<T: Eq + Copy> VoxelStorage<T> for ChunkStorage<T> {
             .is_some()
     }
 }
-impl<T: Eq + Copy> IndexableVoxelStorage<T> for ChunkStorage<T> {
+impl<T: Eq + Copy> IndexableVoxelStorage for ChunkStorage<T> {
+    type Index = (ChunkIndex, IVec);
     fn index(&self, position: Self::Position) -> Option<Self::Index> {
         self.map
             .get_chunk_containing_point(&convert_to_point(position))
-            .map(|(_, c)| c.metadata.0)
+            .map(|(p, c)| (c.metadata, position - convert_from_point(p)))
     }
 }
