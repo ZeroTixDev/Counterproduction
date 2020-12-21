@@ -5,4 +5,3 @@
 pub mod collision;
 pub mod geometry;
 pub mod storage;
-pub mod voxel;

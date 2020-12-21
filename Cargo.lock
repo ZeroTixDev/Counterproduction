@@ -1265,10 +1265,7 @@ dependencies = [
  "cargo-husky",
  "derive-new",
  "either",
- "enum_dispatch",
  "fnv",
- "parking_lot",
- "ref_clone",
  "ultraviolet",
 ]
 
@@ -1486,18 +1483,6 @@ name = "either"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
-
-[[package]]
-name = "enum_dispatch"
-version = "0.3.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "15b748aeb1b8c58d317739aa3171a2752ca3e76b8077c13dc748f327aebc0a72"
-dependencies = [
- "once_cell",
- "proc-macro2",
- "quote",
- "syn",
-]
 
 [[package]]
 name = "env_logger"
@@ -3261,26 +3246,6 @@ name = "redox_syscall"
 version = "0.1.57"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "41cc0f7e4d5d4544e8861606a285bb08d3e70712ccc7d2b84d7c0ccfaf4b05ce"
-
-[[package]]
-name = "ref_clone"
-version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1064200288098ea08b63cc17e6834ce9d592499a97ffb9fd0925b9b5f0f2e7fb"
-dependencies = [
- "ref_clone_derive",
-]
-
-[[package]]
-name = "ref_clone_derive"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "488fa02d06e45e4c267268ce6a6c8b1afd7c3169969a6c8d2c5dfddedb9b748e"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
 
 [[package]]
 name = "regex"
