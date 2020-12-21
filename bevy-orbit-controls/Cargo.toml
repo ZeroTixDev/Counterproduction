@@ -9,5 +9,11 @@ repository = "https://github.com/Counterproduction-game/Counterproduction"
 [lib]
 name = "bevy_orbit_controls"
 
+[[test]]
+name = "test"
+path = "test/main.rs"
+harness = false
+test = false
+
 [dependencies]
 bevy = "0.4.0"

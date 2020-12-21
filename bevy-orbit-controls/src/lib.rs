@@ -1,11 +1,14 @@
+//! An orbit controls plugin for bevy.
+//!
+//! # Usage
+//!
+//! See `test/main.rs` for an example.
+
 use bevy::input::mouse::MouseMotion;
 use bevy::input::mouse::MouseScrollUnit::Line;
 use bevy::input::mouse::MouseWheel;
 use bevy::prelude::*;
 use bevy::render::camera::Camera;
-
-const ROTATE_SENSITIVITY: f32 = 0.2;
-const ZOOM_SENSITIVITY: f32 = 0.8;
 
 #[derive(Default)]
 struct State {
@@ -14,10 +17,12 @@ struct State {
 }
 
 pub struct OrbitCamera {
-    x: f32,
-    y: f32,
-    distance: f32,
-    center: Vec3,
+    pub x: f32,
+    pub y: f32,
+    pub distance: f32,
+    pub center: Vec3,
+    pub rotate_sensitivity: f32,
+    pub zoom_sensitivity: f32,
 }
 
 impl Default for OrbitCamera {
@@ -25,14 +30,16 @@ impl Default for OrbitCamera {
         OrbitCamera {
             x: 0.0,
             y: 0.0,
-            distance: 100.0,
+            distance: 5.0,
             center: Vec3::zero(),
+            rotate_sensitivity: 1.0,
+            zoom_sensitivity: 0.8,
         }
     }
 }
 
-pub struct CameraPlugin;
-impl CameraPlugin {
+pub struct OrbitCameraPlugin;
+impl OrbitCameraPlugin {
     fn mouse_motion_system(
         time: Res<Time>,
         mut state: ResMut<State>,
@@ -45,9 +52,9 @@ impl CameraPlugin {
             delta += event.delta;
         }
         for (mut camera, mut transform, _) in query.iter_mut() {
-            if mouse_button_input.pressed(MouseButton::Middle) {
-                camera.x -= delta.x * ROTATE_SENSITIVITY * time.delta_seconds();
-                camera.y -= delta.y * ROTATE_SENSITIVITY * time.delta_seconds();
+            if mouse_button_input.pressed(MouseButton::Left) {
+                camera.x -= delta.x * camera.rotate_sensitivity * time.delta_seconds();
+                camera.y -= delta.y * camera.rotate_sensitivity * time.delta_seconds();
 
                 camera.y = camera.y.clamp(0.01, 3.13);
 
@@ -74,14 +81,14 @@ impl CameraPlugin {
             }
         }
         for (mut camera, mut transform, _) in query.iter_mut() {
-            camera.distance *= ZOOM_SENSITIVITY.powf(total);
+            camera.distance *= camera.zoom_sensitivity.powf(total);
             let translation = &mut transform.translation;
             *translation =
                 (*translation - camera.center).normalize() * camera.distance + camera.center;
         }
     }
 }
-impl Plugin for CameraPlugin {
+impl Plugin for OrbitCameraPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.init_resource::<State>()
             .add_system(Self::mouse_motion_system.system())
