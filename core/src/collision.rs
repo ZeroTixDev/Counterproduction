@@ -1,7 +1,6 @@
 use crate::geometry::FVec;
 use crate::geometry::Rot;
 use derive_new::*;
-use fnv::FnvHashMap;
 
 pub mod cube;
 pub mod octree;
@@ -25,19 +24,13 @@ pub struct CollisionResult {
     pub collided: bool,
 }
 
-pub type VoxelCollisionListInterior<P> = FnvHashMap<(usize, usize), Vec<(P, P, CollisionResult)>>;
-#[derive(new, Clone, PartialEq, Debug)]
-pub struct VoxelCollisionList<P> {
-    /// The map of all collisions.
-    /// The first index in the `(usize, usize)`
-    /// should always be the smaller one.
-    pub data: VoxelCollisionListInterior<P>,
-}
+pub type VoxelCollisionList<P> = Vec<(P, P, CollisionResult)>;
 
 trait CollisionResolver {
     type Collider;
     type Position;
     fn collide(
-        collidables: impl Iterator<Item = Positioned<Self::Collider>>,
+        a: Positioned<Self::Collider>,
+        b: Positioned<Self::Collider>,
     ) -> VoxelCollisionList<Self::Position>;
 }
