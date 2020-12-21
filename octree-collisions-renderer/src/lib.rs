@@ -1,5 +1,9 @@
 use bevy::prelude::*;
 use bevy_orbit_controls::*;
+use counterproduction_core::storage::*;
+use voxel::SimpleVoxel;
+
+mod voxel;
 
 #[bevy_main]
 fn main() {
@@ -8,6 +12,14 @@ fn main() {
         .add_plugin(OrbitCameraPlugin)
         .add_startup_system(startup.system())
         .run();
+}
+
+#[allow(dead_code)]
+#[allow(unused_variables)]
+fn generate_cube<S: VoxelStorage>(empty: S) -> S
+where
+    S::T: SimpleVoxel, {
+    todo!()
 }
 
 fn startup(

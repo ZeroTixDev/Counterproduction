@@ -1258,7 +1258,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "counterproduction"
+name = "counterproduction-core"
 version = "1.0.0"
 dependencies = [
  "building-blocks",
@@ -1482,6 +1482,18 @@ name = "either"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
+
+[[package]]
+name = "enum_dispatch"
+version = "0.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "15b748aeb1b8c58d317739aa3171a2752ca3e76b8077c13dc748f327aebc0a72"
+dependencies = [
+ "once_cell",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "env_logger"
@@ -2938,6 +2950,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68ff7a51600eabe34e189eec5c995a62f151d8d97e5fbca39e87ca738bb99b82"
 dependencies = [
  "fetch_unroll",
+]
+
+[[package]]
+name = "octree-collisions-renderer"
+version = "1.0.0"
+dependencies = [
+ "bevy",
+ "bevy-orbit-controls",
+ "building-blocks",
+ "counterproduction-core",
+ "enum_dispatch",
+ "ultraviolet",
 ]
 
 [[package]]

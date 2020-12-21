@@ -17,7 +17,7 @@ fn convert_from_point(a: PointN<[i32; 3]>) -> IVec {
 }
 
 pub struct ChunkStorage<T: 'static + Eq + Copy> {
-    map: ChunkHashMap3<T, ChunkIndex>,
+    pub map: ChunkHashMap3<T, ChunkIndex>,
 }
 
 pub struct Mutator<'a, T: 'static + Eq + Copy> {

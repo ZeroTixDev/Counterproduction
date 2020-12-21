@@ -1,5 +1,5 @@
 [package]
-name = "counterproduction"
+name = "counterproduction-core"
 version = "1.0.0"
 authors = ["iMplode nZ <rg@youxplode.com>"]
 license = "GPL-3.0-only"
@@ -9,7 +9,7 @@ publish = false
 repository = "https://github.com/Counterproduction-game/Counterproduction"
 
 [lib]
-name = "counterproduction"
+name = "counterproduction_core"
 
 [dependencies]
 ultraviolet = { version = "0.7.5", features = ["int"] }
