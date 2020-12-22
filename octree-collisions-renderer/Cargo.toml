@@ -7,9 +7,6 @@ edition = "2018"
 publish = false
 repository = "https://github.com/Counterproduction-game/Counterproduction"
 
-[lib]
-name = "octree_collisions_renderer"
-
 [dependencies]
 ultraviolet = { version = "0.7.5", features = ["int"] }
 building-blocks =  { git = "https://github.com/iMplode-nZ/building-blocks.git", branch = "main" }
