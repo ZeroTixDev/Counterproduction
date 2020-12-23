@@ -14,3 +14,4 @@ bevy = "0.4.0"
 bevy-orbit-controls = { path = "../bevy-orbit-controls"}
 enum_dispatch = "0.3.4"
 counterproduction-core = { path = "../core" }
+rand = "0.8.0"
