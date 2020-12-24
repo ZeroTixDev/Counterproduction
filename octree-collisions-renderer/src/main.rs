@@ -11,6 +11,8 @@ use building_blocks::prelude::*;
 use counterproduction_core::geometry::FVec;
 use counterproduction_core::geometry::IVec;
 use counterproduction_core::geometry::Rot;
+use counterproduction_core::physics::Position;
+use counterproduction_core::physics::Rotation;
 use counterproduction_core::storage::chunk_map::ChunkStorage;
 use counterproduction_core::storage::*;
 use voxel::*;
@@ -24,8 +26,7 @@ fn main() {
         .add_plugin(OrbitCameraPlugin)
         .add_startup_system(startup.system())
         .add_startup_system(startup_create_storage.system())
-        .add_system(move_system.system())
-        .add_system(transform_converter_system.system())
+        .add_system(display_sync_transform_system.system())
         .add_system(auto_mesh_system.system())
         .run();
 }
@@ -75,54 +76,15 @@ fn startup_create_storage(
     ));
 }
 
-struct Remesh;
-struct ChunkMeshes(Vec<Entity>);
-struct VoxelMaterial(Handle<StandardMaterial>);
-
-fn auto_mesh_system(
+fn display_sync_transform_system(
     commands: &mut Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    pool: Res<ComputeTaskPool>,
-    mut query: Query<(
-        Entity,
-        &Remesh,
-        &VoxelMaterial,
-        &ChunkStorage<SimpleVoxel>,
-        &mut ChunkMeshes,
-    )>,
+    query: Query<(Entity, &Position, &Rotation), Or<(Changed<Position>, Changed<Rotation>)>>,
 ) {
-    for (e, Remesh, VoxelMaterial(material), storage, mut prev_meshes) in query.iter_mut() {
-        for a in prev_meshes.0.iter() {
-            commands.despawn(*a);
-        }
-        let chunk_meshes = generate_meshes(&storage.map, &pool.0);
-        let chunk_meshes = chunk_meshes
-            .into_iter()
-            .map(|m| create_mesh_entity(e, m, commands, material.clone(), &mut meshes))
-            .collect::<Vec<_>>();
-        *prev_meshes = ChunkMeshes(chunk_meshes);
-        commands.remove_one::<Remesh>(e);
-    }
-}
-
-fn move_system(time: Res<Time>, mut query: Query<&mut FVec>) {
-    for mut v in query.iter_mut() {
-        // println!("Moving");
-        *v += FVec::new(1.0, 1.0, 1.0) * time.delta_seconds();
-    }
-}
-
-fn transform_converter_system(
-    commands: &mut Commands,
-    query: Query<(Entity, &FVec, &Rot), Or<(Changed<FVec>, Changed<Rot>)>>,
-) {
-    for (e, v, _r) in query.iter() {
-        println!("Changing");
-        println!("Value: {:?}", v);
+    for (e, s, _r) in query.iter() {
         commands.insert_one(
             e,
             Transform {
-                translation: (*v.as_array()).into(),
+                translation: (*s.0.as_array()).into(),
                 rotation: Quat::identity(),
                 scale: Vec3::one(),
             },
@@ -163,6 +125,35 @@ fn cube_rand(
     }
 }
 
+struct Remesh;
+struct ChunkMeshes(Vec<Entity>);
+struct VoxelMaterial(Handle<StandardMaterial>);
+
+fn auto_mesh_system(
+    commands: &mut Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    pool: Res<ComputeTaskPool>,
+    mut query: Query<(
+        Entity,
+        &Remesh,
+        &VoxelMaterial,
+        &ChunkStorage<SimpleVoxel>,
+        &mut ChunkMeshes,
+    )>,
+) {
+    for (e, Remesh, VoxelMaterial(material), storage, mut prev_meshes) in query.iter_mut() {
+        for a in prev_meshes.0.iter() {
+            commands.despawn(*a);
+        }
+        let chunk_meshes = generate_meshes(&storage.map, &pool.0);
+        let chunk_meshes = chunk_meshes
+            .into_iter()
+            .map(|m| create_mesh_entity(e, m, commands, material.clone(), &mut meshes))
+            .collect::<Vec<_>>();
+        *prev_meshes = ChunkMeshes(chunk_meshes);
+        commands.remove_one::<Remesh>(e);
+    }
+}
 fn create_mesh_entity(
     parent: Entity,
     mesh: PosNormMesh,

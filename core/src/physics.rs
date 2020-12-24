@@ -27,21 +27,21 @@ impl Plugin for PhysicsPlugin {
     }
 }
 
-pub struct Timestep(f32);
+pub struct Timestep(pub f32);
 
-pub struct Position(FVec);
-pub struct Rotation(Rot);
+pub struct Position(pub FVec);
+pub struct Rotation(pub Rot);
 
-pub struct Velocity(FVec);
-pub struct AngularVelocity(Rot);
+pub struct Velocity(pub FVec);
+pub struct AngularVelocity(pub Rot);
 
-pub struct Acceleration(FVec);
-pub struct AngularAcceleration(FVec);
+pub struct Acceleration(pub FVec);
+pub struct AngularAcceleration(pub FVec);
 
 /* Figure out how to use */
-pub struct CenterOfMass(FVec);
-pub struct Mass(f32);
-pub struct Inertia(Mat); // TODO: FIGURE OUT HOW TO USE THIS
+pub struct CenterOfMass(pub FVec);
+pub struct Mass(pub f32);
+pub struct Inertia(pub Mat); // TODO: FIGURE OUT HOW TO USE THIS
 
 fn linear_update(
     timestep: Res<Timestep>,
