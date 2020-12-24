@@ -1,0 +1,69 @@
+use crate::geometry::*;
+use bevy::core::FixedTimestep;
+use bevy::prelude::*;
+use bevy::tasks::{ComputeTaskPool, ParallelIterator};
+
+pub struct PhysicsPlugin {
+    pub timestep: f64,
+}
+impl Default for PhysicsPlugin {
+    fn default() -> Self {
+        PhysicsPlugin {
+            timestep: 1000.0 / 60.0,
+        }
+    }
+}
+impl Plugin for PhysicsPlugin {
+    fn build(&self, app: &mut AppBuilder) {
+        app.add_resource(Timestep(self.timestep as f32))
+            .add_stage_after(
+                stage::UPDATE,
+                "physics",
+                SystemStage::parallel()
+                    .with_run_criteria(FixedTimestep::step(self.timestep))
+                    .with_system(linear_update.system())
+                    .with_system(angular_update.system()),
+            );
+    }
+}
+
+pub struct Timestep(f32);
+
+pub struct Position(FVec);
+pub struct Rotation(Rot);
+
+pub struct Velocity(FVec);
+pub struct AngularVelocity(Rot);
+
+pub struct Acceleration(FVec);
+pub struct AngularAcceleration(FVec);
+
+/* Figure out how to use */
+pub struct CenterOfMass(FVec);
+pub struct Mass(f32);
+pub struct Inertia(Mat); // TODO: FIGURE OUT HOW TO USE THIS
+
+fn linear_update(
+    timestep: Res<Timestep>,
+    pool: Res<ComputeTaskPool>,
+    mut query: Query<(&mut Position, &mut Velocity, &mut Acceleration)>,
+) {
+    query
+        .par_iter_mut(32)
+        .for_each(&pool.0, |(mut s, mut v, a)| {
+            v.0 += a.0 * timestep.0;
+            s.0 += v.0 * timestep.0;
+        })
+}
+fn angular_update(
+    timestep: Res<Timestep>,
+    pool: Res<ComputeTaskPool>,
+    mut query: Query<(&mut Position, &mut Velocity, &mut Acceleration)>,
+) {
+    query
+        .par_iter_mut(32)
+        .for_each(&pool.0, |(mut s, mut v, a)| {
+            v.0 += a.0 * timestep.0;
+            s.0 += v.0 * timestep.0;
+        })
+}

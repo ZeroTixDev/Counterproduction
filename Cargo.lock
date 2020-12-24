@@ -1261,6 +1261,7 @@ dependencies = [
 name = "counterproduction-core"
 version = "1.0.0"
 dependencies = [
+ "bevy",
  "building-blocks",
  "cargo-husky",
  "derive-new",

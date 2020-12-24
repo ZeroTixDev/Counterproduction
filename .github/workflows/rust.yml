@@ -21,6 +21,7 @@ jobs:
         toolchain: nightly
         override: true
         components: rustfmt, clippy
+    - run: sudo apt install libasound2-dev libudev-dev
     - name: Detect if formatted
       uses: actions-rs/cargo@v1
       with:
@@ -43,6 +44,7 @@ jobs:
         profile: minimal
         toolchain: nightly
         override: true
+    - run: sudo apt install libasound2-dev libudev-dev
     - name: Attempt build
       uses: actions-rs/cargo@v1
       with:

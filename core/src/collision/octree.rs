@@ -2,7 +2,7 @@ use super::*;
 use crate::collision::cube::collide_cube_sloppy;
 use crate::collision::cube::Cube;
 use crate::geometry::IVec;
-use crate::geometry::Isometry;
+use crate::geometry::Iso;
 
 use building_blocks::storage::octree::OctreeNode;
 use building_blocks::storage::octree::OctreeSet as Octree;
@@ -20,7 +20,7 @@ impl CollisionResolver for OctreeCollisionResolver {
     ) -> VoxelCollisionList<Self::Position> {
         debug_assert!(a.object.edge_length() == b.object.edge_length());
         fn collision_cube(x: OctreeNode, e: &Positioned<Octree>) -> Positioned<Cube> {
-            let mut transform = Isometry::new(e.position, e.rotation);
+            let mut transform = Iso::new(e.position, e.rotation);
             let size = (x.octant().edge_length() as f32) / 2.0;
             let min_vec = x.octant().minimum().0;
             let min_vec: FVec = FVec::new(min_vec[0] as f32, min_vec[1] as f32, min_vec[2] as f32);
