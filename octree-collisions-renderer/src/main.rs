@@ -10,9 +10,9 @@ use building_blocks::mesh::*;
 use building_blocks::prelude::*;
 use counterproduction_core::geometry::FVec;
 use counterproduction_core::geometry::IVec;
-use counterproduction_core::geometry::Rot;
 use counterproduction_core::physics::Position;
-use counterproduction_core::physics::Rotation;
+use counterproduction_core::physics::*;
+
 use counterproduction_core::storage::chunk_map::ChunkStorage;
 use counterproduction_core::storage::*;
 use voxel::*;
@@ -24,10 +24,12 @@ fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
         .add_plugin(OrbitCameraPlugin)
+        .add_plugin(PhysicsPlugin::default())
         .add_startup_system(startup.system())
         .add_startup_system(startup_create_storage.system())
         .add_system(display_sync_transform_system.system())
         .add_system(auto_mesh_system.system())
+        .add_system(octree_generator.system())
         .run();
 }
 
@@ -58,29 +60,67 @@ fn startup_create_storage(
     commands: &mut Commands,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let mut storage = ChunkStorage::new(Empty.into(), 16);
-    cube(&mut storage, IVec::new(0, 0, 0), 5);
-    cube(&mut storage, IVec::new(10, 3, 0), 2);
-    cube_rand(&mut storage, IVec::new(-30, 20, -50), 10, 0.2);
-    commands.spawn((
-        Remesh,
-        VoxelMaterial(materials.add(StandardMaterial {
-            albedo: Color::rgb_u8(54, 75, 110),
-            ..Default::default()
-        })),
-        storage,
-        ChunkMeshes(vec![]),
-        FVec::new(10.0, 0.0, 15.0),
-        Rot::identity(),
-        GlobalTransform::default(),
-    ));
+    {
+        let mut storage = ChunkStorage::new(Empty.into(), 16);
+        cube(&mut storage, IVec::new(0, 0, 0), 5);
+        commands.spawn((
+            Remesh,
+            VoxelMaterial(materials.add(StandardMaterial {
+                albedo: Color::rgb_u8(54, 75, 110),
+                ..Default::default()
+            })),
+            storage,
+            ChunkMeshes(vec![]),
+            Position(FVec::new(0.0, 0.0, 15.0)),
+            Velocity(FVec::new(0.0, 0.0, -1.0)),
+            Force(FVec::new(0.0, 0.0, 0.0)),
+            InvMass(1.0),
+            GlobalTransform::default(),
+        ));
+    }
+    {
+        let mut storage = ChunkStorage::new(Empty.into(), 16);
+        cube(&mut storage, IVec::new(0, 0, 0), 5);
+        commands.spawn((
+            Remesh,
+            VoxelMaterial(materials.add(StandardMaterial {
+                albedo: Color::rgb_u8(110, 54, 75),
+                ..Default::default()
+            })),
+            storage,
+            ChunkMeshes(vec![]),
+            Position(FVec::new(0.0, 0.0, 0.0)),
+            Velocity(FVec::new(0.0, 0.0, 0.0)),
+            Force(FVec::new(0.0, 0.0, 0.0)),
+            InvMass(1.0),
+            GlobalTransform::default(),
+        ));
+    }
+}
+
+fn octree_generator(
+    commands: &mut Commands,
+    query: Query<(Entity, &ChunkStorage<SimpleVoxel>), Without<OctreeSet>>,
+) {
+    fn next_pow(a: i32) -> i32 {
+        (a as u32).next_power_of_two() as i32
+    }
+    for (e, storage) in query.iter() {
+        let map = &storage.map;
+        let mut extent = map.bounding_extent();
+        let shape = extent.shape.0;
+        extent.shape = PointN([next_pow(shape[0]), next_pow(shape[1]), next_pow(shape[2])]);
+        let mut array = Array3::fill(extent, SimpleVoxel::from(Empty));
+        copy_extent(&extent, map, &mut array);
+        commands.insert_one(e, OctreeSet::from_array3(&array, extent));
+    }
 }
 
 fn display_sync_transform_system(
     commands: &mut Commands,
-    query: Query<(Entity, &Position, &Rotation), Or<(Changed<Position>, Changed<Rotation>)>>,
+    query: Query<(Entity, &Position) /* , Or<(Changed<Position>, Changed<Rotation>)> */>,
 ) {
-    for (e, s, _r) in query.iter() {
+    for (e, s) in query.iter() {
         commands.insert_one(
             e,
             Transform {
@@ -107,6 +147,7 @@ fn cube(
     }
 }
 
+#[allow(dead_code)]
 fn cube_rand(
     storage: &mut impl VoxelStorage<T = SimpleVoxel, Position = IVec>,
     center: IVec,

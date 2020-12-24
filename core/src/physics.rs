@@ -9,7 +9,7 @@ pub struct PhysicsPlugin {
 impl Default for PhysicsPlugin {
     fn default() -> Self {
         PhysicsPlugin {
-            timestep: 1000.0 / 60.0,
+            timestep: 1.0 / 60.0,
         }
     }
 }
@@ -21,8 +21,7 @@ impl Plugin for PhysicsPlugin {
                 "physics",
                 SystemStage::parallel()
                     .with_run_criteria(FixedTimestep::step(self.timestep))
-                    .with_system(linear_update.system())
-                    .with_system(angular_update.system()),
+                    .with_system(linear_update.system()), // .with_system(angular_update.system()),
             );
     }
 }
@@ -35,35 +34,39 @@ pub struct Rotation(pub Rot);
 pub struct Velocity(pub FVec);
 pub struct AngularVelocity(pub Rot);
 
-pub struct Acceleration(pub FVec);
-pub struct AngularAcceleration(pub FVec);
+pub struct Force(pub FVec);
+pub struct Torque(pub FVec);
 
 /* Figure out how to use */
-pub struct CenterOfMass(pub FVec);
+// pub struct CenterOfMass(pub FVec);
 pub struct Mass(pub f32);
-pub struct Inertia(pub Mat); // TODO: FIGURE OUT HOW TO USE THIS
+// pub struct Inertia(pub Mat); // TODO: FIGURE OUT HOW TO USE THIS
+pub struct InvMass(pub f32);
 
 fn linear_update(
     timestep: Res<Timestep>,
     pool: Res<ComputeTaskPool>,
-    mut query: Query<(&mut Position, &mut Velocity, &mut Acceleration)>,
+    mut query: Query<(&mut Position, &mut Velocity, &mut Force, &InvMass)>,
 ) {
     query
         .par_iter_mut(32)
-        .for_each(&pool.0, |(mut s, mut v, a)| {
-            v.0 += a.0 * timestep.0;
+        .for_each(&pool.0, |(mut s, mut v, mut f, im)| {
+            v.0 += f.0 * im.0 * timestep.0;
             s.0 += v.0 * timestep.0;
+            f.0 = FVec::zero();
         })
 }
+/*
 fn angular_update(
     timestep: Res<Timestep>,
     pool: Res<ComputeTaskPool>,
-    mut query: Query<(&mut Position, &mut Velocity, &mut Acceleration)>,
+    mut query: Query<(&mut Position, &mut Velocity, &mut Torque, &Inertia)>,
 ) {
     query
         .par_iter_mut(32)
-        .for_each(&pool.0, |(mut s, mut v, a)| {
+        .for_each(&pool.0, |(mut s, mut v, mut t, i)| {
             v.0 += a.0 * timestep.0;
             s.0 += v.0 * timestep.0;
         })
 }
+*/
