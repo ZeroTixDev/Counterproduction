@@ -21,10 +21,12 @@
 //! wheel to zoom.
 
 use bevy::input::mouse::MouseMotion;
-use bevy::input::mouse::MouseScrollUnit::Line;
+use bevy::input::mouse::MouseScrollUnit::{Line, Pixel};
 use bevy::input::mouse::MouseWheel;
 use bevy::prelude::*;
 use bevy::render::camera::Camera;
+
+const LINE_TO_PIXEL_RATIO: f32 = 0.1;
 
 #[derive(Default)]
 struct State {
@@ -103,11 +105,10 @@ impl OrbitCameraPlugin {
     ) {
         let mut total = 0.0;
         for event in state.scroll.iter(&mouse_wheel_events) {
-            if let Line = event.unit {
-                total += event.y;
-            } else {
-                panic!("Invalid Scroll Event: {:?}", event);
-            }
+            total += event.y * match event.unit {
+                Line => 1.0,
+                Pixel => LINE_TO_PIXEL_RATIO,
+            };
         }
         for (mut camera, mut transform, _) in query.iter_mut() {
             camera.distance *= camera.zoom_sensitivity.powf(total);

@@ -21,9 +21,25 @@ impl Plugin for PhysicsPlugin {
                 "physics",
                 SystemStage::parallel()
                     .with_run_criteria(FixedTimestep::step(self.timestep))
-                    .with_system(linear_update.system()), // .with_system(angular_update.system()),
+                    // .with_system(linear_update.system()),
+                    // .with_system(angular_update.system()),
             );
     }
+}
+
+pub struct PhysicsBundle {
+    position: Position,
+    rotation: Rotation,
+    momentum: AngularMomentum,
+    angular_momentum: AngularMomentum,
+    force: Force,
+    torque: Torque,
+    total_mass_position: TotalMassPosition,
+    center_of_mass: CenterOfMass,
+    mass: Mass,
+    inertia: Inertia,
+    inv_mass: InvMass,
+    inv_inertia: InvInertia,
 }
 
 pub struct Timestep(pub f32);
@@ -31,18 +47,23 @@ pub struct Timestep(pub f32);
 pub struct Position(pub FVec);
 pub struct Rotation(pub Rot);
 
-pub struct Velocity(pub FVec);
-pub struct AngularVelocity(pub Rot);
+pub struct Momentum(pub FVec);
+pub struct AngularMomentum(pub FVec);
 
 pub struct Force(pub FVec);
 pub struct Torque(pub FVec);
 
-/* Figure out how to use */
-// pub struct CenterOfMass(pub FVec);
-pub struct Mass(pub f32);
-// pub struct Inertia(pub Mat); // TODO: FIGURE OUT HOW TO USE THIS
-pub struct InvMass(pub f32);
+// The sum of the positions of all the masses within the object.
+pub struct TotalMassPosition(pub [i64; 3]);
+// The center of mass relative to the object.
+pub struct CenterOfMass(pub FVec);
 
+// i64 in case of exotic matter types.
+pub struct Mass(pub i64);
+pub struct Inertia(pub [[i64; 3]; 3]);
+pub struct InvMass(pub i64);
+pub struct InvInertia(pub Mat);
+/*
 fn linear_update(
     timestep: Res<Timestep>,
     pool: Res<ComputeTaskPool>,
@@ -56,6 +77,7 @@ fn linear_update(
             f.0 = FVec::zero();
         })
 }
+*/
 /*
 fn angular_update(
     timestep: Res<Timestep>,
