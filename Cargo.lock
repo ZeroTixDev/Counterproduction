@@ -2962,6 +2962,7 @@ dependencies = [
  "building-blocks",
  "counterproduction-core",
  "enum_dispatch",
+ "itertools",
  "rand 0.8.0",
  "ultraviolet",
 ]

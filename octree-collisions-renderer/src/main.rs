@@ -8,10 +8,13 @@ use bevy::tasks::TaskPool;
 use bevy_orbit_controls::*;
 use building_blocks::mesh::*;
 use building_blocks::prelude::*;
+use counterproduction_core::collision::{octree::OctreeCollisionResolver, *};
 use counterproduction_core::geometry::FVec;
 use counterproduction_core::geometry::IVec;
+use counterproduction_core::geometry::Rot;
 use counterproduction_core::physics::Position;
 use counterproduction_core::physics::*;
+use itertools::Itertools;
 
 use counterproduction_core::storage::chunk_map::ChunkStorage;
 use counterproduction_core::storage::*;
@@ -30,6 +33,7 @@ fn main() {
         .add_system(display_sync_transform_system.system())
         .add_system(auto_mesh_system.system())
         .add_system(octree_generator.system())
+        .add_system(octree_collide.system())
         .run();
 }
 
@@ -64,14 +68,14 @@ fn startup_create_storage(
         let mut storage = ChunkStorage::new(Empty.into(), 16);
         cube(&mut storage, IVec::new(0, 0, 0), 5);
         commands.spawn((
-            Remesh,
             VoxelMaterial(materials.add(StandardMaterial {
                 albedo: Color::rgb_u8(54, 75, 110),
                 ..Default::default()
             })),
             storage,
             ChunkMeshes(vec![]),
-            Position(FVec::new(0.0, 0.0, 15.0)),
+            Position(FVec::new(1.0, 1.0, 50.0)),
+            Rotation(Rot::identity()),
             Velocity(FVec::new(0.0, 0.0, -1.0)),
             Force(FVec::new(0.0, 0.0, 0.0)),
             InvMass(1.0),
@@ -82,7 +86,6 @@ fn startup_create_storage(
         let mut storage = ChunkStorage::new(Empty.into(), 16);
         cube(&mut storage, IVec::new(0, 0, 0), 5);
         commands.spawn((
-            Remesh,
             VoxelMaterial(materials.add(StandardMaterial {
                 albedo: Color::rgb_u8(110, 54, 75),
                 ..Default::default()
@@ -90,6 +93,7 @@ fn startup_create_storage(
             storage,
             ChunkMeshes(vec![]),
             Position(FVec::new(0.0, 0.0, 0.0)),
+            Rotation(Rot::identity()),
             Velocity(FVec::new(0.0, 0.0, 0.0)),
             Force(FVec::new(0.0, 0.0, 0.0)),
             InvMass(1.0),
@@ -98,9 +102,28 @@ fn startup_create_storage(
     }
 }
 
+fn octree_collide(query: Query<(Entity, &OctreeSet, &Position, &Rotation)>) {
+    for ((e1, o1, p1, r1), (e2, o2, p2, r2)) in query
+        .iter()
+        .collect::<Vec<_>>()
+        .into_iter()
+        .tuple_combinations()
+    {
+        let x = Positioned::new(o1, p1.0, r1.0);
+        let y = Positioned::new(o2, p2.0, r2.0);
+        let collisions = OctreeCollisionResolver::collide(x, y);
+        if !collisions.is_empty() {
+            println!(
+                "Entities {:?} and {:?} have collided:\n{:?}",
+                e1, e2, collisions
+            );
+        }
+    }
+}
+
 fn octree_generator(
     commands: &mut Commands,
-    query: Query<(Entity, &ChunkStorage<SimpleVoxel>), Without<OctreeSet>>,
+    query: Query<(Entity, &ChunkStorage<SimpleVoxel>), Changed<ChunkStorage<SimpleVoxel>>>,
 ) {
     fn next_pow(a: i32) -> i32 {
         (a as u32).next_power_of_two() as i32
@@ -112,6 +135,7 @@ fn octree_generator(
         extent.shape = PointN([next_pow(shape[0]), next_pow(shape[1]), next_pow(shape[2])]);
         let mut array = Array3::fill(extent, SimpleVoxel::from(Empty));
         copy_extent(&extent, map, &mut array);
+        println!("Insertion");
         commands.insert_one(e, OctreeSet::from_array3(&array, extent));
     }
 }
@@ -166,7 +190,6 @@ fn cube_rand(
     }
 }
 
-struct Remesh;
 struct ChunkMeshes(Vec<Entity>);
 struct VoxelMaterial(Handle<StandardMaterial>);
 
@@ -174,15 +197,17 @@ fn auto_mesh_system(
     commands: &mut Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     pool: Res<ComputeTaskPool>,
-    mut query: Query<(
-        Entity,
-        &Remesh,
-        &VoxelMaterial,
-        &ChunkStorage<SimpleVoxel>,
-        &mut ChunkMeshes,
-    )>,
+    mut query: Query<
+        (
+            Entity,
+            &VoxelMaterial,
+            &ChunkStorage<SimpleVoxel>,
+            &mut ChunkMeshes,
+        ),
+        Changed<ChunkStorage<SimpleVoxel>>,
+    >,
 ) {
-    for (e, Remesh, VoxelMaterial(material), storage, mut prev_meshes) in query.iter_mut() {
+    for (e, VoxelMaterial(material), storage, mut prev_meshes) in query.iter_mut() {
         for a in prev_meshes.0.iter() {
             commands.despawn(*a);
         }
@@ -192,7 +217,6 @@ fn auto_mesh_system(
             .map(|m| create_mesh_entity(e, m, commands, material.clone(), &mut meshes))
             .collect::<Vec<_>>();
         *prev_meshes = ChunkMeshes(chunk_meshes);
-        commands.remove_one::<Remesh>(e);
     }
 }
 fn create_mesh_entity(

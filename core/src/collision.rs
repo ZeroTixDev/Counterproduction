@@ -26,7 +26,7 @@ pub struct CollisionResult {
 
 pub type VoxelCollisionList<P> = Vec<(P, P, CollisionResult)>;
 
-trait CollisionResolver {
+pub trait CollisionResolver {
     type Collider;
     type Position;
     fn collide(

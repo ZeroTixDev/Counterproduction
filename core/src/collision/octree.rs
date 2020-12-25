@@ -3,23 +3,24 @@ use crate::collision::cube::collide_cube_sloppy;
 use crate::collision::cube::Cube;
 use crate::geometry::IVec;
 use crate::geometry::Iso;
+use std::marker::PhantomData;
 
 use building_blocks::storage::octree::OctreeNode;
 use building_blocks::storage::octree::OctreeSet as Octree;
 use building_blocks::storage::octree::OffsetTable;
 use either::*;
 
-pub struct OctreeCollisionResolver;
+pub struct OctreeCollisionResolver<'a>(PhantomData<&'a ()>);
 
-impl CollisionResolver for OctreeCollisionResolver {
-    type Collider = Octree;
+impl<'a> CollisionResolver for OctreeCollisionResolver<'a> {
+    type Collider = &'a Octree;
     type Position = IVec;
     fn collide(
         a: Positioned<Self::Collider>,
         b: Positioned<Self::Collider>,
     ) -> VoxelCollisionList<Self::Position> {
         debug_assert!(a.object.edge_length() == b.object.edge_length());
-        fn collision_cube(x: OctreeNode, e: &Positioned<Octree>) -> Positioned<Cube> {
+        fn collision_cube(x: OctreeNode, e: &Positioned<&Octree>) -> Positioned<Cube> {
             let mut transform = Iso::new(e.position, e.rotation);
             let size = (x.octant().edge_length() as f32) / 2.0;
             let min_vec = x.octant().minimum().0;
@@ -59,7 +60,7 @@ impl CollisionResolver for OctreeCollisionResolver {
 
         fn collide_level(
             current: Vec<OctreeCollision>,
-            entities: (&Positioned<Octree>, &Positioned<Octree>),
+            entities: (&Positioned<&Octree>, &Positioned<&Octree>),
             current_entity_second: bool,
             table: &OffsetTable,
         ) -> Either<Vec<OctreeCollision>, OctreeCollision> {
