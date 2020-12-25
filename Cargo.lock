@@ -77,9 +77,9 @@ dependencies = [
 
 [[package]]
 name = "alsa-sys"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5a0559bcd3f7a482690d98be41c08a43e92f669b179433e95ddf5e8b8fd36a3"
+checksum = "db8fee663d06c4e303404ef5f40488a53e062f89ba8bfed81f42325aafad1527"
 dependencies = [
  "libc",
  "pkg-config",
@@ -817,7 +817,7 @@ checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
 [[package]]
 name = "building-blocks"
 version = "0.4.3"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#932dc707236c3368bd94a3a8f23e2d1fdf2743e2"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#a7274fbe56ce47db428efdb8fad50c6b91c0d304"
 dependencies = [
  "building_blocks_core",
  "building_blocks_image",
@@ -831,7 +831,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_core"
 version = "0.4.3"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#932dc707236c3368bd94a3a8f23e2d1fdf2743e2"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#a7274fbe56ce47db428efdb8fad50c6b91c0d304"
 dependencies = [
  "glam",
  "itertools",
@@ -844,7 +844,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_image"
 version = "0.4.3"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#932dc707236c3368bd94a3a8f23e2d1fdf2743e2"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#a7274fbe56ce47db428efdb8fad50c6b91c0d304"
 dependencies = [
  "building_blocks_core",
  "building_blocks_storage",
@@ -854,7 +854,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_mesh"
 version = "0.4.3"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#932dc707236c3368bd94a3a8f23e2d1fdf2743e2"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#a7274fbe56ce47db428efdb8fad50c6b91c0d304"
 dependencies = [
  "building_blocks_core",
  "building_blocks_storage",
@@ -864,7 +864,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_procgen"
 version = "0.4.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#932dc707236c3368bd94a3a8f23e2d1fdf2743e2"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#a7274fbe56ce47db428efdb8fad50c6b91c0d304"
 dependencies = [
  "building_blocks_core",
 ]
@@ -872,7 +872,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_search"
 version = "0.4.3"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#932dc707236c3368bd94a3a8f23e2d1fdf2743e2"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#a7274fbe56ce47db428efdb8fad50c6b91c0d304"
 dependencies = [
  "building_blocks_core",
  "building_blocks_storage",
@@ -886,7 +886,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_storage"
 version = "0.4.3"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#932dc707236c3368bd94a3a8f23e2d1fdf2743e2"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#a7274fbe56ce47db428efdb8fad50c6b91c0d304"
 dependencies = [
  "bincode",
  "building_blocks_core",
@@ -903,7 +903,7 @@ dependencies = [
 [[package]]
 name = "building_blocks_vox"
 version = "0.4.0"
-source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#932dc707236c3368bd94a3a8f23e2d1fdf2743e2"
+source = "git+https://github.com/iMplode-nZ/building-blocks.git?branch=main#a7274fbe56ce47db428efdb8fad50c6b91c0d304"
 dependencies = [
  "building_blocks_core",
  "building_blocks_storage",
@@ -1265,7 +1265,6 @@ dependencies = [
  "building-blocks",
  "cargo-husky",
  "derive-new",
- "either",
  "ultraviolet",
 ]
 
@@ -3001,9 +3000,9 @@ dependencies = [
 
 [[package]]
 name = "parking_lot_core"
-version = "0.8.1"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7c6d9b8427445284a09c55be860a15855ab580a417ccad9da88f5a06787ced0"
+checksum = "9ccb628cad4f84851442432c60ad8e1f607e29752d0bf072cbd0baf28aa34272"
 dependencies = [
  "cfg-if 1.0.0",
  "instant",
@@ -3157,9 +3156,9 @@ dependencies = [
 
 [[package]]
 name = "quote"
-version = "1.0.7"
+version = "1.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aa563d17ecb180e500da1cfd2b028310ac758de548efdd203e18f283af693f37"
+checksum = "991431c3519a3f36861882da93630ce66b52918dcf1b8e2fd66b397fc96f28df"
 dependencies = [
  "proc-macro2",
 ]
@@ -3374,11 +3373,11 @@ dependencies = [
 
 [[package]]
 name = "ron"
-version = "0.6.3"
+version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10b27f2d1934e1c43458a35bfaaf1aa7550dbb364a53b963c6894c9121bfd6d5"
+checksum = "064ea8613fb712a19faf920022ec8ddf134984f100090764a4e1d768f3827f1f"
 dependencies = [
- "base64 0.12.3",
+ "base64 0.13.0",
  "bitflags",
  "serde",
 ]
@@ -3752,9 +3751,9 @@ checksum = "8fb1df15f412ee2e9dfc1c504260fa695c1c3f10fe9f4a6ee2d2184d7d6450e2"
 
 [[package]]
 name = "syn"
-version = "1.0.54"
+version = "1.0.55"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a2af957a63d6bd42255c359c93d9bfdb97076bd3b820897ce55ffbfbf107f44"
+checksum = "a571a711dddd09019ccc628e1b17fe87c59b09d513c06c026877aa708334f37a"
 dependencies = [
  "proc-macro2",
  "quote",

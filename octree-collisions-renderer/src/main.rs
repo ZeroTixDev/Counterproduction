@@ -109,6 +109,8 @@ fn octree_collide(query: Query<(Entity, &OctreeSet, &Position, &Rotation)>) {
         .into_iter()
         .tuple_combinations()
     {
+        println!("{:?}", o1.power());
+        println!("{:?}", o2.power());
         let x = Positioned::new(o1, p1.0, r1.0);
         let y = Positioned::new(o2, p2.0, r2.0);
         let collisions = OctreeCollisionResolver::collide(x, y);

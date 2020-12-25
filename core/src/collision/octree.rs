@@ -8,7 +8,6 @@ use std::marker::PhantomData;
 use building_blocks::storage::octree::OctreeNode;
 use building_blocks::storage::octree::OctreeSet as Octree;
 use building_blocks::storage::octree::OffsetTable;
-use either::*;
 
 pub struct OctreeCollisionResolver<'a>(PhantomData<&'a ()>);
 
@@ -19,7 +18,7 @@ impl<'a> CollisionResolver for OctreeCollisionResolver<'a> {
         a: Positioned<Self::Collider>,
         b: Positioned<Self::Collider>,
     ) -> VoxelCollisionList<Self::Position> {
-        debug_assert!(a.object.edge_length() == b.object.edge_length());
+        debug_assert!(a.object.power() == b.object.power());
         fn collision_cube(x: OctreeNode, e: &Positioned<&Octree>) -> Positioned<Cube> {
             let mut transform = Iso::new(e.position, e.rotation);
             let size = (x.octant().edge_length() as f32) / 2.0;
@@ -63,13 +62,15 @@ impl<'a> CollisionResolver for OctreeCollisionResolver<'a> {
             entities: (&Positioned<&Octree>, &Positioned<&Octree>),
             current_entity_second: bool,
             table: &OffsetTable,
-        ) -> Either<Vec<OctreeCollision>, OctreeCollision> {
+        ) -> (Vec<OctreeCollision>, Vec<OctreeCollision>) {
+            println!("{:?}", current);
             let mut non_leaf = vec![];
+            let mut leaf = vec![];
             let entities = swap(entities, current_entity_second);
             for tuple in current.into_iter() {
                 let (a, b, collision) = swap_first(tuple, current_entity_second);
                 if a.is_leaf() && b.is_leaf() {
-                    return Right(swap_first((a, b, collision), current_entity_second));
+                    leaf.push(swap_first((a, b, collision), current_entity_second));
                 } else if a.is_leaf() {
                     non_leaf.push(swap_first((a, b, collision), current_entity_second));
                 } else {
@@ -85,7 +86,7 @@ impl<'a> CollisionResolver for OctreeCollisionResolver<'a> {
                     }
                 }
             }
-            Left(non_leaf)
+            (non_leaf, leaf)
         }
 
         let mut all_collisions = vec![];
@@ -95,16 +96,14 @@ impl<'a> CollisionResolver for OctreeCollisionResolver<'a> {
         for _ in 0..a.object.power() * 2 {
             current_entity_second = !current_entity_second;
             let mut next_collisions = vec![];
-            match collide_level(
+            let (non_leaf, leaf) = collide_level(
                 last_collisions,
                 entities,
                 current_entity_second,
                 &offset_table,
-            ) {
-                Left(collisions) => next_collisions.extend(collisions),
-                Right(leaf_collision) => all_collisions.push(leaf_collision),
-            }
-
+            );
+            next_collisions.extend(non_leaf);
+            all_collisions.extend(leaf);
             last_collisions = next_collisions;
         }
         all_collisions
