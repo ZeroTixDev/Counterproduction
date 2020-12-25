@@ -2,7 +2,23 @@
 //!
 //! # Usage
 //!
-//! See `test/main.rs` for an example.
+//! Register the `OrbitCameraPlugin`, and add the `OrbitCamera` struct to the
+//! entity containing the camera.
+//!
+//! For example, within the startup system:
+//!
+//! ```ignore
+//! commands
+//!     .spawn(Camera3dBundle {
+//!         transform: Transform::from_translation(Vec3::new(-3.0, 3.0, 5.0))
+//!             .looking_at(Vec3::default(), Vec3::unit_y()),
+//!         ..Default::default()
+//!     })
+//!     .with(OrbitCamera::default());
+//! ```
+//!
+//! To control the camera, use dragging (left button) to rotate and the mouse
+//! wheel to zoom.
 
 use bevy::input::mouse::MouseMotion;
 use bevy::input::mouse::MouseScrollUnit::Line;
@@ -32,6 +48,19 @@ impl Default for OrbitCamera {
             y: 0.0,
             distance: 5.0,
             center: Vec3::zero(),
+            rotate_sensitivity: 1.0,
+            zoom_sensitivity: 0.8,
+        }
+    }
+}
+
+impl OrbitCamera {
+    pub fn new(dist: f32, center: Vec3) -> OrbitCamera {
+        OrbitCamera {
+            x: 0.0,
+            y: 0.0,
+            distance: dist,
+            center,
             rotate_sensitivity: 1.0,
             zoom_sensitivity: 0.8,
         }
