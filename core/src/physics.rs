@@ -27,19 +27,55 @@ impl Plugin for PhysicsPlugin {
     }
 }
 
+#[derive(Bundle)]
 pub struct PhysicsBundle {
-    position: Position,
-    rotation: Rotation,
-    momentum: AngularMomentum,
-    angular_momentum: AngularMomentum,
-    force: Force,
-    torque: Torque,
-    total_mass_position: TotalMassPosition,
-    center_of_mass: CenterOfMass,
-    mass: Mass,
-    inertia: Inertia,
-    inv_mass: InvMass,
-    inv_inertia: InvInertia,
+    pub position: Position,
+    pub rotation: Rotation,
+    pub momentum: Momentum,
+    pub angular_momentum: AngularMomentum,
+    pub force: Force,
+    pub torque: Torque,
+    pub total_mass_position: TotalMassPosition,
+    pub center_of_mass: CenterOfMass,
+    pub mass: Mass,
+    pub inertia: Inertia,
+    pub inv_mass: InvMass,
+    pub inv_inertia: InvInertia,
+}
+
+impl PhysicsBundle {
+    fn new(
+        position: FVec,
+        rotation: Rot,
+        velocity: FVec,
+        angular_velocity: Rot,
+        masses_iter: impl Iterator<Item = (IVec, i64)>,
+    ) -> Self {
+        let mut total_mass = 0;
+        let mut total_mass_position = LVec::zero();
+        let mut total_inertia = ULMat::zero();
+        for (pos, mass) in masses_iter {
+            total_mass_position += LVec::from(pos) * mass;
+            total_mass += mass;
+        }
+        let inv_mass = 1.0 / (total_mass as f32);
+        let inertia_mat = total_inertia.as_f32();
+        let inv_inertia = inertia_mat.inversed();
+        PhysicsBundle {
+            position: Position(position),
+            rotation: Rotation(rotation),
+            momentum: Momentum((total_mass as f32) * velocity),
+            angular_momentum: AngularMomentum(/*inertia_mat * angular_velocity*/todo!()),
+            force: Force(FVec::zero()),
+            torque: Torque(FVec::zero()),
+            total_mass_position: TotalMassPosition(total_mass_position),
+            center_of_mass: CenterOfMass(total_mass_position.as_f32() / (total_mass as f32)),
+            mass: Mass(total_mass),
+            inertia: Inertia(total_inertia),
+            inv_mass: InvMass(inv_mass),
+            inv_inertia: InvInertia(inv_inertia),
+        }
+    }
 }
 
 pub struct Timestep(pub f32);
@@ -54,15 +90,17 @@ pub struct Force(pub FVec);
 pub struct Torque(pub FVec);
 
 // The sum of the positions of all the masses within the object.
-pub struct TotalMassPosition(pub [i64; 3]);
+pub struct TotalMassPosition(pub LVec);
 // The center of mass relative to the object.
 pub struct CenterOfMass(pub FVec);
 
 // i64 in case of exotic matter types.
 pub struct Mass(pub i64);
-pub struct Inertia(pub [[i64; 3]; 3]);
-pub struct InvMass(pub i64);
-pub struct InvInertia(pub Mat);
+// The inertia of an object with respect to the object's space.
+pub struct Inertia(pub ULMat);
+pub struct InvMass(pub f32);
+pub struct InvInertia(pub FMat);
+
 /*
 fn linear_update(
     timestep: Res<Timestep>,
