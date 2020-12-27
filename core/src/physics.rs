@@ -2,6 +2,9 @@ use crate::geometry::*;
 use bevy::core::FixedTimestep;
 use bevy::prelude::*;
 use bevy::tasks::{ComputeTaskPool, ParallelIterator};
+use std::ops::Add;
+use std::ops::Mul;
+use std::ops::Neg;
 
 pub struct PhysicsPlugin {
     pub timestep: f64,
@@ -44,19 +47,20 @@ pub struct PhysicsBundle {
 }
 
 impl PhysicsBundle {
-    fn new(
+    pub fn new(
         position: FVec,
         rotation: Rot,
         velocity: FVec,
-        angular_velocity: Rot,
+        angular_velocity: FVec, // Somehow. Figure out conversions.
         masses_iter: impl Iterator<Item = (IVec, i64)>,
     ) -> Self {
         let mut total_mass = 0;
         let mut total_mass_position = LVec::zero();
-        let mut total_inertia = ULMat::zero();
+        let mut total_inertia = LMat::zero();
         for (pos, mass) in masses_iter {
             total_mass_position += LVec::from(pos) * mass;
             total_mass += mass;
+            total_inertia += inertia_of(LVec::from(pos).into(), mass).into();
         }
         let inv_mass = 1.0 / (total_mass as f32);
         let inertia_mat = total_inertia.as_f32();
@@ -65,7 +69,7 @@ impl PhysicsBundle {
             position: Position(position),
             rotation: Rotation(rotation),
             momentum: Momentum((total_mass as f32) * velocity),
-            angular_momentum: AngularMomentum(/* inertia_mat * angular_velocity */ todo!()),
+            angular_momentum: AngularMomentum(inertia_mat * angular_velocity),
             force: Force(FVec::zero()),
             torque: Torque(FVec::zero()),
             total_mass_position: TotalMassPosition(total_mass_position),
@@ -77,7 +81,6 @@ impl PhysicsBundle {
         }
     }
 }
-
 pub struct Timestep(pub f32);
 
 pub struct Position(pub FVec);
@@ -91,42 +94,36 @@ pub struct Torque(pub FVec);
 
 // The sum of the positions of all the masses within the object.
 pub struct TotalMassPosition(pub LVec);
-// The center of mass relative to the object.
+// The center of mass relative to the object's origin.
 pub struct CenterOfMass(pub FVec);
 
-// i64 in case of exotic matter types.
 pub struct Mass(pub i64);
-// The inertia of an object with respect to the object's space.
-pub struct Inertia(pub ULMat);
+// The inertia of an object with respect to the object's origin.
+pub struct Inertia(pub LMat);
+// == Computed properties == //
 pub struct InvMass(pub f32);
+pub struct InertiaAroundCenterOfMass(pub FMat);
 pub struct InvInertia(pub FMat);
 
-/*
-fn linear_update(
-    timestep: Res<Timestep>,
-    pool: Res<ComputeTaskPool>,
-    mut query: Query<(&mut Position, &mut Velocity, &mut Force, &InvMass)>,
-) {
-    query
-        .par_iter_mut(32)
-        .for_each(&pool.0, |(mut s, mut v, mut f, im)| {
-            v.0 += f.0 * im.0 * timestep.0;
-            s.0 += v.0 * timestep.0;
-            f.0 = FVec::zero();
-        })
+fn inertia_of<T: Add<Output = T> + Mul<Output = T> + Neg<Output = T> + Copy>(
+    pos: [T; 3],
+    mass: T,
+) -> [[T; 3]; 3] {
+    [
+        [
+            mass * (pos[1] * pos[1] + pos[2] * pos[2]),
+            -mass * pos[0] * pos[1],
+            -mass * pos[0] * pos[2],
+        ],
+        [
+            -mass * pos[1] * pos[0],
+            mass * (pos[0] * pos[0] + pos[2] * pos[2]),
+            -mass * pos[1] * pos[2],
+        ],
+        [
+            -mass * pos[2] * pos[0],
+            -mass * pos[2] * pos[1],
+            mass * (pos[0] * pos[0] + pos[1] * pos[1]),
+        ],
+    ]
 }
-*/
-/*
-fn angular_update(
-    timestep: Res<Timestep>,
-    pool: Res<ComputeTaskPool>,
-    mut query: Query<(&mut Position, &mut Velocity, &mut Torque, &Inertia)>,
-) {
-    query
-        .par_iter_mut(32)
-        .for_each(&pool.0, |(mut s, mut v, mut t, i)| {
-            v.0 += a.0 * timestep.0;
-            s.0 += v.0 * timestep.0;
-        })
-}
-*/

@@ -97,3 +97,9 @@ impl MulAssign<i64> for LVec {
         self.2 *= other;
     }
 }
+impl Neg for LVec {
+    type Output = Self;
+    fn neg(self) -> Self::Output {
+        LVec(-self.0, -self.1, -self.2)
+    }
+}

@@ -105,10 +105,11 @@ impl OrbitCameraPlugin {
     ) {
         let mut total = 0.0;
         for event in state.scroll.iter(&mouse_wheel_events) {
-            total += event.y * match event.unit {
-                Line => 1.0,
-                Pixel => LINE_TO_PIXEL_RATIO,
-            };
+            total += event.y
+                * match event.unit {
+                    Line => 1.0,
+                    Pixel => LINE_TO_PIXEL_RATIO,
+                };
         }
         for (mut camera, mut transform, _) in query.iter_mut() {
             camera.distance *= camera.zoom_sensitivity.powf(total);
