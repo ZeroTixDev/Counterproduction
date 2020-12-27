@@ -1,5 +1,5 @@
-use crate::geometry::UVec;
 use crate::geometry::FVec;
+use crate::geometry::UVec;
 use std::ops::*;
 
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Default, Debug, Hash)]
@@ -79,16 +79,9 @@ impl SubAssign for ULVec {
     }
 }
 impl Mul for ULVec {
-    type Output = Self;
+    type Output = u64;
     fn mul(self, other: Self) -> Self::Output {
-        ULVec(self.0 * other.0, self.1 * other.1, self.2 * other.2)
-    }
-}
-impl MulAssign for ULVec {
-    fn mul_assign(&mut self, other: Self) {
-        self.0 *= other.0;
-        self.1 *= other.1;
-        self.2 *= other.2;
+        self.0 * other.0 + self.1 * other.1 + self.2 * other.2
     }
 }
 impl Mul<u64> for ULVec {
@@ -102,5 +95,21 @@ impl MulAssign<u64> for ULVec {
         self.0 *= other;
         self.1 *= other;
         self.2 *= other;
+    }
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_vec_multiply() {
+        let x = ULVec::new(1, 2, 3);
+        let y = ULVec::new(4, 5, 6);
+        assert_eq!(x * y, 1 * 4 + 2 * 5 + 3 * 6);
+    }
+    #[test]
+    fn test_conversion() {
+        let x = ULVec::new(1, 2, 3);
+        let y = FVec::new(1.0, 2.0, 3.0);
+        assert_eq!(x.as_f32(), y);
     }
 }

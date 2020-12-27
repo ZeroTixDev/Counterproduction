@@ -65,7 +65,7 @@ impl PhysicsBundle {
             position: Position(position),
             rotation: Rotation(rotation),
             momentum: Momentum((total_mass as f32) * velocity),
-            angular_momentum: AngularMomentum(/*inertia_mat * angular_velocity*/todo!()),
+            angular_momentum: AngularMomentum(/* inertia_mat * angular_velocity */ todo!()),
             force: Force(FVec::zero()),
             torque: Torque(FVec::zero()),
             total_mass_position: TotalMassPosition(total_mass_position),

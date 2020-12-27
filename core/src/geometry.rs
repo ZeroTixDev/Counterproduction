@@ -1,12 +1,12 @@
 use ultraviolet::IVec3;
-use ultraviolet::UVec3;
 use ultraviolet::Isometry3;
 use ultraviolet::Mat3;
 use ultraviolet::Rotor3;
+use ultraviolet::UVec3;
 use ultraviolet::Vec3;
+mod lvec;
 mod ulmat;
 mod ulvec;
-mod lvec;
 pub type FVec = Vec3;
 pub type IVec = IVec3;
 pub type UVec = UVec3;

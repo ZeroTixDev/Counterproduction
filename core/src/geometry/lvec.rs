@@ -1,5 +1,5 @@
-use crate::geometry::IVec;
 use crate::geometry::FVec;
+use crate::geometry::IVec;
 use std::ops::*;
 
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Default, Debug, Hash)]
@@ -79,16 +79,9 @@ impl SubAssign for LVec {
     }
 }
 impl Mul for LVec {
-    type Output = Self;
+    type Output = i64;
     fn mul(self, other: Self) -> Self::Output {
-        LVec(self.0 * other.0, self.1 * other.1, self.2 * other.2)
-    }
-}
-impl MulAssign for LVec {
-    fn mul_assign(&mut self, other: Self) {
-        self.0 *= other.0;
-        self.1 *= other.1;
-        self.2 *= other.2;
+        self.0 * other.0 + self.1 * other.1 + self.2 * other.2
     }
 }
 impl Mul<i64> for LVec {

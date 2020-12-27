@@ -93,22 +93,27 @@ impl SubAssign for ULMat {
 impl Mul for ULMat {
     type Output = Self;
     fn mul(self, other: Self) -> Self::Output {
-        let tr = other.transpose();
-        ULMat(
-            ULVec(
-                (self.0 * tr.0).sum(),
-                (self.0 * tr.1).sum(),
-                (self.0 * tr.2).sum(),
+        let sa = self.0;
+        let sb = self.1;
+        let sc = self.2;
+        let oa = other.0;
+        let ob = other.1;
+        let oc = other.2;
+        ULMat::new(
+            ULVec::new(
+                (sa.0 * oa.0) + (sb.0 * oa.1) + (sc.0 * oa.2),
+                (sa.1 * oa.0) + (sb.1 * oa.1) + (sc.1 * oa.2),
+                (sa.2 * oa.0) + (sb.2 * oa.1) + (sc.2 * oa.2),
             ),
-            ULVec(
-                (self.1 * tr.0).sum(),
-                (self.1 * tr.1).sum(),
-                (self.1 * tr.2).sum(),
+            ULVec::new(
+                (sa.0 * ob.0) + (sb.0 * ob.1) + (sc.0 * ob.2),
+                (sa.1 * ob.0) + (sb.1 * ob.1) + (sc.1 * ob.2),
+                (sa.2 * ob.0) + (sb.2 * ob.1) + (sc.2 * ob.2),
             ),
-            ULVec(
-                (self.2 * tr.0).sum(),
-                (self.2 * tr.1).sum(),
-                (self.2 * tr.2).sum(),
+            ULVec::new(
+                (sa.0 * oc.0) + (sb.0 * oc.1) + (sc.0 * oc.2),
+                (sa.1 * oc.0) + (sb.1 * oc.1) + (sc.1 * oc.2),
+                (sa.2 * oc.0) + (sb.2 * oc.1) + (sc.2 * oc.2),
             ),
         )
     }
@@ -116,11 +121,7 @@ impl Mul for ULMat {
 impl Mul<ULVec> for ULMat {
     type Output = ULVec;
     fn mul(self, other: ULVec) -> ULVec {
-        ULVec(
-            (self.0 * other).sum(),
-            (self.1 * other).sum(),
-            (self.2 * other).sum(),
-        )
+        ULVec(self.0 * other, self.1 * other, self.2 * other)
     }
 }
 impl Mul<u64> for ULMat {
@@ -140,6 +141,7 @@ impl MulAssign<u64> for ULMat {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::geometry::FVec;
     fn test_matrixes(first: ULMat, second: ULMat) {
         let first_f32 = first.as_f32();
         let second_f32 = second.as_f32();
@@ -152,5 +154,19 @@ mod tests {
             ULMat::create([1, 2, 3], [4, 5, 6], [7, 8, 9]),
             ULMat::create([9, 8, 7], [6, 5, 4], [3, 2, 1]),
         );
+    }
+    #[test]
+    fn test_conversion() {
+        let x = ULMat::new(
+            ULVec::new(1, 2, 3),
+            ULVec::new(4, 5, 6),
+            ULVec::new(7, 8, 9),
+        );
+        let y = FMat::new(
+            FVec::new(1.0, 2.0, 3.0),
+            FVec::new(4.0, 5.0, 6.0),
+            FVec::new(7.0, 8.0, 9.0),
+        );
+        assert_eq!(x.as_f32(), y);
     }
 }
