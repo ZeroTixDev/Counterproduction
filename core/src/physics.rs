@@ -5,6 +5,7 @@ use bevy::tasks::{ComputeTaskPool, ParallelIterator};
 use std::ops::Add;
 use std::ops::Mul;
 use std::ops::Neg;
+use ultraviolet::Bivec3;
 
 pub struct PhysicsPlugin {
     pub timestep: f64,
@@ -24,26 +25,39 @@ impl Plugin for PhysicsPlugin {
                 "physics",
                 SystemStage::parallel()
                     .with_run_criteria(FixedTimestep::step(self.timestep))
-                    // .with_system(linear_update.system()),
-                    // .with_system(angular_update.system()),
+                    .with_system(linear_update.system())
+                    .with_system(angular_update.system()),
+            )
+            .add_stage_after(
+                stage::UPDATE,
+                "pre-physics",
+                SystemStage::serial()
+                    .with_system(recompute_after_changed_body.system())
+                    .with_system(recompute_computed_after_changed.system()),
             );
     }
 }
 
 #[derive(Bundle)]
+/// A bundle for physics.
+/// IMPORTANT: DO NOT ADD THIS AFTER THE UPDATE STAGE!
+/// ADDING AFTER THE UPDATE STAGE WILL CAUSE INVALID STATES.
 pub struct PhysicsBundle {
-    pub position: Position,
-    pub rotation: Rotation,
-    pub momentum: Momentum,
-    pub angular_momentum: AngularMomentum,
-    pub force: Force,
-    pub torque: Torque,
-    pub total_mass_position: TotalMassPosition,
-    pub center_of_mass: CenterOfMass,
-    pub mass: Mass,
-    pub inertia: Inertia,
-    pub inv_mass: InvMass,
-    pub inv_inertia: InvInertia,
+    position: Position,
+    rotation: Rotation,
+    momentum: Momentum,
+    angular_momentum: AngularMomentum,
+    force: Force,
+    torque: Torque,
+    total_mass_position: TotalMassPosition,
+    mass: Mass,
+    inertia: Inertia,
+    changed_bodies: ChangedBodies,
+    // Computed fields
+    center_of_mass: CenterOfMass,
+    inv_mass: InvMass,
+    inertia_around_center_of_mass: InertiaAroundCenterOfMass,
+    inv_inertia_around_center_of_mass: InvInertiaAroundCenterOfMass,
 }
 
 impl PhysicsBundle {
@@ -51,7 +65,7 @@ impl PhysicsBundle {
         position: FVec,
         rotation: Rot,
         velocity: FVec,
-        angular_velocity: FVec, // Somehow. Figure out conversions.
+        /* angular_velocity: FVec, */
         masses_iter: impl Iterator<Item = (IVec, i64)>,
     ) -> Self {
         let mut total_mass = 0;
@@ -62,28 +76,31 @@ impl PhysicsBundle {
             total_mass += mass;
             total_inertia += inertia_of(LVec::from(pos).into(), mass).into();
         }
-        let inv_mass = 1.0 / (total_mass as f32);
-        let inertia_mat = total_inertia.as_f32();
-        let inv_inertia = inertia_mat.inversed();
         PhysicsBundle {
             position: Position(position),
             rotation: Rotation(rotation),
             momentum: Momentum((total_mass as f32) * velocity),
-            angular_momentum: AngularMomentum(inertia_mat * angular_velocity),
+            angular_momentum: AngularMomentum(FVec::zero()),
             force: Force(FVec::zero()),
             torque: Torque(FVec::zero()),
             total_mass_position: TotalMassPosition(total_mass_position),
-            center_of_mass: CenterOfMass(total_mass_position.as_f32() / (total_mass as f32)),
             mass: Mass(total_mass),
             inertia: Inertia(total_inertia),
-            inv_mass: InvMass(inv_mass),
-            inv_inertia: InvInertia(inv_inertia),
+            changed_bodies: ChangedBodies(vec![]),
+            // These are all computed in the pre-physics stage.
+            // As such, all of them are default values.
+            center_of_mass: CenterOfMass(FVec::zero()),
+            inv_mass: InvMass(0.0),
+            inertia_around_center_of_mass: InertiaAroundCenterOfMass(FMat::identity()),
+            inv_inertia_around_center_of_mass: InvInertiaAroundCenterOfMass(FMat::identity()),
         }
     }
 }
 pub struct Timestep(pub f32);
 
+// The position of the object's center of mass.
 pub struct Position(pub FVec);
+// The rotation of the object around its center of mass.
 pub struct Rotation(pub Rot);
 
 pub struct Momentum(pub FVec);
@@ -94,16 +111,18 @@ pub struct Torque(pub FVec);
 
 // The sum of the positions of all the masses within the object.
 pub struct TotalMassPosition(pub LVec);
-// The center of mass relative to the object's origin.
-pub struct CenterOfMass(pub FVec);
-
 pub struct Mass(pub i64);
 // The inertia of an object with respect to the object's origin.
 pub struct Inertia(pub LMat);
 // == Computed properties == //
+// The center of mass relative to the object's origin.
+pub struct CenterOfMass(pub FVec);
 pub struct InvMass(pub f32);
 pub struct InertiaAroundCenterOfMass(pub FMat);
-pub struct InvInertia(pub FMat);
+pub struct InvInertiaAroundCenterOfMass(pub FMat);
+
+// A struct representing a change in mass of an object.
+pub struct ChangedBodies(pub Vec<(IVec, i64)>);
 
 fn inertia_of<T: Add<Output = T> + Mul<Output = T> + Neg<Output = T> + Copy>(
     pos: [T; 3],
@@ -127,3 +146,97 @@ fn inertia_of<T: Add<Output = T> + Mul<Output = T> + Neg<Output = T> + Copy>(
         ],
     ]
 }
+
+fn recompute_after_changed_body(
+    pool: Res<ComputeTaskPool>,
+    mut query: Query<(
+        &mut ChangedBodies,
+        &mut TotalMassPosition,
+        &mut Mass,
+        &mut Inertia,
+    )>,
+) {
+    query
+        .par_iter_mut(128)
+        .for_each(&pool.0, |(mut cb, mut tmp, mut m, mut i)| {
+            for (pos, mass) in std::mem::replace(&mut cb.0, vec![]).into_iter() {
+                let pos = LVec::from(pos);
+                m.0 += mass;
+                tmp.0 += pos * mass;
+                i.0 += inertia_of(pos.into(), mass).into();
+            }
+        })
+}
+
+#[allow(clippy::type_complexity)]
+fn recompute_computed_after_changed(
+    pool: Res<ComputeTaskPool>,
+    mut query: Query<
+        (
+            &TotalMassPosition,
+            &Mass,
+            &Inertia,
+            &mut CenterOfMass,
+            &mut InvMass,
+            &mut InertiaAroundCenterOfMass,
+            &mut InvInertiaAroundCenterOfMass,
+        ),
+        Or<(Changed<TotalMassPosition>, Changed<Mass>, Changed<Inertia>)>,
+        // If any of the others are changed, mass is changed.
+    >,
+) {
+    query.par_iter_mut(128).for_each(
+        &pool.0,
+        |(tmp, m, i, mut com, mut im, mut iacom, mut iiacom)| {
+            com.0 = tmp.0.as_f32() / (m.0 as f32);
+            im.0 = 1.0 / (m.0 as f32);
+            iacom.0 = i.0.as_f32() + inertia_of(*com.0.as_array(), m.0 as f32).into();
+            iiacom.0 = iacom.0.inversed();
+        },
+    );
+}
+
+fn linear_update(
+    timestep: Res<Timestep>,
+    pool: Res<ComputeTaskPool>,
+    mut query: Query<(&InvMass, &mut Force, &mut Momentum, &mut Position)>,
+) {
+    let timestep = timestep.0;
+    query
+        .par_iter_mut(128)
+        .for_each(&pool.0, |(im, mut f, mut m, mut p)| {
+            m.0 += timestep * f.0;
+            p.0 += timestep * m.0 * im.0;
+            f.0 = FVec::zero();
+        });
+}
+
+fn angular_update(
+    timestep: Res<Timestep>,
+    pool: Res<ComputeTaskPool>,
+    mut query: Query<(
+        &InvInertiaAroundCenterOfMass,
+        &mut Torque,
+        &mut AngularMomentum,
+        &mut Rotation,
+    )>,
+) {
+    let timestep = timestep.0;
+    query
+        .par_iter_mut(128)
+        .for_each(&pool.0, |(iiacom, mut t, mut am, mut r)| {
+            let rot_mat = r.0.into_matrix();
+            am.0 += timestep * t.0;
+            let w = rot_mat * iiacom.0 * rot_mat.inversed() * am.0;
+            let theta = w.mag();
+            let half = theta / 2.0;
+            let vec = w.normalized() * half.sin();
+            // TODO: TEST THIS EQUATION AND MAKE SURE IT WORKS
+            r.0 += Rot::new(half.cos(), Bivec3::new(vec.z, vec.y, vec.x));
+            t.0 = FVec::zero();
+        });
+}
+
+// Inertia computations taken from http://www.kwon3d.com/theory/moi/triten.html
+// Other physics from both         http://www.cs.cmu.edu/~baraff/sigcourse/notesd1.pdf
+// and                             http://developer.nvidia.com/gpugems/gpugems3/part-v-physics-simulation/chapter-29-real-time-rigid-body-simulation-gpus
