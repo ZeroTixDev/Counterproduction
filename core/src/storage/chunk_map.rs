@@ -1,6 +1,7 @@
-use super::*;
+use super::{IndexableVoxelStorage, VoxelStorage, Writer};
 use crate::geometry::IVec;
 use building_blocks::prelude::*;
+use std::ops::Index;
 use std::sync::atomic::AtomicU32;
 use std::sync::atomic::Ordering;
 
@@ -57,6 +58,14 @@ impl Iterator for PositionIterator {
     }
 }
 
+impl<T: Eq + Copy> crate::for_each::ForEach<(IVec, T)> for ChunkStorage<T> {
+    fn for_each(&self, mut f: impl FnMut((IVec, T))) {
+        let extent = self.map.bounding_extent();
+        self.map
+            .for_each(&extent, |p, t| f((convert_from_point(p), t)));
+    }
+}
+
 impl<T: Eq + Copy> VoxelStorage for ChunkStorage<T> {
     type T = T;
     type Position = IVec;
@@ -72,11 +81,7 @@ impl<T: Eq + Copy> VoxelStorage for ChunkStorage<T> {
             position,
         }
     }
-    fn for_each(&self, mut f: impl FnMut(Self::Position, T)) {
-        let extent = self.map.bounding_extent();
-        self.map
-            .for_each(&extent, |p, t| f(convert_from_point(p), t));
-    }
+
     fn contains(&self, position: Self::Position) -> bool {
         self.map
             .get_chunk_containing_point(&convert_to_point(position))
@@ -106,12 +111,17 @@ impl<T: Eq + Copy> ChunkStorage<T> {
     }
 }
 
-#[test]
-fn test_chunk_storage() {
-    let mut storage = ChunkStorage::new(0, 16);
-    test_storage(&mut storage, 1, IVec::new(0, 0, 0));
-    test_storage(&mut storage, 1, IVec::new(0, 20, 0));
-    test_storage(&mut storage, 1, IVec::new(18, 93, -3));
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::storage::test_storage;
+    #[test]
+    fn test_chunk_storage() {
+        let mut storage = ChunkStorage::new(0, 16);
+        test_storage(&mut storage, 1, IVec::new(0, 0, 0));
+        test_storage(&mut storage, 1, IVec::new(0, 20, 0));
+        test_storage(&mut storage, 1, IVec::new(18, 93, -3));
+    }
 }
 
 impl_index!(ChunkStorage, T);

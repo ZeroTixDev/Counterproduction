@@ -1,3 +1,4 @@
+use crate::for_each::ForEach;
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::ops::Index;
@@ -7,7 +8,8 @@ use std::ops::Index;
 /// Generally, the voxel storage constructor should take in a "default" voxel,
 /// which is used to cull to a reasonable size.
 pub trait VoxelStorage:
-    Index<<Self as VoxelStorage>::Position, Output = <Self as VoxelStorage>::T> {
+    Index<<Self as VoxelStorage>::Position, Output = <Self as VoxelStorage>::T>
+    + ForEach<(<Self as VoxelStorage>::Position, <Self as VoxelStorage>::T)> {
     /// The voxel type.
     type T: Eq + Copy;
     type Position: Eq + Copy;
@@ -17,8 +19,6 @@ pub trait VoxelStorage:
     fn get(&self, position: Self::Position) -> &Self::T;
     /// Gets the voxel at a position, with mutation.
     fn get_mut(&mut self, position: Self::Position) -> Self::Mutator<'_>;
-    /// An iterator over all voxel positions.
-    fn for_each(&self, f: impl FnMut(Self::Position, Self::T));
     /// Whether a position is contained within the storage.
     /// If this is true, then the get_mut Writer set method should be O(1),
     /// and should not allocate any memory

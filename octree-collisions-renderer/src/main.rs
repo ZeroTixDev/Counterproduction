@@ -9,9 +9,7 @@ use bevy_orbit_controls::*;
 use building_blocks::mesh::*;
 use building_blocks::prelude::*;
 use counterproduction_core::collision::{octree::OctreeCollisionResolver, *};
-use counterproduction_core::geometry::FVec;
 use counterproduction_core::geometry::IVec;
-use counterproduction_core::geometry::Rot;
 use counterproduction_core::physics::Position;
 use counterproduction_core::physics::*;
 use itertools::Itertools;
@@ -74,11 +72,6 @@ fn startup_create_storage(
             })),
             storage,
             ChunkMeshes(vec![]),
-            Position(FVec::new(1.0, 1.0, 50.0)),
-            Rotation(Rot::identity()),
-            Velocity(FVec::new(0.0, 0.0, -1.0)),
-            Force(FVec::new(0.0, 0.0, 0.0)),
-            InvMass(1.0),
             GlobalTransform::default(),
         ));
     }
@@ -92,11 +85,6 @@ fn startup_create_storage(
             })),
             storage,
             ChunkMeshes(vec![]),
-            Position(FVec::new(0.0, 0.0, 0.0)),
-            Rotation(Rot::identity()),
-            Velocity(FVec::new(0.0, 0.0, 0.0)),
-            Force(FVec::new(0.0, 0.0, 0.0)),
-            InvMass(1.0),
             GlobalTransform::default(),
         ));
     }

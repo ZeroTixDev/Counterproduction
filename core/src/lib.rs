@@ -3,6 +3,7 @@
 #![feature(generic_associated_types)]
 
 pub mod collision;
+pub mod for_each;
 pub mod geometry;
 pub mod physics;
 pub mod storage;

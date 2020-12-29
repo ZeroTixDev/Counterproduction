@@ -1,3 +1,4 @@
+use crate::for_each::ForEachMut;
 use crate::geometry::*;
 use bevy::core::FixedTimestep;
 use bevy::prelude::*;
@@ -66,16 +67,16 @@ impl PhysicsBundle {
         rotation: Rot,
         velocity: FVec,
         /* angular_velocity: FVec, */
-        masses_iter: impl Iterator<Item = (IVec, i64)>,
+        mut masses_fn: impl ForEachMut<(IVec, i64)>,
     ) -> Self {
         let mut total_mass = 0;
         let mut total_mass_position = LVec::zero();
         let mut total_inertia = LMat::zero();
-        for (pos, mass) in masses_iter {
+        masses_fn.for_each_mut(|(pos, mass)| {
             total_mass_position += LVec::from(pos) * mass;
             total_mass += mass;
             total_inertia += inertia_of(LVec::from(pos).into(), mass).into();
-        }
+        });
         PhysicsBundle {
             position: Position(position),
             rotation: Rotation(rotation),
@@ -157,7 +158,7 @@ fn recompute_after_changed_body(
     )>,
 ) {
     query
-        .par_iter_mut(128)
+        .par_iter_mut(64)
         .for_each(&pool.0, |(mut cb, mut tmp, mut m, mut i)| {
             for (pos, mass) in std::mem::replace(&mut cb.0, vec![]).into_iter() {
                 let pos = LVec::from(pos);
@@ -182,7 +183,6 @@ fn recompute_computed_after_changed(
             &mut InvInertiaAroundCenterOfMass,
         ),
         Or<(Changed<TotalMassPosition>, Changed<Mass>, Changed<Inertia>)>,
-        // If any of the others are changed, mass is changed.
     >,
 ) {
     query.par_iter_mut(128).for_each(
