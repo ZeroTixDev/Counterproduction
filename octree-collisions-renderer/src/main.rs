@@ -8,11 +8,14 @@ use bevy::tasks::TaskPool;
 use bevy_orbit_controls::*;
 use building_blocks::mesh::*;
 use building_blocks::prelude::*;
-use counterproduction_core::collision::{octree::OctreeCollisionResolver, *};
+use counterproduction_core::for_each::ForEach;
+// use counterproduction_core::collision::{octree::OctreeCollisionResolver, *};
+use counterproduction_core::geometry::FVec;
 use counterproduction_core::geometry::IVec;
+use counterproduction_core::geometry::Rot;
 use counterproduction_core::physics::Position;
 use counterproduction_core::physics::*;
-use itertools::Itertools;
+// use itertools::Itertools;
 
 use counterproduction_core::storage::chunk_map::ChunkStorage;
 use counterproduction_core::storage::*;
@@ -31,7 +34,7 @@ fn main() {
         .add_system(display_sync_transform_system.system())
         .add_system(auto_mesh_system.system())
         .add_system(octree_generator.system())
-        .add_system(octree_collide.system())
+        // .add_system(octree_collide.system())
         .run();
 }
 
@@ -65,31 +68,47 @@ fn startup_create_storage(
     {
         let mut storage = ChunkStorage::new(Empty.into(), 16);
         cube(&mut storage, IVec::new(0, 0, 0), 5);
-        commands.spawn((
-            VoxelMaterial(materials.add(StandardMaterial {
-                albedo: Color::rgb_u8(54, 75, 110),
-                ..Default::default()
-            })),
-            storage,
-            ChunkMeshes(vec![]),
-            GlobalTransform::default(),
-        ));
+        let physics = PhysicsBundle::new(
+            FVec::zero(),
+            Rot::identity(),
+            FVec::zero(),
+            storage.for_each_map(|(pos, v)| (pos, v.mass())),
+        );
+        commands
+            .spawn((
+                VoxelMaterial(materials.add(StandardMaterial {
+                    albedo: Color::rgb_u8(54, 75, 110),
+                    ..Default::default()
+                })),
+                storage,
+                ChunkMeshes(vec![]),
+                GlobalTransform::default(),
+            ))
+            .with_bundle(physics);
     }
     {
         let mut storage = ChunkStorage::new(Empty.into(), 16);
         cube(&mut storage, IVec::new(0, 0, 0), 5);
-        commands.spawn((
-            VoxelMaterial(materials.add(StandardMaterial {
-                albedo: Color::rgb_u8(110, 54, 75),
-                ..Default::default()
-            })),
-            storage,
-            ChunkMeshes(vec![]),
-            GlobalTransform::default(),
-        ));
+        let physics = PhysicsBundle::new(
+            FVec::new(15.0, 3.0, 0.0),
+            Rot::identity(),
+            FVec::new(1.0, 0.0, 0.0),
+            storage.for_each_map(|(pos, v)| (pos, v.mass())),
+        );
+        commands
+            .spawn((
+                VoxelMaterial(materials.add(StandardMaterial {
+                    albedo: Color::rgb_u8(110, 54, 75),
+                    ..Default::default()
+                })),
+                storage,
+                ChunkMeshes(vec![]),
+                GlobalTransform::default(),
+            ))
+            .with_bundle(physics);
     }
 }
-
+/*
 fn octree_collide(query: Query<(Entity, &OctreeSet, &Position, &Rotation)>) {
     for ((e1, o1, p1, r1), (e2, o2, p2, r2)) in query
         .iter()
@@ -110,7 +129,7 @@ fn octree_collide(query: Query<(Entity, &OctreeSet, &Position, &Rotation)>) {
         }
     }
 }
-
+*/
 fn octree_generator(
     commands: &mut Commands,
     query: Query<(Entity, &ChunkStorage<SimpleVoxel>), Changed<ChunkStorage<SimpleVoxel>>>,
@@ -139,7 +158,7 @@ fn display_sync_transform_system(
             e,
             Transform {
                 translation: (*s.0.as_array()).into(),
-                rotation: Quat::identity(),
+                rotation: Quat::identity(), // TODO: FIX
                 scale: Vec3::one(),
             },
         );

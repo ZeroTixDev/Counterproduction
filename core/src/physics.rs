@@ -150,12 +150,15 @@ fn inertia_of<T: Add<Output = T> + Mul<Output = T> + Neg<Output = T> + Copy>(
 
 fn recompute_after_changed_body(
     pool: Res<ComputeTaskPool>,
-    mut query: Query<(
-        &mut ChangedBodies,
-        &mut TotalMassPosition,
-        &mut Mass,
-        &mut Inertia,
-    )>,
+    mut query: Query<
+        (
+            &mut ChangedBodies,
+            &mut TotalMassPosition,
+            &mut Mass,
+            &mut Inertia,
+        ),
+        Mutated<ChangedBodies>,
+    >,
 ) {
     query
         .par_iter_mut(64)

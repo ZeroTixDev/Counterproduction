@@ -13,6 +13,7 @@ pub enum SimpleVoxel {
 pub trait SimpleVoxelType: Copy + Eq {
     fn color(self) -> Color;
     fn collidable(self) -> bool;
+    fn mass(self) -> i64;
 }
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct Empty;
@@ -23,6 +24,9 @@ impl SimpleVoxelType for Empty {
     fn collidable(self) -> bool {
         false
     }
+    fn mass(self) -> i64 {
+        0
+    }
 }
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct Solid;
@@ -32,6 +36,9 @@ impl SimpleVoxelType for Solid {
     }
     fn collidable(self) -> bool {
         true
+    }
+    fn mass(self) -> i64 {
+        1
     }
 }
 impl IsEmpty for SimpleVoxel {
