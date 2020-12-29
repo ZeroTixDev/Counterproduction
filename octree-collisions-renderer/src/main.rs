@@ -34,6 +34,7 @@ fn main() {
         .add_system(display_sync_transform_system.system())
         .add_system(auto_mesh_system.system())
         .add_system(octree_generator.system())
+        .add_system(apply_force_to_entity.system())
         // .add_system(octree_collide.system())
         .run();
 }
@@ -86,7 +87,7 @@ fn startup_create_storage(
             ))
             .with_bundle(physics);
     }
-    {
+    /* {
         let mut storage = ChunkStorage::new(Empty.into(), 16);
         cube(&mut storage, IVec::new(0, 0, 0), 5);
         let physics = PhysicsBundle::new(
@@ -106,6 +107,16 @@ fn startup_create_storage(
                 GlobalTransform::default(),
             ))
             .with_bundle(physics);
+    } */
+}
+
+fn apply_force_to_entity(mut query: Query<(&mut Force, &mut Torque, &Position)>) {
+    for q in query.iter_mut() {
+        apply_force(
+            FVec::new(0.5, 1.0, -0.3) * 20.0,
+            q.2 .0 + FVec::new(2.0, 0.3, 7.0),
+            q,
+        );
     }
 }
 /*
@@ -151,14 +162,16 @@ fn octree_generator(
 
 fn display_sync_transform_system(
     commands: &mut Commands,
-    query: Query<(Entity, &Position) /* , Or<(Changed<Position>, Changed<Rotation>)> */>,
+    query: Query<
+        (Entity, &Position, &Rotation), /* , Or<(Changed<Position>, Changed<Rotation>)> */
+    >,
 ) {
-    for (e, s) in query.iter() {
+    for (e, &Position(s), &Rotation(r)) in query.iter() {
         commands.insert_one(
             e,
             Transform {
-                translation: (*s.0.as_array()).into(),
-                rotation: Quat::identity(), // TODO: FIX
+                translation: (*s.as_array()).into(),
+                rotation: Quat::from_xyzw(r.bv.yz, r.bv.xz, r.bv.xy, r.s), // TODO: FIX
                 scale: Vec3::one(),
             },
         );

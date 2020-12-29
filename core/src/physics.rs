@@ -172,6 +172,8 @@ fn recompute_after_changed_body(
         })
 }
 
+/* TODO: CHANGE THE POSITION OF THE OBJECT BASED ON THE CHANGE IN CENTER OF
+ * MASS */
 #[allow(clippy::type_complexity)]
 fn recompute_computed_after_changed(
     pool: Res<ComputeTaskPool>,
@@ -235,9 +237,15 @@ fn angular_update(
             let half = theta / 2.0;
             let vec = w.normalized() * half.sin();
             // TODO: TEST THIS EQUATION AND MAKE SURE IT WORKS
-            r.0 += Rot::new(half.cos(), Bivec3::new(vec.z, vec.y, vec.x));
+            r.0 = Rot::new(half.cos(), Bivec3::new(vec.z, vec.y, vec.x)) * r.0;
             t.0 = FVec::zero();
         });
+}
+
+pub fn apply_force(force: FVec, position: FVec, mut ftp: (Mut<Force>, Mut<Torque>, &Position)) {
+    let delta = position - ftp.2 .0;
+    ftp.0 .0 += force;
+    ftp.1 .0 += force.cross(delta);
 }
 
 // Inertia computations taken from http://www.kwon3d.com/theory/moi/triten.html
