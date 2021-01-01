@@ -167,10 +167,7 @@ fn octree_generator(
 // OF MASS
 fn display_sync_transform_system(
     commands: &mut Commands,
-    query: Query<
-        (Entity, &Position, &Rotation, &CenterOfMass), /* , Or<(Changed<Position>,
-                                                        * Changed<Rotation>)> */
-    >,
+    query: Query<(Entity, &Position, &Rotation, &CenterOfMass)>,
 ) {
     for (e, &Position(s), &Rotation(r), &CenterOfMass(com)) in query.iter() {
         commands.insert_one(
