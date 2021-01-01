@@ -33,6 +33,10 @@ impl LMat {
     pub fn zero() -> Self {
         LMat(LVec::zero(), LVec::zero(), LVec::zero())
     }
+
+    pub fn identity() -> Self {
+        LMat(LVec(1, 0, 0), LVec(0, 1, 0), LVec(0, 0, 1))
+    }
 }
 impl From<[LVec; 3]> for LMat {
     fn from(x: [LVec; 3]) -> Self {

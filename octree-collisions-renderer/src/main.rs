@@ -68,7 +68,7 @@ fn startup_create_storage(
 ) {
     {
         let mut storage = ChunkStorage::new(Empty.into(), 16);
-        cube(&mut storage, IVec::new(0, 0, 0), 5);
+        cube(&mut storage, IVec::new(2, 0, 0), 5);
         let physics = PhysicsBundle::new(
             FVec::zero(),
             Rot::identity(),
@@ -111,11 +111,16 @@ fn startup_create_storage(
 }
 
 fn apply_force_to_entity(mut query: Query<(&mut Force, &mut Torque, &Position)>) {
-    for q in query.iter_mut() {
+    for mut q in query.iter_mut() {
         apply_force(
-            FVec::new(0.5, 1.0, -0.3) * 20.0,
-            q.2 .0 + FVec::new(2.0, 0.3, 7.0),
-            q,
+            FVec::new(1.0, 0.0, 0.0) * 20.0,
+            q.2 .0 + FVec::new(0.0, 0.0, 2.0),
+            &mut q,
+        );
+        apply_force(
+            FVec::new(-1.0, 0.0, 0.0) * 20.0,
+            q.2 .0 + FVec::new(0.0, 0.0, -2.0),
+            &mut q,
         );
     }
 }
@@ -155,22 +160,23 @@ fn octree_generator(
         extent.shape = PointN([next_pow(shape[0]), next_pow(shape[1]), next_pow(shape[2])]);
         let mut array = Array3::fill(extent, SimpleVoxel::from(Empty));
         copy_extent(&extent, map, &mut array);
-        println!("Insertion");
         commands.insert_one(e, OctreeSet::from_array3(&array, extent));
     }
 }
-
+// TODO: FIX THIS SO IT RENDERS AROUND THE ORIGIN OF THE ENTITY NOT THE CENTER
+// OF MASS
 fn display_sync_transform_system(
     commands: &mut Commands,
     query: Query<
-        (Entity, &Position, &Rotation), /* , Or<(Changed<Position>, Changed<Rotation>)> */
+        (Entity, &Position, &Rotation, &CenterOfMass), /* , Or<(Changed<Position>,
+                                                        * Changed<Rotation>)> */
     >,
 ) {
-    for (e, &Position(s), &Rotation(r)) in query.iter() {
+    for (e, &Position(s), &Rotation(r), &CenterOfMass(com)) in query.iter() {
         commands.insert_one(
             e,
             Transform {
-                translation: (*s.as_array()).into(),
+                translation: (*(s - r * com).as_array()).into(),
                 rotation: Quat::from_xyzw(r.bv.yz, r.bv.xz, r.bv.xy, r.s), // TODO: FIX
                 scale: Vec3::one(),
             },
@@ -287,8 +293,6 @@ fn generate_meshes<M: Sync>(
                 let mut padded_chunk = Array3::fill(padded_chunk_extent, Empty.into());
                 copy_extent(&padded_chunk_extent, map_ref, &mut padded_chunk);
 
-                // TODO bevy: we could avoid re-allocating the buffers on every call if we had
-                // thread-local storage accessible from this task
                 let mut buffer = GreedyQuadsBuffer::new(padded_chunk_extent);
                 greedy_quads(&padded_chunk, &padded_chunk_extent, &mut buffer);
 
@@ -297,6 +301,12 @@ fn generate_meshes<M: Sync>(
                     for (quad, _material) in group.quads.iter() {
                         group.face.add_quad_to_pos_norm_mesh(&quad, &mut mesh);
                     }
+                }
+
+                for [x, y, z] in mesh.positions.iter_mut() {
+                    *x -= 0.5;
+                    *y -= 0.5;
+                    *z -= 0.5;
                 }
 
                 if mesh.is_empty() {

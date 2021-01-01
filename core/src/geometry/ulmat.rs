@@ -33,6 +33,10 @@ impl ULMat {
     pub fn zero() -> Self {
         ULMat(ULVec::zero(), ULVec::zero(), ULVec::zero())
     }
+
+    pub fn identity() -> Self {
+        ULMat(ULVec(1, 0, 0), ULVec(0, 1, 0), ULVec(0, 0, 1))
+    }
 }
 impl From<[ULVec; 3]> for ULMat {
     fn from(x: [ULVec; 3]) -> Self {

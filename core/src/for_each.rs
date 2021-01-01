@@ -28,3 +28,11 @@ impl<T, X: ForEach<T>, S, F: Fn(T) -> S> ForEach<S> for ForEachMap<'_, T, X, S, 
         self.0.for_each(|t| f(self.1(t)))
     }
 }
+
+impl<T: Clone> ForEach<T> for Vec<T> {
+    fn for_each(&self, mut f: impl FnMut(T)) {
+        for x in self.iter() {
+            f(x.clone());
+        }
+    }
+}
