@@ -1,4 +1,5 @@
 #![allow(clippy::type_complexity)]
+#![allow(dead_code)]
 use bevy::prelude::*;
 use bevy::render::mesh::Indices;
 use bevy::render::mesh::VertexAttributeValues;
@@ -8,14 +9,15 @@ use bevy::tasks::TaskPool;
 use bevy_orbit_controls::*;
 use building_blocks::mesh::*;
 use building_blocks::prelude::*;
+use counterproduction_core::collision::{octree::OctreeCollisionResolver, *};
 use counterproduction_core::for_each::ForEach;
-// use counterproduction_core::collision::{octree::OctreeCollisionResolver, *};
 use counterproduction_core::geometry::FVec;
 use counterproduction_core::geometry::IVec;
 use counterproduction_core::geometry::Rot;
+use counterproduction_core::octree::octree_set::BBOctreeSet;
 use counterproduction_core::physics::Position;
 use counterproduction_core::physics::*;
-// use itertools::Itertools;
+use itertools::Itertools;
 
 use counterproduction_core::storage::chunk_map::ChunkStorage;
 use counterproduction_core::storage::*;
@@ -34,8 +36,8 @@ fn main() {
         .add_system(display_sync_transform_system.system())
         .add_system(auto_mesh_system.system())
         .add_system(octree_generator.system())
-        .add_system(apply_force_to_entity.system())
-        // .add_system(octree_collide.system())
+        // .add_system(apply_force_to_entity.system())
+        .add_system(octree_collide.system())
         .run();
 }
 
@@ -68,7 +70,7 @@ fn startup_create_storage(
 ) {
     {
         let mut storage = ChunkStorage::new(Empty.into(), 16);
-        cube(&mut storage, IVec::new(2, 0, 0), 5);
+        cube(&mut storage, IVec::zero(), 5);
         let physics = PhysicsBundle::new(
             FVec::zero(),
             Rot::identity(),
@@ -87,13 +89,13 @@ fn startup_create_storage(
             ))
             .with_bundle(physics);
     }
-    /* {
+    {
         let mut storage = ChunkStorage::new(Empty.into(), 16);
-        cube(&mut storage, IVec::new(0, 0, 0), 5);
+        cube(&mut storage, IVec::zero(), 5);
         let physics = PhysicsBundle::new(
             FVec::new(15.0, 3.0, 0.0),
             Rot::identity(),
-            FVec::new(1.0, 0.0, 0.0),
+            FVec::new(-1.0, 0.0, 0.0),
             storage.for_each_map(|(pos, v)| (pos, v.mass())),
         );
         commands
@@ -107,7 +109,7 @@ fn startup_create_storage(
                 GlobalTransform::default(),
             ))
             .with_bundle(physics);
-    } */
+    }
 }
 
 fn apply_force_to_entity(mut query: Query<(&mut Force, &mut Torque, &Position)>) {
@@ -124,47 +126,33 @@ fn apply_force_to_entity(mut query: Query<(&mut Force, &mut Torque, &Position)>)
         );
     }
 }
-/*
-fn octree_collide(query: Query<(Entity, &OctreeSet, &Position, &Rotation)>) {
+fn octree_collide(query: Query<(Entity, &BBOctreeSet, &Position, &Rotation)>) {
     for ((e1, o1, p1, r1), (e2, o2, p2, r2)) in query
         .iter()
         .collect::<Vec<_>>()
         .into_iter()
         .tuple_combinations()
     {
-        println!("{:?}", o1.power());
-        println!("{:?}", o2.power());
         let x = Positioned::new(o1, p1.0, r1.0);
         let y = Positioned::new(o2, p2.0, r2.0);
         let collisions = OctreeCollisionResolver::collide(x, y);
         if !collisions.is_empty() {
             println!(
-                "Entities {:?} and {:?} have collided:\n{:?}",
+                "Entities {:?} and {:?} have collided:\n{:?}\n\n\n",
                 e1, e2, collisions
             );
         }
     }
 }
-*/
 fn octree_generator(
     commands: &mut Commands,
     query: Query<(Entity, &ChunkStorage<SimpleVoxel>), Changed<ChunkStorage<SimpleVoxel>>>,
 ) {
-    fn next_pow(a: i32) -> i32 {
-        (a as u32).next_power_of_two() as i32
-    }
     for (e, storage) in query.iter() {
-        let map = &storage.map;
-        let mut extent = map.bounding_extent();
-        let shape = extent.shape.0;
-        extent.shape = PointN([next_pow(shape[0]), next_pow(shape[1]), next_pow(shape[2])]);
-        let mut array = Array3::fill(extent, SimpleVoxel::from(Empty));
-        copy_extent(&extent, map, &mut array);
-        commands.insert_one(e, OctreeSet::from_array3(&array, extent));
+        commands.insert_one(e, BBOctreeSet::from_chunk_storage(storage));
     }
 }
-// TODO: FIX THIS SO IT RENDERS AROUND THE ORIGIN OF THE ENTITY NOT THE CENTER
-// OF MASS
+
 fn display_sync_transform_system(
     commands: &mut Commands,
     query: Query<(Entity, &Position, &Rotation, &CenterOfMass)>,
@@ -196,7 +184,6 @@ fn cube(
     }
 }
 
-#[allow(dead_code)]
 fn cube_rand(
     storage: &mut impl VoxelStorage<T = SimpleVoxel, Position = IVec>,
     center: IVec,

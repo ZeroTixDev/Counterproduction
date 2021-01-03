@@ -5,5 +5,6 @@
 pub mod collision;
 pub mod for_each;
 pub mod geometry;
+pub mod octree;
 pub mod physics;
 pub mod storage;

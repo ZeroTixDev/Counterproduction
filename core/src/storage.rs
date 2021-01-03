@@ -96,5 +96,5 @@ where
     }
     assert_eq!(*storage.get(pos), ambient);
 }
-
+/* Implementations */
 pub mod chunk_map;

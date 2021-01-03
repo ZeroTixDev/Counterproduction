@@ -87,7 +87,7 @@ impl OrbitCameraPlugin {
                 camera.x -= delta.x * camera.rotate_sensitivity * time.delta_seconds();
                 camera.y -= delta.y * camera.rotate_sensitivity * time.delta_seconds();
 
-                camera.y = camera.y.clamp(0.01, 3.13);
+                camera.y = camera.y.max(0.01).min(3.13);
 
                 let rot = Quat::from_axis_angle(Vec3::unit_y(), camera.x)
                     * Quat::from_axis_angle(-Vec3::unit_x(), camera.y);

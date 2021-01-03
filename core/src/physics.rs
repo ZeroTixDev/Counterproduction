@@ -38,16 +38,16 @@ impl Plugin for PhysicsPlugin {
                     .add_stage_before(
                         "collide",
                         "physics",
-                        SystemStage::serial()
-                            .with_system(recompute_after_changed_body.system())
-                            .with_system(recompute_computed_after_changed.system()),
+                        SystemStage::parallel()
+                            .with_system(linear_update.system())
+                            .with_system(angular_update.system()),
                     )
                     .add_stage_before(
                         "physics",
                         "pre-physics",
-                        SystemStage::parallel()
-                            .with_system(linear_update.system())
-                            .with_system(angular_update.system()),
+                        SystemStage::serial()
+                            .with_system(recompute_after_changed_body.system())
+                            .with_system(recompute_computed_after_changed.system()),
                     )
             },
         );
@@ -208,6 +208,8 @@ fn recompute_after_changed_body(
         })
 }
 
+// TODO: AT THE START, com.0 IS ZERO. MAKE IT SO THAT THE POSITION IS NOT
+// CHANGED DUE TO THIS.
 #[allow(clippy::type_complexity)]
 fn recompute_computed_after_changed(
     pool: Res<ComputeTaskPool>,
@@ -254,6 +256,7 @@ fn linear_update(
             m.0 += timestep * f.0;
             p.0 += timestep * m.0 * im.0;
             f.0 = FVec::zero();
+            debug_assert!(!f32::is_nan(p.0.x) && !f32::is_nan(p.0.y) && !f32::is_nan(p.0.z));
         });
 }
 
@@ -274,12 +277,16 @@ fn angular_update(
             let rot_mat = r.0.into_matrix();
             am.0 += timestep * t.0;
             let w = rot_mat * iiacom.0 * rot_mat.inversed() * am.0;
+            if w == FVec::zero() {
+                return;
+            }
             let theta = w.mag();
             let half = theta / 2.0;
             let vec = w.normalized() * half.sin();
             // TODO: TEST THIS EQUATION AND MAKE SURE IT WORKS
             r.0 = Rot::new(half.cos(), Bivec3::new(vec.z, vec.y, vec.x)) * r.0;
             t.0 = FVec::zero();
+            debug_assert!(!f32::is_nan(r.0.s));
         });
 }
 
