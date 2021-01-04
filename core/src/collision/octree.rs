@@ -46,7 +46,19 @@ impl<'a, Set: 'a + OctreeSet> CollisionResolver for OctreeCollisionResolver<'a, 
                     if x.0.size() == 1 {
                         let collision = collide_cube(x_collide, y_collide);
                         if collision.collided {
-                            voxel_collisions.push((x.0.position(), y.0.position(), collision))
+                            if std::ptr::eq(x.1.object, a.object) {
+                                voxel_collisions.push((
+                                    x.0.position(),
+                                    y.0.position(),
+                                    collision.penetration,
+                                ))
+                            } else {
+                                voxel_collisions.push((
+                                    y.0.position(),
+                                    x.0.position(),
+                                    collision.penetration,
+                                ));
+                            }
                         }
                     } else if collide_cube_sloppy(x_collide, y_collide).collided {
                         for a in x.1.object.children(x.0) {

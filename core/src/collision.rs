@@ -20,11 +20,11 @@ pub struct Positioned<T> {
 #[derive(new, Copy, Clone, PartialEq, Debug)]
 pub struct CollisionResult {
     /// The penetration of the collision.
-    pub penetration: f32,
+    pub penetration: FVec,
     pub collided: bool,
 }
 
-pub type VoxelCollisionList<P> = Vec<(P, P, CollisionResult)>;
+pub type VoxelCollisionList<P> = Vec<(P, P, FVec)>;
 
 pub trait CollisionResolver {
     type Collider;

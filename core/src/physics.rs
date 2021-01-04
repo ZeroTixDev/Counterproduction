@@ -290,10 +290,30 @@ fn angular_update(
         });
 }
 
-pub fn apply_force(force: FVec, position: FVec, ftp: &mut (Mut<Force>, Mut<Torque>, &Position)) {
+pub fn apply_force_bundle(
+    force: FVec,
+    position: FVec,
+    ftp: &mut (Mut<Force>, Mut<Torque>, &Position),
+) {
+    apply_force(force, position, (&mut ftp.0, &mut ftp.1, ftp.2));
+}
+
+pub fn apply_force(force: FVec, position: FVec, ftp: (&mut Force, &mut Torque, &Position)) {
     let delta = position - ftp.2 .0;
     ftp.0 .0 += force;
     ftp.1 .0 += force.cross(delta);
+}
+
+pub fn apply_collision(
+    a: (&mut Force, &mut Torque, &Position, &Rotation),
+    b: (&mut Force, &mut Torque, &Position, &Rotation),
+    a_collide_pos: FVec,
+    b_collide_pos: FVec,
+    penetration: FVec,
+) {
+    let force = penetration * 200.0;
+    apply_force(force, a.2 .0 + a.3 .0 * a_collide_pos, (a.0, a.1, a.2));
+    apply_force(-force, b.2 .0 + b.3 .0 * b_collide_pos, (b.0, b.1, b.2));
 }
 
 // Inertia computations taken from http://www.kwon3d.com/theory/moi/triten.html
@@ -327,7 +347,7 @@ mod tests {
         mut query: Query<(&mut Force, &mut Torque, &Position)>,
     ) {
         for mut q in query.iter_mut() {
-            apply_force(cube_force.0, q.2 .0 + cube_force_pos.0, &mut q);
+            apply_force_bundle(cube_force.0, q.2 .0 + cube_force_pos.0, &mut q);
         }
     }
 

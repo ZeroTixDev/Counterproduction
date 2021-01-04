@@ -50,7 +50,7 @@ fn startup(commands: &mut Commands) {
         })
         // camera
         .spawn(Camera3dBundle {
-            transform: Transform::from_translation(Vec3::new(1.0, 1.0, 1.0))
+            transform: Transform::from_translation(Vec3::new(0.0, 1.0, 1.0))
                 .looking_at(Vec3::default(), Vec3::unit_y()),
             ..Default::default()
         })
@@ -93,9 +93,9 @@ fn startup_create_storage(
         let mut storage = ChunkStorage::new(Empty.into(), 16);
         cube(&mut storage, IVec::zero(), 5);
         let physics = PhysicsBundle::new(
-            FVec::new(15.0, 3.0, 0.0),
+            FVec::new(40.0, 1.0, 0.0),
             Rot::identity(),
-            FVec::new(-1.0, 0.0, 0.0),
+            FVec::new(-3.0, 0.0, 0.0),
             storage.for_each_map(|(pos, v)| (pos, v.mass())),
         );
         commands
@@ -114,33 +114,54 @@ fn startup_create_storage(
 
 fn apply_force_to_entity(mut query: Query<(&mut Force, &mut Torque, &Position)>) {
     for mut q in query.iter_mut() {
-        apply_force(
+        apply_force_bundle(
             FVec::new(1.0, 0.0, 0.0) * 20.0,
             q.2 .0 + FVec::new(0.0, 0.0, 2.0),
             &mut q,
         );
-        apply_force(
+        apply_force_bundle(
             FVec::new(-1.0, 0.0, 0.0) * 20.0,
             q.2 .0 + FVec::new(0.0, 0.0, -2.0),
             &mut q,
         );
     }
 }
-fn octree_collide(query: Query<(Entity, &BBOctreeSet, &Position, &Rotation)>) {
-    for ((e1, o1, p1, r1), (e2, o2, p2, r2)) in query
-        .iter()
-        .collect::<Vec<_>>()
-        .into_iter()
-        .tuple_combinations()
-    {
+#[allow(clippy::many_single_char_names)]
+fn octree_collide(
+    mut query: Query<(
+        Entity,
+        &BBOctreeSet,
+        &mut Force,
+        &mut Torque,
+        &Position,
+        &Rotation,
+    )>,
+) {
+    let mut v = query.iter_mut().collect::<Vec<_>>();
+    for (i, j) in (0..v.len()).tuple_combinations() {
+        assert!(i < j);
+        let (l, r) = v.split_at_mut(j);
+        let (e1, o1, ref mut f1, ref mut t1, p1, r1) = l[i];
+        let (e2, o2, ref mut f2, ref mut t2, p2, r2) = r[0];
         let x = Positioned::new(o1, p1.0, r1.0);
         let y = Positioned::new(o2, p2.0, r2.0);
         let collisions = OctreeCollisionResolver::collide(x, y);
         if !collisions.is_empty() {
             println!(
-                "Entities {:?} and {:?} have collided:\n{:?}\n\n\n",
-                e1, e2, collisions
+                "Entities {:?} and {:?} have collided: {:?}",
+                e1,
+                e2,
+                collisions.len()
             );
+            for (a_pos, b_pos, penetration) in collisions {
+                apply_collision(
+                    (f1, t1, p1, r1),
+                    (f2, t2, p2, r2),
+                    FVec::new(a_pos.x as f32, a_pos.y as f32, a_pos.z as f32),
+                    FVec::new(b_pos.x as f32, b_pos.y as f32, b_pos.z as f32),
+                    penetration,
+                );
+            }
         }
     }
 }
