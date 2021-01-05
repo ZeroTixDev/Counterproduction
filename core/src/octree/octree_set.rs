@@ -24,7 +24,9 @@ impl BBOctreeSet {
         let map = &storage.map;
         let mut extent = map.bounding_extent();
         let shape = extent.shape.0;
-        let max_dist = next_pow(shape[0]).max(next_pow(shape[1])).max(next_pow(shape[2]));
+        let max_dist = next_pow(shape[0])
+            .max(next_pow(shape[1]))
+            .max(next_pow(shape[2]));
         extent.shape = PointN([max_dist, max_dist, max_dist]);
         let mut array = Array3::fill(extent, storage.ambient());
         copy_extent(&extent, map, &mut array);
