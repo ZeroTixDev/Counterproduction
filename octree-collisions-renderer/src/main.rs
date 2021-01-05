@@ -70,7 +70,7 @@ fn startup_create_storage(
 ) {
     {
         let mut storage = ChunkStorage::new(Empty.into(), 16);
-        cube(&mut storage, IVec::zero(), 5);
+        chain_link(&mut storage, IVec::zero(), 2, 10, 15);
         let physics = PhysicsBundle::new(
             FVec::zero(),
             Rot::identity(),
@@ -91,9 +91,30 @@ fn startup_create_storage(
     }
     {
         let mut storage = ChunkStorage::new(Empty.into(), 16);
-        cube(&mut storage, IVec::zero(), 5);
+        chain_link(&mut storage, IVec::zero(), 2, 10, 15);
         let physics = PhysicsBundle::new(
-            FVec::new(40.0, 1.0, 0.0),
+            FVec::new(20.0, 0.0, 0.0),
+            Rot::from_rotation_yz(std::f32::consts::PI / 2.0),
+            FVec::zero(),
+            storage.for_each_map(|(pos, v)| (pos, v.mass())),
+        );
+        commands
+            .spawn((
+                VoxelMaterial(materials.add(StandardMaterial {
+                    albedo: Color::rgb_u8(54, 75, 110),
+                    ..Default::default()
+                })),
+                storage,
+                ChunkMeshes(vec![]),
+                GlobalTransform::default(),
+            ))
+            .with_bundle(physics);
+    }
+    {
+        let mut storage = ChunkStorage::new(Empty.into(), 16);
+        chain_link(&mut storage, IVec::zero(), 2, 10, 15);
+        let physics = PhysicsBundle::new(
+            FVec::new(40.0, 0.0, 0.0),
             Rot::identity(),
             FVec::new(-3.0, 0.0, 0.0),
             storage.for_each_map(|(pos, v)| (pos, v.mass())),
@@ -101,7 +122,7 @@ fn startup_create_storage(
         commands
             .spawn((
                 VoxelMaterial(materials.add(StandardMaterial {
-                    albedo: Color::rgb_u8(110, 54, 75),
+                    albedo: Color::rgb_u8(54, 75, 110),
                     ..Default::default()
                 })),
                 storage,
@@ -190,14 +211,51 @@ fn display_sync_transform_system(
     }
 }
 
+fn chain_link(
+    storage: &mut impl VoxelStorage<T = SimpleVoxel, Position = IVec>,
+    center: IVec,
+    thickness: i32,
+    x_size: i32,
+    y_size: i32,
+) {
+    fill_box(
+        storage,
+        center + IVec::new(0, x_size, 0),
+        IVec::new(y_size, thickness, thickness),
+    );
+    fill_box(
+        storage,
+        center + IVec::new(0, -x_size, 0),
+        IVec::new(y_size, thickness, thickness),
+    );
+    fill_box(
+        storage,
+        center + IVec::new(y_size, 0, 0),
+        IVec::new(thickness, x_size, thickness),
+    );
+    fill_box(
+        storage,
+        center + IVec::new(-y_size, 0, 0),
+        IVec::new(thickness, x_size, thickness),
+    );
+}
+
 fn cube(
     storage: &mut impl VoxelStorage<T = SimpleVoxel, Position = IVec>,
     center: IVec,
     size: i32,
 ) {
-    for a in -size..=size {
-        for b in -size..=size {
-            for c in -size..=size {
+    fill_box(storage, center, IVec::new(size, size, size));
+}
+
+fn fill_box(
+    storage: &mut impl VoxelStorage<T = SimpleVoxel, Position = IVec>,
+    center: IVec,
+    size: IVec,
+) {
+    for a in -size.x..=size.x {
+        for b in -size.y..=size.y {
+            for c in -size.z..=size.z {
                 let pos = center + IVec::new(a, b, c);
                 *storage.get_mut(pos).get_mut() = Solid.into();
             }
