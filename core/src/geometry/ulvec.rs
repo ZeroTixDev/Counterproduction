@@ -37,19 +37,19 @@ impl From<(u64, u64, u64)> for ULVec {
         ULVec(x, y, z)
     }
 }
-impl Into<[u64; 3]> for ULVec {
-    fn into(self) -> [u64; 3] {
-        [self.0, self.1, self.2]
+impl From<ULVec> for [u64; 3] {
+    fn from(x: ULVec) -> [u64; 3] {
+        [x.0, x.1, x.2]
     }
 }
-impl Into<(u64, u64, u64)> for ULVec {
-    fn into(self) -> (u64, u64, u64) {
-        (self.0, self.1, self.2)
+impl From<ULVec> for (u64, u64, u64) {
+    fn from(x: ULVec) -> (u64, u64, u64) {
+        (x.0, x.1, x.2)
     }
 }
-impl Into<FVec> for ULVec {
-    fn into(self) -> FVec {
-        self.as_f32()
+impl From<ULVec> for FVec {
+    fn from(x: ULVec) -> FVec {
+        x.as_f32()
     }
 }
 impl Add for ULVec {

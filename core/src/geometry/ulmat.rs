@@ -1,3 +1,5 @@
+#![allow(clippy::suspicious_operation_groupings)]
+
 use crate::geometry::ulvec::ULVec;
 use crate::geometry::FMat;
 use std::ops::*;
@@ -53,19 +55,19 @@ impl From<[[u64; 3]; 3]> for ULMat {
         ULMat(x[0].into(), x[1].into(), x[2].into())
     }
 }
-impl Into<[ULVec; 3]> for ULMat {
-    fn into(self) -> [ULVec; 3] {
-        [self.0, self.1, self.2]
+impl From<ULMat> for [ULVec; 3] {
+    fn from(x: ULMat) -> [ULVec; 3] {
+        [x.0, x.1, x.2]
     }
 }
-impl Into<(ULVec, ULVec, ULVec)> for ULMat {
-    fn into(self) -> (ULVec, ULVec, ULVec) {
-        (self.0, self.1, self.2)
+impl From<ULMat> for (ULVec, ULVec, ULVec) {
+    fn from(x: ULMat) -> (ULVec, ULVec, ULVec) {
+        (x.0, x.1, x.2)
     }
 }
-impl Into<FMat> for ULMat {
-    fn into(self) -> FMat {
-        self.as_f32()
+impl From<ULMat> for FMat {
+    fn from(x: ULMat) -> FMat {
+        x.as_f32()
     }
 }
 impl Add for ULMat {
