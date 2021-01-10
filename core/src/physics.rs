@@ -43,15 +43,22 @@ impl Plugin for PhysicsPlugin {
             schedule_name,
             |schedule: &mut Schedule| {
                 schedule
+                    .add_stage_before(
+                        "collide",
+                        "physics-before",
+                        SystemStage::parallel()
+                            .with_system(linear_update_before.system())
+                            .with_system(angular_update_before.system()),
+                    )
                     .add_stage_after(
                         "collide",
-                        "physics",
+                        "physics-after",
                         SystemStage::parallel()
-                            .with_system(linear_update.system())
-                            .with_system(angular_update.system()),
+                            .with_system(linear_update_after.system())
+                            .with_system(angular_update_after.system()),
                     )
                     .add_stage_before(
-                        "physics",
+                        "physics-before",
                         "pre-physics",
                         SystemStage::serial()
                             .with_system(recompute_after_changed_body.system())
@@ -252,7 +259,7 @@ fn recompute_computed_after_changed(
     );
 }
 
-fn linear_update(
+fn linear_update_before(
     timestep: Res<Timestep>,
     pool: Res<ComputeTaskPool>,
     mut query: Query<(&InvMass, &mut Force, &mut Momentum, &mut Position)>,
@@ -261,14 +268,14 @@ fn linear_update(
     query
         .par_iter_mut(128)
         .for_each(&pool.0, |(im, mut f, mut m, mut p)| {
-            m.0 += timestep * f.0;
-            p.0 += timestep * m.0 * im.0;
+            m.0 += 0.5 * f.0 * timestep;
+            p.0 += m.0 * im.0 * timestep;
             f.0 = FVec::zero();
             debug_assert!(!f32::is_nan(p.0.x) && !f32::is_nan(p.0.y) && !f32::is_nan(p.0.z));
         });
 }
 
-fn angular_update(
+fn angular_update_before(
     timestep: Res<Timestep>,
     pool: Res<ComputeTaskPool>,
     mut query: Query<(
@@ -282,9 +289,9 @@ fn angular_update(
     query
         .par_iter_mut(128)
         .for_each(&pool.0, |(iiacom, mut t, mut am, mut r)| {
+            am.0 += 0.5 * t.0 * timestep;
             let rot_mat = r.0.into_matrix();
-            am.0 += timestep * t.0;
-            let w = rot_mat * iiacom.0 * rot_mat.inversed() * am.0;
+            let w = rot_mat * iiacom.0 * rot_mat.inversed() * am.0 * timestep;
             if w == FVec::zero() {
                 return;
             }
@@ -296,6 +303,28 @@ fn angular_update(
             t.0 = FVec::zero();
             debug_assert!(!f32::is_nan(r.0.s));
         });
+}
+
+fn linear_update_after(
+    timestep: Res<Timestep>,
+    pool: Res<ComputeTaskPool>,
+    mut query: Query<(&Force, &mut Momentum)>,
+) {
+    let timestep = timestep.0;
+    query.par_iter_mut(128).for_each(&pool.0, |(f, mut m)| {
+        m.0 += 0.5 * f.0 * timestep;
+    });
+}
+
+fn angular_update_after(
+    timestep: Res<Timestep>,
+    pool: Res<ComputeTaskPool>,
+    mut query: Query<(&Torque, &mut AngularMomentum)>,
+) {
+    let timestep = timestep.0;
+    query.par_iter_mut(128).for_each(&pool.0, |(t, mut am)| {
+        am.0 += 0.5 * t.0 * timestep;
+    });
 }
 
 pub fn apply_force_bundle(
@@ -313,13 +342,14 @@ pub fn apply_force(force: FVec, position: FVec, ftp: (&mut Force, &mut Torque, &
 }
 
 pub fn apply_collision(
-    a: (&mut Force, &mut Torque, &Position, &Rotation),
-    b: (&mut Force, &mut Torque, &Position, &Rotation),
+    a: (&mut Force, &mut Torque, &Position, &Rotation, &Mass),
+    b: (&mut Force, &mut Torque, &Position, &Rotation, &Mass),
     a_collide_pos: FVec,
     b_collide_pos: FVec,
     penetration: FVec,
 ) {
-    let force = penetration * 2000.0;
+    let min_mass = a.4 .0.min(b.4 .0) as f32;
+    let force = penetration * min_mass * 0.5;
     apply_force(force, a.2 .0 + a.3 .0 * a_collide_pos, (a.0, a.1, a.2));
     apply_force(-force, b.2 .0 + b.3 .0 * b_collide_pos, (b.0, b.1, b.2));
 }

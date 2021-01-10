@@ -1,6 +1,5 @@
 #![allow(clippy::type_complexity)]
 #![allow(dead_code)]
-use bevy::core::FixedTimestep;
 use bevy::prelude::*;
 use bevy::render::mesh::Indices;
 use bevy::render::mesh::VertexAttributeValues;
@@ -36,8 +35,7 @@ fn main() {
         .add_system(display_sync_transform_system.system())
         .add_system(auto_mesh_system.system())
         .add_system(octree_generator.system())
-        .add_system(octree_collide.system())
-        .add_system(velocity_printer.system())
+        .add_system(energy_printer.system())
         .add_stage_before(
             stage::UPDATE,
             "physics-schedule",
@@ -48,7 +46,7 @@ fn main() {
                     SystemStage::serial().with_system(octree_collide.system()),
                 ),
         )
-        .add_plugin(PhysicsPlugin::new(1.0 / 400.0, "physics-schedule"))
+        .add_plugin(PhysicsPlugin::new(1.0 / 60.0, "physics-schedule"))
         .run();
 }
 
@@ -122,7 +120,7 @@ fn startup_create_storage(
             ))
             .with_bundle(physics);
     }
-    /* {
+    {
         let mut storage = ChunkStorage::new(Empty.into(), 16);
         chain_link(&mut storage, IVec::zero(), 2, 10, 15);
         let physics = PhysicsBundle::new(
@@ -142,7 +140,7 @@ fn startup_create_storage(
                 GlobalTransform::default(),
             ))
             .with_bundle(physics);
-    } */
+    }
 }
 
 fn apply_force_to_entity(mut query: Query<(&mut Force, &mut Torque, &Position)>) {
@@ -162,12 +160,12 @@ fn apply_force_to_entity(mut query: Query<(&mut Force, &mut Torque, &Position)>)
 #[allow(clippy::many_single_char_names)]
 fn octree_collide(
     mut query: Query<(
-        Entity,
         &BBOctreeSet,
         &mut Force,
         &mut Torque,
         &Position,
         &Rotation,
+        &Mass,
     )>,
 ) {
     // println!("Colliding");
@@ -175,8 +173,8 @@ fn octree_collide(
     for (i, j) in (0..v.len()).tuple_combinations() {
         assert!(i < j);
         let (l, r) = v.split_at_mut(j);
-        let (e1, o1, ref mut f1, ref mut t1, p1, r1) = l[i];
-        let (e2, o2, ref mut f2, ref mut t2, p2, r2) = r[0];
+        let (o1, ref mut f1, ref mut t1, p1, r1, m1) = l[i];
+        let (o2, ref mut f2, ref mut t2, p2, r2, m2) = r[0];
         let x = Positioned::new(o1, p1.0, r1.0);
         let y = Positioned::new(o2, p2.0, r2.0);
         let collisions = OctreeCollisionResolver::collide(x, y);
@@ -189,8 +187,8 @@ fn octree_collide(
             // );
             for (a_pos, b_pos, penetration) in collisions {
                 apply_collision(
-                    (f1, t1, p1, r1),
-                    (f2, t2, p2, r2),
+                    (f1, t1, p1, r1, m1),
+                    (f2, t2, p2, r2, m2),
                     FVec::new(a_pos.x as f32, a_pos.y as f32, a_pos.z as f32),
                     FVec::new(b_pos.x as f32, b_pos.y as f32, b_pos.z as f32),
                     penetration,
@@ -199,10 +197,9 @@ fn octree_collide(
         }
     }
 }
-fn velocity_printer(query: Query<(Entity, &Momentum, &AngularMomentum)>) {
+fn energy_printer(query: Query<&Momentum>) {
     let mut total_ke = 0.0;
-    for (e, v, av) in query.iter() {
-        // println!("{:?}: V {:?} AV {:?}", e, v.0, av.0);
+    for v in query.iter() {
         total_ke += v.0.mag_sq();
     }
     println!("Energy: {:?}", total_ke);
