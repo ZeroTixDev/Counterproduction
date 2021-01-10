@@ -1,5 +1,6 @@
 #![allow(clippy::type_complexity)]
 #![allow(dead_code)]
+use bevy::core::FixedTimestep;
 use bevy::prelude::*;
 use bevy::render::mesh::Indices;
 use bevy::render::mesh::VertexAttributeValues;
@@ -30,14 +31,24 @@ fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
         .add_plugin(OrbitCameraPlugin)
-        .add_plugin(PhysicsPlugin::default())
         .add_startup_system(startup.system())
         .add_startup_system(startup_create_storage.system())
         .add_system(display_sync_transform_system.system())
         .add_system(auto_mesh_system.system())
         .add_system(octree_generator.system())
-        // .add_system(apply_force_to_entity.system())
         .add_system(octree_collide.system())
+        .add_system(velocity_printer.system())
+        .add_stage_before(
+            stage::UPDATE,
+            "physics-schedule",
+            Schedule::default()
+                // .with_run_criteria(FixedTimestep::step(1.0 / 60.0))
+                .with_stage(
+                    "collide",
+                    SystemStage::serial().with_system(octree_collide.system()),
+                ),
+        )
+        .add_plugin(PhysicsPlugin::new(1.0 / 400.0, "physics-schedule"))
         .run();
 }
 
@@ -74,48 +85,6 @@ fn startup_create_storage(
         let physics = PhysicsBundle::new(
             FVec::zero(),
             Rot::identity(),
-            FVec::zero(),
-            storage.for_each_map(|(pos, v)| (pos, v.mass())),
-        );
-        commands
-            .spawn((
-                VoxelMaterial(materials.add(StandardMaterial {
-                    albedo: Color::rgb_u8(54, 75, 110),
-                    ..Default::default()
-                })),
-                storage,
-                ChunkMeshes(vec![]),
-                GlobalTransform::default(),
-            ))
-            .with_bundle(physics);
-    }
-    {
-        let mut storage = ChunkStorage::new(Empty.into(), 16);
-        chain_link(&mut storage, IVec::zero(), 2, 10, 15);
-        let physics = PhysicsBundle::new(
-            FVec::new(20.0, 0.0, 0.0),
-            Rot::from_rotation_yz(std::f32::consts::PI / 2.0),
-            FVec::zero(),
-            storage.for_each_map(|(pos, v)| (pos, v.mass())),
-        );
-        commands
-            .spawn((
-                VoxelMaterial(materials.add(StandardMaterial {
-                    albedo: Color::rgb_u8(54, 75, 110),
-                    ..Default::default()
-                })),
-                storage,
-                ChunkMeshes(vec![]),
-                GlobalTransform::default(),
-            ))
-            .with_bundle(physics);
-    }
-    {
-        let mut storage = ChunkStorage::new(Empty.into(), 16);
-        chain_link(&mut storage, IVec::zero(), 2, 10, 15);
-        let physics = PhysicsBundle::new(
-            FVec::new(40.0, 0.0, 0.0),
-            Rot::identity(),
             FVec::new(-3.0, 0.0, 0.0),
             storage.for_each_map(|(pos, v)| (pos, v.mass())),
         );
@@ -131,6 +100,49 @@ fn startup_create_storage(
             ))
             .with_bundle(physics);
     }
+    {
+        let mut storage = ChunkStorage::new(Empty.into(), 16);
+        chain_link_2(&mut storage, IVec::zero(), 2, 10, 15);
+        let physics = PhysicsBundle::new(
+            FVec::new(20.0, 0.0, 0.0),
+            Rot::identity(),
+            //Rot::from_rotation_yz(std::f32::consts::PI / 2.0),
+            FVec::zero(),
+            storage.for_each_map(|(pos, v)| (pos, v.mass())),
+        );
+        commands
+            .spawn((
+                VoxelMaterial(materials.add(StandardMaterial {
+                    albedo: Color::rgb_u8(54, 75, 110),
+                    ..Default::default()
+                })),
+                storage,
+                ChunkMeshes(vec![]),
+                GlobalTransform::default(),
+            ))
+            .with_bundle(physics);
+    }
+    /* {
+        let mut storage = ChunkStorage::new(Empty.into(), 16);
+        chain_link(&mut storage, IVec::zero(), 2, 10, 15);
+        let physics = PhysicsBundle::new(
+            FVec::new(40.0, 0.0, 0.0),
+            Rot::identity(),
+            FVec::new(0.0, 0.0, 0.0),
+            storage.for_each_map(|(pos, v)| (pos, v.mass())),
+        );
+        commands
+            .spawn((
+                VoxelMaterial(materials.add(StandardMaterial {
+                    albedo: Color::rgb_u8(54, 75, 110),
+                    ..Default::default()
+                })),
+                storage,
+                ChunkMeshes(vec![]),
+                GlobalTransform::default(),
+            ))
+            .with_bundle(physics);
+    } */
 }
 
 fn apply_force_to_entity(mut query: Query<(&mut Force, &mut Torque, &Position)>) {
@@ -158,6 +170,7 @@ fn octree_collide(
         &Rotation,
     )>,
 ) {
+    // println!("Colliding");
     let mut v = query.iter_mut().collect::<Vec<_>>();
     for (i, j) in (0..v.len()).tuple_combinations() {
         assert!(i < j);
@@ -168,12 +181,12 @@ fn octree_collide(
         let y = Positioned::new(o2, p2.0, r2.0);
         let collisions = OctreeCollisionResolver::collide(x, y);
         if !collisions.is_empty() {
-            println!(
-                "Entities {:?} and {:?} have collided: {:?}",
-                e1,
-                e2,
-                collisions.len()
-            );
+            // println!(
+            //     "Entities {:?} and {:?} have collided: {:?}",
+            //     e1,
+            //     e2,
+            //     collisions.len()
+            // );
             for (a_pos, b_pos, penetration) in collisions {
                 apply_collision(
                     (f1, t1, p1, r1),
@@ -185,6 +198,14 @@ fn octree_collide(
             }
         }
     }
+}
+fn velocity_printer(query: Query<(Entity, &Momentum, &AngularMomentum)>) {
+    let mut total_ke = 0.0;
+    for (e, v, av) in query.iter() {
+        // println!("{:?}: V {:?} AV {:?}", e, v.0, av.0);
+        total_ke += v.0.mag_sq();
+    }
+    println!("Energy: {:?}", total_ke);
 }
 fn octree_generator(
     commands: &mut Commands,
@@ -237,6 +258,35 @@ fn chain_link(
         storage,
         center + IVec::new(-y_size, 0, 0),
         IVec::new(thickness, x_size, thickness),
+    );
+}
+
+fn chain_link_2(
+    storage: &mut impl VoxelStorage<T = SimpleVoxel, Position = IVec>,
+    center: IVec,
+    thickness: i32,
+    x_size: i32,
+    y_size: i32,
+) {
+    fill_box(
+        storage,
+        center + IVec::new(0, 0, x_size),
+        IVec::new(y_size, thickness, thickness),
+    );
+    fill_box(
+        storage,
+        center + IVec::new(0, 0, -x_size),
+        IVec::new(y_size, thickness, thickness),
+    );
+    fill_box(
+        storage,
+        center + IVec::new(y_size, 0, 0),
+        IVec::new(thickness, thickness, x_size),
+    );
+    fill_box(
+        storage,
+        center + IVec::new(-y_size, 0, 0),
+        IVec::new(thickness, thickness, x_size),
     );
 }
 

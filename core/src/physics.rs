@@ -12,6 +12,14 @@ pub struct PhysicsPlugin {
     // This is the schedule that the physics is added to.
     pub physics_schedule_name: Option<&'static str>,
 }
+impl PhysicsPlugin {
+    pub fn new(timestep: f64, physics_schedule_name: &'static str) -> Self {
+        PhysicsPlugin {
+            timestep,
+            physics_schedule_name: Some(physics_schedule_name),
+        }
+    }
+}
 impl Default for PhysicsPlugin {
     fn default() -> Self {
         PhysicsPlugin {
@@ -35,7 +43,7 @@ impl Plugin for PhysicsPlugin {
             schedule_name,
             |schedule: &mut Schedule| {
                 schedule
-                    .add_stage_before(
+                    .add_stage_after(
                         "collide",
                         "physics",
                         SystemStage::parallel()
@@ -311,7 +319,7 @@ pub fn apply_collision(
     b_collide_pos: FVec,
     penetration: FVec,
 ) {
-    let force = penetration * 200.0;
+    let force = penetration * 2000.0;
     apply_force(force, a.2 .0 + a.3 .0 * a_collide_pos, (a.0, a.1, a.2));
     apply_force(-force, b.2 .0 + b.3 .0 * b_collide_pos, (b.0, b.1, b.2));
 }
