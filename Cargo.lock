@@ -4306,6 +4306,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "wgpu-test"
+version = "1.0.0"
+dependencies = [
+ "bevy",
+ "cargo-husky",
+ "shaderc",
+ "wgpu",
+]
+
+[[package]]
 name = "wgpu-types"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

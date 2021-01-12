@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "core",
+    "wgpu-test",
     "type-record",
     "bevy-orbit-controls",
     "octree-collisions-renderer"
