@@ -32,7 +32,6 @@ TLDR: This is a game in which players will counter others by creating combat spa
 To compile the Rust part of the program, run
 
 ```bash
-> cd core
 > cargo build
 ```
 
