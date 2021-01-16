@@ -6,15 +6,31 @@ license = "GPL-3.0-only"
 edition = "2018"
 publish = false
 repository = "https://github.com/Counterproduction-game/Counterproduction"
+build = "build.rs"
 
 # [lib]
 # name = "counterproduction_render"
 
 [dependencies]
-bevy = "0.4.0"
-shaderc = "0.7.0"
 wgpu = "0.6.2"
-[dev-dependencies.cargo-husky]
-version = "1.5.0"
+futures = "0.3.8"
+log = "0.4.13"
+winit = "0.24.0"
+bytemuck = { version = "1.5.0", features = ["derive"] }
+[dependencies.bevy]
+version = "0.4.0"
 default-features = false
-features = ["precommit-hook", "run-cargo-clippy", "run-cargo-fmt"]
+features = [
+    "bevy_audio",
+    "bevy_dynamic_plugin",
+    "bevy_gilrs",
+    "bevy_winit",
+    "mp3",
+    "x11",
+]
+
+[build-dependencies]
+anyhow = "1.0"
+fs_extra = "1.1"
+glob = "0.3"
+shaderc = "0.7.0"
