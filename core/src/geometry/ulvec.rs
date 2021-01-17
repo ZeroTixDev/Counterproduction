@@ -6,7 +6,7 @@ use std::ops::*;
 pub struct ULVec(pub u64, pub u64, pub u64);
 
 impl ULVec {
-    pub fn new(x: u64, y: u64, z: u64) -> Self {
+    pub const fn new(x: u64, y: u64, z: u64) -> Self {
         ULVec(x, y, z)
     }
 

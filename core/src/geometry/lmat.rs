@@ -8,7 +8,7 @@ use std::ops::*;
 pub struct LMat(pub LVec, pub LVec, pub LVec);
 
 impl LMat {
-    pub fn new(x: LVec, y: LVec, z: LVec) -> Self {
+    pub const fn new(x: LVec, y: LVec, z: LVec) -> Self {
         LMat(x, y, z)
     }
 

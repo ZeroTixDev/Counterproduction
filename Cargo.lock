@@ -4500,6 +4500,7 @@ dependencies = [
  "anyhow",
  "bevy",
  "bytemuck",
+ "counterproduction-core",
  "fs_extra",
  "futures",
  "glob",

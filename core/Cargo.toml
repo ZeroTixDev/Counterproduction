@@ -14,8 +14,10 @@ name = "counterproduction_core"
 ultraviolet = { version = "0.7.5", features = ["int"] }
 building-blocks =  { git = "https://github.com/iMplode-nZ/building-blocks.git", branch = "main" }
 derive-new = "0.5.8"
-bevy = "0.4.0"
 take_mut = "0.2.2"
+[dependencies.bevy]
+version = "0.4.0"
+default-features = false
 [dev-dependencies.cargo-husky]
 version = "1.5.0"
 default-features = false

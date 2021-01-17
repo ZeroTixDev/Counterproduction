@@ -8,7 +8,7 @@ use std::ops::*;
 pub struct ULMat(pub ULVec, pub ULVec, pub ULVec);
 
 impl ULMat {
-    pub fn new(x: ULVec, y: ULVec, z: ULVec) -> Self {
+    pub const fn new(x: ULVec, y: ULVec, z: ULVec) -> Self {
         ULMat(x, y, z)
     }
 

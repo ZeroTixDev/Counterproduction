@@ -6,7 +6,7 @@ use std::ops::*;
 pub struct LVec(pub i64, pub i64, pub i64);
 
 impl LVec {
-    pub fn new(x: i64, y: i64, z: i64) -> Self {
+    pub const fn new(x: i64, y: i64, z: i64) -> Self {
         LVec(x, y, z)
     }
 
