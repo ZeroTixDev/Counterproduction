@@ -1,5 +1,5 @@
+use counterproduction_core::geometry::{FVec, IVec, Rot};
 use wgpu::*;
-use counterproduction_core::geometry::{IVec, FVec, Rot};
 #[repr(C)]
 #[derive(Copy, Clone, Debug)]
 // TODO: DECIDE ON ENTITY AND UID TYPES

@@ -1,6 +1,6 @@
+use crate::types::*;
 use bevy::ecs::Commands;
 use wgpu::*;
-use crate::types::*;
 
 pub fn create_buffers(commands: &mut Commands, device: &Device) {
     let vertex_buffer = device.create_buffer(&BufferDescriptor {
@@ -21,7 +21,7 @@ pub fn create_buffers(commands: &mut Commands, device: &Device) {
         sample_count: 1,
         dimension: TextureDimension::D1,
         format: TextureFormat::Rgba32Float,
-        usage: TextureUsage::SAMPLED | TextureUsage::COPY_DST
+        usage: TextureUsage::SAMPLED | TextureUsage::COPY_DST,
     });
 
     let entity_position_texture = device.create_texture(&TextureDescriptor {
@@ -35,7 +35,7 @@ pub fn create_buffers(commands: &mut Commands, device: &Device) {
         sample_count: 1,
         dimension: TextureDimension::D1,
         format: TextureFormat::Rgba32Float,
-        usage: TextureUsage::SAMPLED | TextureUsage::COPY_DST
+        usage: TextureUsage::SAMPLED | TextureUsage::COPY_DST,
     });
 
     let type_color_texture = device.create_texture(&TextureDescriptor {
@@ -49,7 +49,7 @@ pub fn create_buffers(commands: &mut Commands, device: &Device) {
         sample_count: 1,
         dimension: TextureDimension::D1,
         format: TextureFormat::Rgba32Float,
-        usage: TextureUsage::SAMPLED | TextureUsage::COPY_DST
+        usage: TextureUsage::SAMPLED | TextureUsage::COPY_DST,
     });
 
     commands
