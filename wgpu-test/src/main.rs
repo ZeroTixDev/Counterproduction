@@ -72,6 +72,7 @@ fn render(
     device: Res<Device>,
     render_pipeline: Res<RenderPipeline>,
     vertex_buffer: Res<VertexBuffer>,
+    vertex_buffer_length: Res<VertexBufferLength>,
     queue: Res<Queue>,
 ) -> Result<(), SwapChainError> {
     let frame = swap_chain.get_current_frame()?.output;
@@ -98,7 +99,7 @@ fn render(
         });
         render_pass.set_pipeline(&render_pipeline);
         render_pass.set_vertex_buffer(0, vertex_buffer.0.slice(..));
-        render_pass.draw(0..3, 0..1);
+        render_pass.draw(0..(vertex_buffer_length.0 as u32), 0..1);
     }
 
     queue.submit(std::iter::once(encoder.finish()));

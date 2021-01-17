@@ -47,5 +47,7 @@ pub struct VertexBuffer(pub Buffer);
 pub struct EntityRotationTexture(pub Texture);
 pub struct EntityPositionTexture(pub Texture);
 pub struct TypeColorTexture(pub Texture);
+// TODO: THIS NEEDS TO BE A u32 FOR SOME REASON. FIGURE OUT WORKAROUND OR SET TO
+// BE u32.
 pub struct VertexBufferLength(pub u64);
 pub struct EntityTextureLength(pub u64);
