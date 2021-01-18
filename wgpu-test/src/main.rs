@@ -1,4 +1,5 @@
 #![feature(const_fn_floating_point_arithmetic)]
+use counterproduction_core::geometry::IVec;
 use bevy::prelude::*;
 use bevy::winit::WinitWindows;
 use futures::executor::block_on;
@@ -21,6 +22,14 @@ fn main() {
 const TYPE_COLORS: &[RgbaColor] = &[
     // Dark blue
     RgbaColor::new_rgb_u8(55, 80, 120),
+];
+
+const VOXELS: &[Voxel] = &[
+    Voxel {
+        position: IVec::new(0, 0, 0),
+        entity: 0,
+        id: 0,
+    }
 ];
 
 fn setup(commands: &mut Commands, windows: Res<WinitWindows>) {
