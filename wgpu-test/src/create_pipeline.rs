@@ -2,13 +2,18 @@ use crate::types::Voxel;
 use bevy::ecs::Commands;
 use wgpu::*;
 
-pub fn create_pipeline(commands: &mut Commands, device: &Device, sc_desc: &SwapChainDescriptor) {
+pub fn create_pipeline(
+    commands: &mut Commands,
+    device: &Device,
+    sc_desc: &SwapChainDescriptor,
+    bind_group_layout: &BindGroupLayout,
+) {
     let vs_module = device.create_shader_module(include_spirv!("shader.vert.spv"));
     let fs_module = device.create_shader_module(include_spirv!("shader.frag.spv"));
 
     let render_pipeline_layout = device.create_pipeline_layout(&PipelineLayoutDescriptor {
         label: Some("Render Pipeline Layout"),
-        bind_group_layouts: &[],
+        bind_group_layouts: &[bind_group_layout],
         push_constant_ranges: &[],
     });
 
@@ -37,7 +42,7 @@ pub fn create_pipeline(commands: &mut Commands, device: &Device, sc_desc: &SwapC
             alpha_blend: BlendDescriptor::REPLACE,
             write_mask: ColorWrite::ALL,
         }],
-        primitive_topology: PrimitiveTopology::TriangleList,
+        primitive_topology: PrimitiveTopology::PointList,
         depth_stencil_state: None,
         vertex_state: VertexStateDescriptor {
             index_format: IndexFormat::Uint16,

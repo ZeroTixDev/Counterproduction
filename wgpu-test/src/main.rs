@@ -1,3 +1,4 @@
+#![feature(const_fn_floating_point_arithmetic)]
 use bevy::prelude::*;
 use bevy::winit::WinitWindows;
 use futures::executor::block_on;
@@ -17,15 +18,20 @@ fn main() {
         .run();
 }
 
+const TYPE_COLORS: &[RgbaColor] = &[
+    // Dark blue
+    RgbaColor::new_rgb_u8(55, 80, 120),
+];
+
 fn setup(commands: &mut Commands, windows: Res<WinitWindows>) {
     let windows = &windows.windows;
     assert_eq!(windows.len(), 1);
     for window in windows.values() {
-        setup_window(commands, window);
+        setup_window(commands, window, TYPE_COLORS);
     }
 }
 
-fn setup_window(commands: &mut Commands, window: &winit::window::Window) {
+fn setup_window(commands: &mut Commands, window: &winit::window::Window, type_colors: &[RgbaColor]) {
     let size = window.inner_size();
     let instance = Instance::new(BackendBit::PRIMARY);
     let surface = unsafe { instance.create_surface(window) };
@@ -54,9 +60,9 @@ fn setup_window(commands: &mut Commands, window: &winit::window::Window) {
     };
     let swap_chain = device.create_swap_chain(&surface, &sc_desc);
 
-    create_pipeline::create_pipeline(commands, &device, &sc_desc);
+    let bind_group_layout = create_buffers::create_buffers(commands, &device, &queue, type_colors);
 
-    create_buffers::create_buffers(commands, &device);
+    create_pipeline::create_pipeline(commands, &device, &sc_desc, &bind_group_layout);
 
     commands
         .insert_resource(surface)
@@ -71,6 +77,7 @@ fn render(
     mut swap_chain: ResMut<SwapChain>,
     device: Res<Device>,
     render_pipeline: Res<RenderPipeline>,
+    bind_group: Res<TextureBindGroup>,
     vertex_buffer: Res<VertexBuffer>,
     vertex_buffer_length: Res<VertexBufferLength>,
     queue: Res<Queue>,
@@ -98,6 +105,7 @@ fn render(
             depth_stencil_attachment: None,
         });
         render_pass.set_pipeline(&render_pipeline);
+        render_pass.set_bind_group(0, &bind_group.0, &[]);
         render_pass.set_vertex_buffer(0, vertex_buffer.0.slice(..));
         render_pass.draw(0..(vertex_buffer_length.0 as u32), 0..1);
     }

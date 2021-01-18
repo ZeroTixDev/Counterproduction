@@ -1,13 +1,16 @@
 use counterproduction_core::geometry::{FVec, IVec, Rot};
 use wgpu::*;
+use bytemuck::{Pod, Zeroable};
 #[repr(C)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 // TODO: DECIDE ON ENTITY AND UID TYPES
 pub struct Voxel {
     pub position: IVec,
     pub entity: u16,
     pub id: u16,
 }
+unsafe impl bytemuck::Pod for Voxel {}
+unsafe impl bytemuck::Zeroable for Voxel {}
 impl Voxel {
     pub(crate) fn desc() -> VertexBufferDescriptor<'static> {
         VertexBufferDescriptor {
@@ -35,10 +38,6 @@ pub struct Entity {
     pub rotation: Rot,
     pub position: FVec,
 }
-
-unsafe impl bytemuck::Pod for Voxel {}
-unsafe impl bytemuck::Zeroable for Voxel {}
-
 // CHANGE LATER
 pub const MAX_VOXELS: u64 = 1024;
 pub const MAX_ENTITIES: u32 = 16;
@@ -51,3 +50,41 @@ pub struct TypeColorTexture(pub Texture);
 // BE u32.
 pub struct VertexBufferLength(pub u64);
 pub struct EntityTextureLength(pub u64);
+pub struct TextureBindGroup(pub BindGroup);
+#[derive(Copy, Clone, Debug, PartialEq, Pod, Zeroable)]
+#[repr(C)]
+pub struct RgbaColor {
+    pub r: f32,
+    pub g: f32,
+    pub b: f32,
+    pub a: f32,
+}
+impl RgbaColor {
+    pub const fn new(r: f32, g: f32, b: f32, a: f32) -> Self {
+        RgbaColor {
+            r,
+            g,
+            b,
+            a,
+        }
+    }
+    pub const fn new_rgb(r: f32, g: f32, b: f32) -> Self {
+        RgbaColor {
+            r,
+            g,
+            b,
+            a: 1.0,
+        }
+    }
+    pub const fn new_u8(r: u8, g: u8, b: u8, a: u8) -> Self {
+        RgbaColor {
+            r: (r as f32) / 256.0,
+            g: (g as f32) / 256.0,
+            b: (b as f32) / 256.0,
+            a: (a as f32) / 256.0,
+        }
+    }
+    pub const fn new_rgb_u8(r: u8, g: u8, b: u8) -> Self {
+        Self::new_u8(r, g, b, 255)
+    }
+}
