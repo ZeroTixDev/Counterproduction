@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use bevy::winit::WinitWindows;
 use counterproduction_core::geometry::IVec;
 use futures::executor::block_on;
-
+use lazy_static::lazy_static;
 use wgpu::*;
 
 pub mod types;
@@ -19,10 +19,9 @@ fn main() {
         .run();
 }
 
-const TYPE_COLORS: &[RgbaColor] = &[
-    // Dark blue
-    RgbaColor::new_rgb_u8(50, 0, 0),
-];
+lazy_static! {
+    static ref TYPE_COLORS: Vec<RgbaColor> = vec![RgbaColor::new(0.4, 0.0, 0.0, 1.0),];
+}
 
 const VOXELS: &[Voxel] = &[Voxel {
     position: IVec::new(0, 0, 0),
@@ -34,7 +33,7 @@ fn setup(commands: &mut Commands, windows: Res<WinitWindows>) {
     let windows = &windows.windows;
     assert_eq!(windows.len(), 1);
     for window in windows.values() {
-        setup_window(commands, window, TYPE_COLORS);
+        setup_window(commands, window, &*TYPE_COLORS);
     }
 }
 

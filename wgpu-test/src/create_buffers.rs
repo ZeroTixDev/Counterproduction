@@ -2,6 +2,8 @@ use crate::types::*;
 use bevy::ecs::Commands;
 use bytemuck::cast_slice;
 use std::mem::size_of;
+use std::mem::size_of_val;
+use std::slice::from_raw_parts;
 use wgpu::*;
 
 fn bind_group_layout_single(
@@ -157,13 +159,23 @@ pub fn create_buffers(
 
     println!("{:?}", type_colors);
 
+    let type_colors_linear = &type_colors
+        .iter()
+        .map(|x| x.into_linear())
+        .collect::<Vec<_>>()[..];
+
     queue.write_texture(
         TextureCopyView {
             texture: &type_color_texture,
             mip_level: 0,
             origin: wgpu::Origin3d::ZERO,
         },
-        cast_slice(type_colors),
+        unsafe {
+            from_raw_parts(
+                type_colors_linear.as_ptr().cast::<u8>(),
+                size_of_val(type_colors_linear),
+            )
+        },
         TextureDataLayout {
             offset: 0,
             bytes_per_row: (type_colors.len() * size_of::<RgbaColor>()) as u32,
