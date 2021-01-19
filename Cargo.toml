@@ -3,8 +3,10 @@ members = [
     "core",
     "wgpu-test",
     "type-record",
+]
+exclude = [
+    "octree-collisions-renderer",
     "bevy-orbit-controls",
-    "octree-collisions-renderer"
 ]
 [profile.release]
 lto = "fat"

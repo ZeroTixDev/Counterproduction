@@ -1,6 +1,6 @@
+use bytemuck::{Pod, Zeroable};
 use counterproduction_core::geometry::{FVec, IVec, Rot};
 use wgpu::*;
-use bytemuck::{Pod, Zeroable};
 #[repr(C)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 // TODO: DECIDE ON ENTITY AND UID TYPES
@@ -61,27 +61,17 @@ pub struct RgbaColor {
 }
 impl RgbaColor {
     pub const fn new(r: f32, g: f32, b: f32, a: f32) -> Self {
-        RgbaColor {
-            r,
-            g,
-            b,
-            a,
-        }
+        RgbaColor { r, g, b, a }
     }
     pub const fn new_rgb(r: f32, g: f32, b: f32) -> Self {
-        RgbaColor {
-            r,
-            g,
-            b,
-            a: 1.0,
-        }
+        RgbaColor { r, g, b, a: 1.0 }
     }
     pub const fn new_u8(r: u8, g: u8, b: u8, a: u8) -> Self {
         RgbaColor {
-            r: (r as f32) / 256.0,
-            g: (g as f32) / 256.0,
-            b: (b as f32) / 256.0,
-            a: (a as f32) / 256.0,
+            r: (r as f32) / 255.0,
+            g: (g as f32) / 255.0,
+            b: (b as f32) / 255.0,
+            a: (a as f32) / 255.0,
         }
     }
     pub const fn new_rgb_u8(r: u8, g: u8, b: u8) -> Self {

@@ -1,6 +1,7 @@
-use bytemuck::cast_slice;
 use crate::types::*;
 use bevy::ecs::Commands;
+use bytemuck::cast_slice;
+use std::mem::size_of;
 use wgpu::*;
 
 fn bind_group_layout_single(
@@ -57,11 +58,17 @@ fn bind_group_single(
     )
 }
 
-pub fn create_buffers(commands: &mut Commands, device: &Device, queue: &Queue, type_colors: &[RgbaColor]) -> BindGroupLayout {
+pub fn create_buffers(
+    commands: &mut Commands,
+    device: &Device,
+    queue: &Queue,
+    type_colors: &[RgbaColor],
+    voxels: &[Voxel],
+) -> BindGroupLayout {
     let vertex_buffer = device.create_buffer(&BufferDescriptor {
         label: Some("Vertex Buffer"),
         size: MAX_VOXELS,
-        usage: BufferUsage::VERTEX,
+        usage: BufferUsage::VERTEX | BufferUsage::COPY_DST | BufferUsage::COPY_SRC,
         mapped_at_creation: false,
     });
 
@@ -148,6 +155,8 @@ pub fn create_buffers(commands: &mut Commands, device: &Device, queue: &Queue, t
 
     /* ==== Write data to buffers ==== */
 
+    println!("{:?}", type_colors);
+
     queue.write_texture(
         TextureCopyView {
             texture: &type_color_texture,
@@ -157,7 +166,7 @@ pub fn create_buffers(commands: &mut Commands, device: &Device, queue: &Queue, t
         cast_slice(type_colors),
         TextureDataLayout {
             offset: 0,
-            bytes_per_row: 0,
+            bytes_per_row: (type_colors.len() * size_of::<RgbaColor>()) as u32,
             rows_per_image: 0,
         },
         Extent3d {
@@ -167,9 +176,11 @@ pub fn create_buffers(commands: &mut Commands, device: &Device, queue: &Queue, t
         },
     );
 
+    queue.write_buffer(&vertex_buffer, 0, cast_slice(voxels));
+
     commands
         .insert_resource(VertexBuffer(vertex_buffer))
-        .insert_resource(VertexBufferLength(0))
+        .insert_resource(VertexBufferLength(voxels.len() as u64))
         .insert_resource(EntityRotationTexture(entity_rotation_texture))
         .insert_resource(EntityPositionTexture(entity_position_texture))
         .insert_resource(EntityTextureLength(0))

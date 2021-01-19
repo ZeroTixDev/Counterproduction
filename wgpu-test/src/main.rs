@@ -1,7 +1,7 @@
 #![feature(const_fn_floating_point_arithmetic)]
-use counterproduction_core::geometry::IVec;
 use bevy::prelude::*;
 use bevy::winit::WinitWindows;
+use counterproduction_core::geometry::IVec;
 use futures::executor::block_on;
 
 use wgpu::*;
@@ -21,16 +21,14 @@ fn main() {
 
 const TYPE_COLORS: &[RgbaColor] = &[
     // Dark blue
-    RgbaColor::new_rgb_u8(55, 80, 120),
+    RgbaColor::new_rgb_u8(50, 0, 0),
 ];
 
-const VOXELS: &[Voxel] = &[
-    Voxel {
-        position: IVec::new(0, 0, 0),
-        entity: 0,
-        id: 0,
-    }
-];
+const VOXELS: &[Voxel] = &[Voxel {
+    position: IVec::new(0, 0, 0),
+    entity: 0,
+    id: 0,
+}];
 
 fn setup(commands: &mut Commands, windows: Res<WinitWindows>) {
     let windows = &windows.windows;
@@ -40,7 +38,11 @@ fn setup(commands: &mut Commands, windows: Res<WinitWindows>) {
     }
 }
 
-fn setup_window(commands: &mut Commands, window: &winit::window::Window, type_colors: &[RgbaColor]) {
+fn setup_window(
+    commands: &mut Commands,
+    window: &winit::window::Window,
+    type_colors: &[RgbaColor],
+) {
     let size = window.inner_size();
     let instance = Instance::new(BackendBit::PRIMARY);
     let surface = unsafe { instance.create_surface(window) };
@@ -69,7 +71,8 @@ fn setup_window(commands: &mut Commands, window: &winit::window::Window, type_co
     };
     let swap_chain = device.create_swap_chain(&surface, &sc_desc);
 
-    let bind_group_layout = create_buffers::create_buffers(commands, &device, &queue, type_colors);
+    let bind_group_layout =
+        create_buffers::create_buffers(commands, &device, &queue, type_colors, VOXELS);
 
     create_pipeline::create_pipeline(commands, &device, &sc_desc, &bind_group_layout);
 
@@ -103,9 +106,9 @@ fn render(
                 resolve_target: None,
                 ops: Operations {
                     load: LoadOp::Clear(Color {
-                        r: 0.1,
-                        g: 0.2,
-                        b: 0.3,
+                        r: 0.0,
+                        g: 0.0,
+                        b: 0.0,
                         a: 1.0,
                     }),
                     store: true,
