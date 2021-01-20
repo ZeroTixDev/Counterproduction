@@ -1,6 +1,7 @@
 use ultraviolet::IVec3;
 use ultraviolet::Isometry3;
 use ultraviolet::Mat3;
+use ultraviolet::Mat4;
 use ultraviolet::Rotor3;
 use ultraviolet::UVec3;
 use ultraviolet::Vec3;
@@ -16,5 +17,6 @@ pub type ULVec = ulvec::ULVec;
 pub type Iso = Isometry3;
 pub type Rot = Rotor3;
 pub type FMat = Mat3;
+pub type FHMat = Mat4;
 pub type LMat = lmat::LMat;
 pub type ULMat = ulmat::ULMat;

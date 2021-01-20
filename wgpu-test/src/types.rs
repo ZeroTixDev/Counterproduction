@@ -38,18 +38,18 @@ pub struct Entity {
     pub position: FVec,
 }
 // CHANGE LATER
-pub const MAX_VOXELS: u64 = 1024;
-pub const MAX_ENTITIES: u32 = 16;
+pub(crate) const MAX_VOXELS: u64 = 1024;
+pub(crate) const MAX_ENTITIES: u32 = 16;
 
-pub struct VertexBuffer(pub Buffer);
-pub struct EntityRotationTexture(pub Texture);
-pub struct EntityPositionTexture(pub Texture);
-pub struct TypeColorTexture(pub Texture);
+pub(crate) struct VertexBuffer(pub Buffer);
+pub(crate) struct EntityRotationTexture(pub Texture);
+pub(crate) struct EntityPositionTexture(pub Texture);
+pub(crate) struct TypeColorTexture(pub Texture);
 // TODO: THIS NEEDS TO BE A u32 FOR SOME REASON. FIGURE OUT WORKAROUND OR SET TO
 // BE u32.
-pub struct VertexBufferLength(pub u64);
-pub struct EntityTextureLength(pub u64);
-pub struct TextureBindGroup(pub BindGroup);
+pub(crate) struct VertexBufferLength(pub u64);
+pub(crate) struct EntityTextureLength(pub u64);
+pub(crate) struct TextureBindGroup(pub BindGroup);
 
 pub type RgbaColor = palette::Srgba;
 pub type LinRgbaColor = palette::LinSrgba;

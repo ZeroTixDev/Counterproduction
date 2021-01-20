@@ -6,6 +6,7 @@ use futures::executor::block_on;
 use lazy_static::lazy_static;
 use wgpu::*;
 
+pub mod camera;
 pub mod types;
 use types::*;
 mod create_buffers;

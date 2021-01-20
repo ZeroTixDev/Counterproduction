@@ -1,9 +1,8 @@
 use crate::types::*;
 use bevy::ecs::Commands;
-use bytemuck::cast_slice;
+use bytemuck::{cast_slice, Pod, Zeroable};
 use std::mem::size_of;
-use std::mem::size_of_val;
-use std::slice::from_raw_parts;
+
 use wgpu::*;
 
 fn bind_group_layout_single(
@@ -161,7 +160,7 @@ pub fn create_buffers(
 
     let type_colors_linear = &type_colors
         .iter()
-        .map(|x| x.into_linear())
+        .map(|x| LinRgbaColorWrapper(x.into_linear()))
         .collect::<Vec<_>>()[..];
 
     queue.write_texture(
@@ -170,12 +169,7 @@ pub fn create_buffers(
             mip_level: 0,
             origin: wgpu::Origin3d::ZERO,
         },
-        unsafe {
-            from_raw_parts(
-                type_colors_linear.as_ptr().cast::<u8>(),
-                size_of_val(type_colors_linear),
-            )
-        },
+        cast_slice(type_colors_linear),
         TextureDataLayout {
             offset: 0,
             bytes_per_row: (type_colors.len() * size_of::<RgbaColor>()) as u32,
@@ -201,3 +195,8 @@ pub fn create_buffers(
 
     bind_group_layout
 }
+
+#[derive(Copy, Clone, PartialEq, Debug)]
+struct LinRgbaColorWrapper(LinRgbaColor);
+unsafe impl Pod for LinRgbaColorWrapper {}
+unsafe impl Zeroable for LinRgbaColorWrapper {}
