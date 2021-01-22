@@ -11,7 +11,7 @@ repository = "https://github.com/Counterproduction-game/Counterproduction"
 name = "counterproduction_core"
 
 [dependencies]
-ultraviolet = { git = "https://github.com/iMplode-nZ/ultraviolet.git", features = ["int"] }
+ultraviolet = { git = "https://github.com/iMplode-nZ/ultraviolet.git", features = ["int", "bytemuck"] }
 building-blocks =  { git = "https://github.com/iMplode-nZ/building-blocks.git", branch = "main" }
 derive-new = "0.5.8"
 take_mut = "0.2.2"

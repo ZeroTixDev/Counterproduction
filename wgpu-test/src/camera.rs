@@ -9,11 +9,9 @@ pub struct Camera {
     pub z_far: f32,
 }
 
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Debug, bytemuck::Pod, bytemuck::Zeroable)]
 #[repr(C)]
 pub(crate) struct CameraRaw {
     projection_matrix: FHMat,
     position: FVec,
 }
-unsafe impl bytemuck::Pod for CameraRaw {}
-unsafe impl bytemuck::Zeroable for CameraRaw {}

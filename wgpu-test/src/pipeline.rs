@@ -1,19 +1,20 @@
-use crate::types::Voxel;
+use crate::voxel::Voxel;
 use bevy::ecs::Commands;
+use bevy::ecs::Res;
 use wgpu::*;
 
-pub fn create_pipeline(
+pub fn init(
     commands: &mut Commands,
-    device: &Device,
-    sc_desc: &SwapChainDescriptor,
-    bind_group_layout: &BindGroupLayout,
+    device: Res<Device>,
+    sc_desc: Res<SwapChainDescriptor>,
+    bind_group_layout: Res<BindGroupLayout>,
 ) {
     let vs_module = device.create_shader_module(include_spirv!("shader.vert.spv"));
     let fs_module = device.create_shader_module(include_spirv!("shader.frag.spv"));
 
     let render_pipeline_layout = device.create_pipeline_layout(&PipelineLayoutDescriptor {
         label: Some("Render Pipeline Layout"),
-        bind_group_layouts: &[bind_group_layout],
+        bind_group_layouts: &[&bind_group_layout],
         push_constant_ranges: &[],
     });
 

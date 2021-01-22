@@ -1,21 +1,33 @@
 #![feature(const_fn_floating_point_arithmetic)]
+use crate::texture::TextureBindGroup;
+use crate::voxel::VoxelBuffer;
+use crate::voxel::VoxelBufferLength;
 use bevy::prelude::*;
 use bevy::winit::WinitWindows;
+use color::RgbaColor;
 use counterproduction_core::geometry::IVec;
 use futures::executor::block_on;
 use lazy_static::lazy_static;
+use voxel::Voxel;
 use wgpu::*;
 
 pub mod camera;
-pub mod types;
-use types::*;
-mod create_buffers;
-mod create_pipeline;
+pub mod color;
+pub mod entity;
+pub mod pipeline;
+pub mod texture;
+pub mod type_color;
+pub mod uniform;
+pub mod voxel;
 
 fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup.system())
+        .add_startup_system(entity::init.system())
+        .add_startup_system(type_color::init::<1>.system())
+        .add_startup_system(texture::init.system())
+        .add_startup_system(pipeline::init.system())
         .add_system(render.system().chain(render_error.system()))
         .run();
 }
@@ -34,15 +46,11 @@ fn setup(commands: &mut Commands, windows: Res<WinitWindows>) {
     let windows = &windows.windows;
     assert_eq!(windows.len(), 1);
     for window in windows.values() {
-        setup_window(commands, window, &*TYPE_COLORS);
+        setup_window(commands, window);
     }
 }
 
-fn setup_window(
-    commands: &mut Commands,
-    window: &winit::window::Window,
-    type_colors: &[RgbaColor],
-) {
+fn setup_window(commands: &mut Commands, window: &winit::window::Window) {
     let size = window.inner_size();
     let instance = Instance::new(BackendBit::PRIMARY);
     let surface = unsafe { instance.create_surface(window) };
@@ -71,11 +79,6 @@ fn setup_window(
     };
     let swap_chain = device.create_swap_chain(&surface, &sc_desc);
 
-    let bind_group_layout =
-        create_buffers::create_buffers(commands, &device, &queue, type_colors, VOXELS);
-
-    create_pipeline::create_pipeline(commands, &device, &sc_desc, &bind_group_layout);
-
     commands
         .insert_resource(surface)
         .insert_resource(device)
@@ -90,8 +93,8 @@ fn render(
     device: Res<Device>,
     render_pipeline: Res<RenderPipeline>,
     bind_group: Res<TextureBindGroup>,
-    vertex_buffer: Res<VertexBuffer>,
-    vertex_buffer_length: Res<VertexBufferLength>,
+    vertex_buffer: Res<VoxelBuffer>,
+    vertex_buffer_length: Res<VoxelBufferLength>,
     queue: Res<Queue>,
 ) -> Result<(), SwapChainError> {
     let frame = swap_chain.get_current_frame()?.output;
