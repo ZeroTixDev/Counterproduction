@@ -21,9 +21,6 @@
     <img src="https://img.shields.io/github/workflow/status/Counterproduction-game/Counterproduction/Rust%20Prototype?style=flat-square&logo=github-actions&logoColor=fff">
 </a>
 </p>
-<p align="center">
-    <strong> <a href="https://youxplode.com/md.html?Counterproduction">About</a> </strong>
-</p>
 
 TLDR: This is a game in which players will counter others by creating combat spaceship designs on the fly.
 
